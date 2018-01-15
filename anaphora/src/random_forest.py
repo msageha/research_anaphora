@@ -129,7 +129,7 @@ def make_df(X, Y):
     # 出現頻度の小さいクラスに、大きいクラスの個数を合わせてランダムにデータを抽出する
     random_indices = np.random.choice(high_frequentry_data, sampling_size, replace=False)
     high_frequentry_data_sample = df.loc[random_indices]
-    pd.DataFrame(high_frequentry_data_sample)
+    # pd.DataFrame(high_frequentry_data_sample)
 
     # データをマージする
     merged_df = pd.concat([high_frequentry_data_sample, low_frequentry_data_sample], ignore_index=True)
