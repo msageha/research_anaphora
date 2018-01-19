@@ -206,14 +206,13 @@ def check_feature_importance(X, Y, feature_list):
     # Feature Importance
     fti = clf_rf.feature_importances_
 
-    if is_feature_importance:
-        print('|', end='')
-        for i, feat in enumerate(feature_list):
-            print('\t{0}'.format(feat), end='|')
-        print('\n|', end='')
-        for i, feat in enumerate(feature_list):
-            print('{0:>.6f}'.format(fti[i]), end='|')
-        print()
+    print('|', end='')
+    for i, feat in enumerate(feature_list):
+        print('\t{0}'.format(feat), end='|')
+    print('\n|', end='')
+    for i, feat in enumerate(feature_list):
+        print('{0:>.6f}'.format(fti[i]), end='|')
+    print()
 
 if __name__ == '__main__':
     data_set_dict = load()
@@ -232,8 +231,13 @@ if __name__ == '__main__':
     for train_type in data_set_dict:
         print('|'+train_type, end='|')
         X_train, Y_train, feature_list = make_dataframe(data_set_dict[train_type])
+        X_train, X_test, Y_train, Y_test = train_test_split(X_train, Y_train, test_size=0.2, random_state=0)
         for test_type in data_set_dict:
-            X_test, Y_test, feature_list = make_dataframe(data_set_dict[test_type])
+            if train_type == test_type:
+                pass
+            else:
+                X_test, Y_test, feature_list = make_dataframe(data_set_dict[test_type])
+                _, X_test, _, Y_test = train_test_split(X_test, Y_test, test_size=0.2, random_state=0)
             train(X_train, X_test, Y_train, Y_test, feature_list, False)
         print()
 
@@ -246,7 +250,12 @@ if __name__ == '__main__':
     for train_type in data_set_dict:
         print('|'+train_type, end='|')
         X_train, Y_train, feature_list = make_dataframe(data_set_dict[train_type], sampling_size)
+        X_train, X_test, Y_train, Y_test = train_test_split(X_train, Y_train, test_size=0.2, random_state=0)
         for test_type in data_set_dict:
-            X_test, Y_test, feature_list = make_dataframe(data_set_dict[test_type], sampling_size)
+            if train_type == test_type:
+                pass
+            else:
+                X_test, Y_test, feature_list = make_dataframe(data_set_dict[test_type], sampling_size)
+                _, X_test, _, Y_test = train_test_split(X_test, Y_test, test_size=0.2, random_state=0)
             train(X_train, X_test, Y_train, Y_test, feature_list, False)
         print()
