@@ -8,10 +8,13 @@ from collections import defaultdict
 import chainer.links as L
 import pickle
 
-w2v_path = '/gs/hs0/tga-cl/sango-m-ab/research/data/entity_vector/entity_vector.model.txt'
-directory = '/gs/hs0/tga-cl/sango-m-ab/research/data/annotated/'
+research_path = '/home/mzk/デスクトップ/research/'
+w2v_path = research_path + 'data/entity_vector/entity_vector.model.txt'
+directory = research_path + '/data/annotated/'
 domain_dict = {'OC':'Yahoo!知恵袋','OW':'白書','OY':'Yahoo!ブログ',
     'PB':'書籍','PM':'雑誌','PN':'新聞'}
+
+count = 0
 
 #正規表現
 #正規表現
@@ -144,6 +147,10 @@ class FeatureToEmbedID:
 
 def file_to_dataframe_list(file_path):
     df_list = []
+    global count
+    count += 1
+    if count % 10 == 0:
+        print(count)
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df_list.append(df)
@@ -321,6 +328,8 @@ def reduction_dataframe(df_list):
 
 def main():
     for domain in domain_dict:
+        global count
+        count = 0
         print(f'start {domain}')
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
