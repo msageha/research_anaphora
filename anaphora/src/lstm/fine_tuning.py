@@ -58,10 +58,11 @@ def fine_tuning(model_path, train_data, test_data, domain, case):
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
     trainer.extend(extensions.LogReport(trigger=(100, 'iteration')), trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
     trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
-    trainer.extend(extensions.snapshot_object(model,savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'), trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy/domain-{0}_case-{1}.png'.format(domain, case)))
     trainer.extend(extensions.ProgressBar(update_interval=10))
 
