@@ -3,6 +3,9 @@ import pickle
 import math
 import json
 
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 import chainer
 from chainer.datasets import tuple_dataset
@@ -10,9 +13,9 @@ from chainer import serializers
 from chainer.training import extensions
 
 from model import BiLSTMBase
-from model import convert as convert_seq
+from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋'} #, 'OW':'白書', 'OY':'Yahoo!ブログ', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OW':'白書', 'OY':'Yahoo!ブログ', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset():
     dataset_dict = {}
