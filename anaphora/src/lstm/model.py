@@ -8,19 +8,24 @@ import chainer.functions as F
 
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
-        return chainer.dataset.to_device(device, batch)
         if device is None:
             return batch
         elif device < 0:
             return [chainer.dataset.to_device(device, x) for x in batch]
         else:
+            print(1)
             xp = cuda.cupy.get_array_module(*batch)
+            print(2)
             concat = xp.concatenate(batch, axis=0)
+            print(3)
             sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
+            print(4)
             concat_dev = chainer.dataset.to_device(device, concat)
+            print(5)
             batch_dev = cuda.cupy.split(concat_dev, sections)
+            print(6)
             return batch_dev
-
+    print('with_label', with_label)
     if with_label:
         return {'xs': to_device_batch([x for x, _ in batch]),
                 'ys': to_device_batch([y for _, y in batch])}
