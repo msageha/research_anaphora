@@ -61,7 +61,7 @@ def training(train_data, test_data, domain, case):
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
-        model.to_gpu(args.gpu)
+        model.to_gpu()
 
     #optimizer
     optimizer = chainer.optimizers.Adam()
