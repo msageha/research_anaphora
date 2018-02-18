@@ -110,34 +110,48 @@ def main():
         all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         all_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ga)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-    training(train_data, test_data, 'all', 'ga')
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_o)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-    training(train_data, test_data, 'all', 'o')
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ni)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-    training(train_data, test_data, 'all', 'ni')
-    for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-        train_x = dataset_dict['{0}_x'.format(domain)][:size]
-        test_x = dataset_dict['{0}_x'.format(domain)][size:]
-        train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ga')
-        train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'o')
-        train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ni')
+    np.save('numpy_data/all_train_x.npy', all_train_x)
+    np.save('numpy_data/all_test_x.npy', all_test_x)
+    np.save('numpy_data/all_train_ga.npy', all_train_ga)
+    np.save('numpy_data/all_test_ga.npy', all_test_ga)
+    np.save('numpy_data/all_train_o.npy', all_train_o)
+    np.save('numpy_data/all_test_o.npy', all_test_o)
+    np.save('numpy_data/all_train_ni.npy', all_train_ni)
+    np.save('numpy_data/all_test_ni.npy', all_test_ni)
+    # all_train_x = np.load('numpy_data/all_train_x.npy')
+    # all_test_x = np.load('numpy_data/all_test_x.npy')
+    # all_train_ga = np.load('numpy_data/all_train_ga.npy')
+    # all_test_ga = np.load('numpy_data/all_test_ga.npy')
+    # all_train_o = np.load('numpy_data/all_train_o.npy')
+    # all_test_o = np.load('numpy_data/all_test_o.npy')
+    # train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ga)
+    # test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+    # training(train_data, test_data, 'all', 'ga')
+    # train_data = tuple_dataset.TupleDataset(all_train_x, all_train_o)
+    # test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
+    # training(train_data, test_data, 'all', 'o')
+    # train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ni)
+    # test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
+    # training(train_data, test_data, 'all', 'ni')
+    # for domain in domain_dict:
+    #     size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
+    #     train_x = dataset_dict['{0}_x'.format(domain)][:size]
+    #     test_x = dataset_dict['{0}_x'.format(domain)][size:]
+    #     train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'ga')
+    #     train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'o')
+    #     train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'ni')
 
 if __name__ == '__main__':
     main()
