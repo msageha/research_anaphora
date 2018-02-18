@@ -3,6 +3,9 @@ import pickle
 import math
 import json
 
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 import chainer
 from chainer.datasets import tuple_dataset
@@ -28,8 +31,9 @@ def fine_tuning(model_path, train_data, test_data, domain, case):
     args = parser.parse_args()
 
     print(json.dumps(args.__dict__, indent=2))
-    with open('args/domain-{0}_case-{1}.json'.format(domain, case), 'w') as f:
-        json.dump(args.__dict__, f, indent=2)
+    if args.out:
+        with open('{0}/args/domain-{1}_case-{2}.json'.format(args.out, domain, case), 'w') as f:
+            json.dump(args.__dict__, f, indent=2)
 
     feature_size = train_data[0][0].shape[1]
     model = BiLSTMBase(input_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout) #saveした時と同じ構成にすること．
@@ -52,19 +56,20 @@ def fine_tuning(model_path, train_data, test_data, domain, case):
 
     evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
 
-    trainer.extend(evaluator, trigger=(1000, 'iteration'))
-    trainer.extend(extensions.LogReport(trigger=(100, 'iteration')), trigger=(100, 'iteration'))
+    trainer.extend(evaluator, trigger=(1, 'epoch'))
+    trainer.extend(extensions.LogReport(trigger=(100, 'iteration')), trigger=(1, 'epoch'))
     trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
     trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
-    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
+    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
     trainer.extend(extensions.snapshot_object(model,savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'), trigger=(1, 'epoch'))
     trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy/domain-{0}_case-{1}.png'.format(domain, case)))
     trainer.extend(extensions.ProgressBar(update_interval=10))
 
     trainer.run()
 
-def main(model_path):
+def main():
     dataset_dict = load_dataset()
+    model_dir = './result/model'
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
         train_x = dataset_dict['{0}_x'.format(domain)][:size]
@@ -73,17 +78,17 @@ def main(model_path):
         test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(model_path, train_data, test_data, domain, 'ga')
+        fine_tuning('{0}/domain-all_case-ga_epoch-10.npz'.format(model_dir), train_data, test_data, domain, 'ga')
         train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
         test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(model_path, train_data, test_data, domain, 'o')
+        fine_tuning('{0}/domain-all_case-o_epoch-10.npz'.format(model_dir), train_data, test_data, domain, 'o')
         train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
         test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(model_path, train_data, test_data, domain, 'ni')
+        fine_tuning('{0}/domain-all_case-ni_epoch-10.npz'.format(model_dir), train_data, test_data, domain, 'ni')
 
 if __name__ == '__main__':
-    main(model_path)
+    main()
