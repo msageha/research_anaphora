@@ -8,6 +8,7 @@ import chainer.functions as F
 
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
+        print('device', device)
         return batch
         if device is None:
             return batch
