@@ -10,7 +10,7 @@ from chainer import serializers
 from chainer.training import extensions
 
 from model import BiLSTMBase
-from model import convert_seq
+from model import convert as convert_seq
 
 domain_dict = {'OC':'Yahoo!知恵袋'} #, 'OW':'白書', 'OY':'Yahoo!ブログ', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
