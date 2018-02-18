@@ -78,7 +78,7 @@ def training(train_data, test_data, domain, case):
 
     trainer.extend(evaluator, trigger=(1000, 'iteration'))
     # trainer.extend(extensions.dump_graph(out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
-    trainer.extend(extensions.LogReport(trigger=(100, 'iteration')), trigger=(100, 'iteration'))
+    trainer.extend(extensions.LogReport(trigger=(100, 'iteration'), log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(100, 'iteration'))
     # trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
     trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
