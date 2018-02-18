@@ -66,7 +66,7 @@ def training(train_data, test_data, domain, case):
     #optimizer
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
-    # optimizer.add_hook(chainer.optimizer.WeightDecay(0.0001))
+    optimizer.add_hook(chainer.optimizer.WeightDecay(0.0001))
 
     train_iter = chainer.iterators.SerialIterator(train_data, args.batchsize)
     test_iter = chainer.iterators.SerialIterator(test_data, args.batchsize, repeat=False, shuffle=False)
@@ -74,18 +74,18 @@ def training(train_data, test_data, domain, case):
     updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu, converter=convert_seq)
     trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=args.out)
 
-    # evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
+    evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
 
-    # trainer.extend(evaluator, trigger=(1000, 'iteration'))
-    # # trainer.extend(extensions.dump_graph(out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
-    # trainer.extend(extensions.LogReport(trigger=(100, 'iteration'), log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(100, 'iteration'))
-    # trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
-    # trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
-    # trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
-    # trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
-    # trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=(1, 'epoch'))
-    # trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy/domain-{0}_case-{1}.png'.format(domain, case)))
-    # trainer.extend(extensions.ProgressBar(update_interval=10))
+    trainer.extend(evaluator, trigger=(1000, 'iteration'))
+    # trainer.extend(extensions.dump_graph(out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
+    trainer.extend(extensions.LogReport(trigger=(100, 'iteration'), log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(100, 'iteration'))
+    trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
+    trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
+    trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
+    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=(1, 'epoch'))
+    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy/domain-{0}_case-{1}.png'.format(domain, case)))
+    trainer.extend(extensions.ProgressBar(update_interval=10))
 
     trainer.run()
 
