@@ -8,7 +8,6 @@ import chainer
 from chainer.datasets import tuple_dataset
 from chainer import serializers
 from chainer.training import extensions
-from chainerui.utils import save_args
 
 from model import BiLSTMBase
 from model import convert_seq
@@ -51,9 +50,10 @@ def training(train_data, test_data, domain, case):
     parser.add_argument('--gpu', '-g', type=int, default=-1)
     parser.add_argument('--out', '-o', default='', help='Directory to output the result')
     args = parser.parse_args()
-    save_args(args, args.out)
 
     print(json.dumps(args.__dict__, indent=2))
+    with open('args/domain-{0}_case-{1}'.format(domain, case), 'w') as f:
+        json.dump(args.__dict__, f, indent=2)
 
     feature_size = train_data[0][0].shape[1]
 
@@ -79,11 +79,11 @@ def training(train_data, test_data, domain, case):
     trainer.extend(evaluator, trigger=(1000, 'iteration'))
     # trainer.extend(extensions.dump_graph(out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
     trainer.extend(extensions.LogReport(trigger=(100, 'iteration'), log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(100, 'iteration'))
-    # trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
     trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
-    trainer.extend(extensions.snapshot_object(model,savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'), trigger=(1, 'epoch'))
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy/domain-{0}_case-{1}.png'.format(domain, case)))
     trainer.extend(extensions.ProgressBar(update_interval=10))
 
