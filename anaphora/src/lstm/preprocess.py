@@ -14,8 +14,6 @@ directory = research_path + '/data/annotated/'
 domain_dict = {'OC':'Yahoo!知恵袋','OW':'白書','OY':'Yahoo!ブログ',
     'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
-count = 0
-
 #正規表現
 #正規表現
 def get_tag_id(text):
@@ -147,10 +145,7 @@ class FeatureToEmbedID:
 
 def file_to_dataframe_list(file_path):
     df_list = []
-    global count
-    count += 1
-    if count % 10 == 0:
-        print(count)
+    print(file_path)
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df_list.append(df)
@@ -328,15 +323,13 @@ def reduction_dataframe(df_list):
 
 def main():
     for domain in domain_dict:
-        global count
-        count = 0
         print(f'start {domain}')
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
             dataset += df_list
         dataset = reduction_dataframe(dataset)
-        with open(f'./dataframe_list_{domain}.pickle', 'wb') as f:
+        with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
             pickle.dump(dataset, f)
         del r
         del dataset
