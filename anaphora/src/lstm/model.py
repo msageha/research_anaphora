@@ -1,4 +1,5 @@
 import chainer
+from chainer import Variable
 from chainer import cuda
 import numpy as np
 from chainer import Chain
@@ -20,8 +21,8 @@ def convert_seq(batch, device=None, with_label=True):
             batch_dev = cuda.cupy.split(concat_dev, sections)
             return batch_dev
     if with_label:
-        return {'xs': to_device_batch([x for x, _ in batch]),
-                'ys': to_device_batch([y for _, y in batch])}
+        return {'xs': to_device_batch([Variable(x) for x, _ in batch]),
+                'ys': to_device_batch([Variable(y) for _, y in batch])}
     else:
         return to_device_batch([x for x in batch])
 
@@ -57,8 +58,6 @@ class BiLSTMBase(Chain):
 
     def traverse(self, xs):
         hx, cx = None, None
-        print(type(xs))
-        print(len(xs))
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         return [self.l1(y) for y in ys]
 
