@@ -162,3 +162,6 @@ def main():
             test_y = dataset_dict['{0}_y_ni'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain, 'fine_tuning')
+
+if __name__ == '__main__':
+    main()
