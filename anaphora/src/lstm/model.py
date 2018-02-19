@@ -82,6 +82,7 @@ class BiLSTMBase(Chain):
         return loss
 
     def traverse(self, xs):
+        xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         return [self.l1(y) for y in ys]

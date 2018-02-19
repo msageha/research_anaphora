@@ -42,9 +42,6 @@ def load_dataset_without_dep():
             if df['ni_dep_tag'].any() != 'dep':
                 x_ni_dataset.append(x)
                 y_ni_dataset.append(y_ni)
-        print('domain-{0}_case-ga_size-{1}'.format(domain, len(y_ga_dataset)))
-        print('domain-{0}_case-o_size-{1}'.format(domain, len(y_o_dataset)))
-        print('domain-{0}_case-ni_size-{1}'.format(domain, len(y_ni_dataset)))
         dataset_dict['{0}_x_ga'.format(domain)] = x_ga_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_x_o'.format(domain)] = x_o_dataset
