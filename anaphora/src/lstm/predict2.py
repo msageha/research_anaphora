@@ -97,7 +97,7 @@ def main():
         all_test_y_o += dataset_dict['{0}_y_o'.format(domain)]
         all_test_x_ni += dataset_dict['{0}_x_ni'.format(domain)]
         all_test_y_ni += dataset_dict['{0}_y_ni'.format(domain)]
-    for file in model_list
+    for file in model_list:
         test_data  = tuple_dataset.TupleDataset(all_test_x_ga, all_test_y_ga)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'result')
         for domain in domain_dict:
@@ -132,7 +132,7 @@ def main():
     model_list = ['domain-OC_case-ga_epoch-10.npz', 'domain-OW_case-ga_epoch-10.npz', 'domain-OY_case-ga_epoch-10.npz',
         'domain-PB_case-ga_epoch-10.npz', 'domain-PM_case-ga_epoch-10.npz', 'domain-PN_case-ga_epoch-10.npz', 'domain-all_case-ga_epoch-10.npz']
     print('start data load domain-all')
-    for file in model_list
+    for file in model_list:
         test_data  = tuple_dataset.TupleDataset(all_test_x_ga, all_test_y_ga)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'fine_tuning')
         for domain in domain_dict:
