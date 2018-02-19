@@ -79,50 +79,52 @@ def predict(model_path, test_data, domain, train_type):
         f.write('model_path:{0}\tdomain:{1}\taccuracy:{2}\ttest_data_size:{3}'.format(model_path, domain, accuracy, len(test_data)))
 
 def main():
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset_without_dep()
     model_dir = './result/model'
     model_list = ['domain-OC_case-ga_epoch-10.npz', 'domain-OW_case-ga_epoch-10.npz', 'domain-OY_case-ga_epoch-10.npz',
         'domain-PB_case-ga_epoch-10.npz', 'domain-PM_case-ga_epoch-10.npz', 'domain-PN_case-ga_epoch-10.npz', 'domain-all_case-ga_epoch-10.npz']
     print('start data load domain-all')
-    all_test_x = []
-    all_test_ga = []
-    all_test_o = []
-    all_test_ni = []
+    all_test_x_ga = []
+    all_test_y_ga = []
+    all_test_x_o = []
+    all_test_y_o = []
+    all_test_x_ni = []
+    all_test_y_ni = []
     for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-        all_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        all_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        all_test_x_ga += dataset_dict['{0}_x_ga'.format(domain)]
+        all_test_y_ga += dataset_dict['{0}_y_ga'.format(domain)]
+        all_test_x_o += dataset_dict['{0}_x_o'.format(domain)]
+        all_test_y_o += dataset_dict['{0}_y_o'.format(domain)]
+        all_test_x_ni += dataset_dict['{0}_x_ni'.format(domain)]
+        all_test_y_ni += dataset_dict['{0}_y_ni'.format(domain)]
     for file in model_list
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_ga, all_test_y_ga)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'result')
         for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_ga'.format(domain)]
+            test_y = dataset_dict['{0}_y_ga'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain, 'result')
 
     model_list = ['domain-OC_case-o_epoch-10.npz', 'domain-OW_case-o_epoch-10.npz', 'domain-OY_case-o_epoch-10.npz',
         'domain-PB_case-o_epoch-10.npz', 'domain-PM_case-o_epoch-10.npz', 'domain-PN_case-o_epoch-10.npz', 'domain-all_case-o_epoch-10.npz']
     for file in model_list:
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_o, all_test_y_o)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all','result')
         for domain in domain_dict:
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_o'.format(domain)]
+            test_y = dataset_dict['{0}_y_o'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain,'result')
 
     model_list = ['domain-OC_case-ni_epoch-10.npz', 'domain-OW_case-ni_epoch-10.npz', 'domain-OY_case-ni_epoch-10.npz',
         'domain-PB_case-ni_epoch-10.npz', 'domain-PM_case-ni_epoch-10.npz', 'domain-PN_case-ni_epoch-10.npz', 'domain-all_case-ni_epoch-10.npz']
     for file in model_list:
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_ni, all_test_y_ni)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'result')
         for domain in domain_dict:
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_ni'.format(domain)]
+            test_y = dataset_dict['{0}_y_ni'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain, 'result')
 
@@ -131,35 +133,32 @@ def main():
         'domain-PB_case-ga_epoch-10.npz', 'domain-PM_case-ga_epoch-10.npz', 'domain-PN_case-ga_epoch-10.npz', 'domain-all_case-ga_epoch-10.npz']
     print('start data load domain-all')
     for file in model_list
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_ga, all_test_y_ga)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'fine_tuning')
         for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_ga'.format(domain)]
+            test_y = dataset_dict['{0}_y_ga'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain, 'fine_tuning')
 
     model_list = ['domain-OC_case-o_epoch-10.npz', 'domain-OW_case-o_epoch-10.npz', 'domain-OY_case-o_epoch-10.npz',
         'domain-PB_case-o_epoch-10.npz', 'domain-PM_case-o_epoch-10.npz', 'domain-PN_case-o_epoch-10.npz', 'domain-all_case-o_epoch-10.npz']
     for file in model_list:
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_o, all_test_y_o)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all','fine_tuning')
         for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_o'.format(domain)]
+            test_y = dataset_dict['{0}_y_o'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain,'fine_tuning')
 
     model_list = ['domain-OC_case-ni_epoch-10.npz', 'domain-OW_case-ni_epoch-10.npz', 'domain-OY_case-ni_epoch-10.npz',
         'domain-PB_case-ni_epoch-10.npz', 'domain-PM_case-ni_epoch-10.npz', 'domain-PN_case-ni_epoch-10.npz', 'domain-all_case-ni_epoch-10.npz']
     for file in model_list:
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
+        test_data  = tuple_dataset.TupleDataset(all_test_x_ni, all_test_y_ni)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'fine_tuning')
         for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+            test_x = dataset_dict['{0}_x_ni'.format(domain)]
+            test_y = dataset_dict['{0}_y_ni'.format(domain)]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             predict('{0}/{1}'.format(model_dir, file), test_data, domain, 'fine_tuning')
