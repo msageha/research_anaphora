@@ -51,9 +51,10 @@ def load_dataset_without_dep():
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
         dataset_dict['{0}_x_ni'.format(domain)] = x_ni_dataset
         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
+    return dataset_dict
 
 def predict(model_path, test_data, domain, train_type):
-
+    parser = argparse.ArgumentParser()
     parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.5)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
