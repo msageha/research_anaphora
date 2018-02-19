@@ -65,7 +65,7 @@ def predict(model_path, test_data, domain, train_type):
 
     model = BiLSTMBase(input_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-
+    accuracy = 0
     for xs, ys in test_data:
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
