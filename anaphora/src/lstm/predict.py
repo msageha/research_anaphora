@@ -79,7 +79,7 @@ def predict(model_path, test_data, domain, train_type):
     optimizer.add_hook(chainer.optimizer.WeightDecay(0.0001))
 
     for xs, ys in test_data:
-        xs = Variable(cuda.cupy(xs), dtype=cuda.cupy.float32)
+        xs = Variable(cuda.cupy.array(xs, dtype=cuda.cupy.float32))
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
