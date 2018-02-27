@@ -94,8 +94,8 @@ def predict(model_path, test_data, domain, train_type):
 def main():
     dataset_dict = load_dataset()
     model_dir = './result/model'
-    model_list = ['domain-OC_case-ga_epoch-10.npz', 'domain-OW_case-ga_epoch-10.npz', 'domain-OY_case-ga_epoch-10.npz',
-        'domain-PB_case-ga_epoch-10.npz', 'domain-PM_case-ga_epoch-10.npz', 'domain-PN_case-ga_epoch-10.npz', 'domain-all_case-ga_epoch-10.npz']
+    model_list = [] #['domain-OC_case-ga_epoch-10.npz', 'domain-OW_case-ga_epoch-10.npz', 'domain-OY_case-ga_epoch-10.npz',
+        # 'domain-PB_case-ga_epoch-10.npz', 'domain-PM_case-ga_epoch-10.npz', 'domain-PN_case-ga_epoch-10.npz', 'domain-all_case-ga_epoch-10.npz']
     print('start data load domain-all')
     all_test_x = []
     all_test_ga = []
