@@ -135,6 +135,7 @@ def main():
         test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
         predict('{0}/{1}'.format(model_dir, file), test_data, 'all', 'result')
         for domain in domain_dict:
+            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
             test_x = dataset_dict['{0}_x'.format(domain)][size:]
             test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
