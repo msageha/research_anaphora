@@ -60,6 +60,9 @@ def training(train_data, test_data, domain, case):
     today = str(datetime.datetime.today())[:-7]
     os.mkdir('{0}/{1}'.format(args.out, today))
     output_path = args.out + '/' + today
+    os.mkdir('{0}/{1}'.format(output_path, 'args'))
+    os.mkdir('{0}/{1}'.format(output_path, 'log'))
+    os.mkdir('{0}/{1}'.format(output_path, 'model'))
 
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
