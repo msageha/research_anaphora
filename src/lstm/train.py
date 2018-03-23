@@ -53,7 +53,7 @@ def training(train_data, test_data, domain, case):
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
     parser.add_argument('--epoch', '-e', type=int, default=20)
-    parser.add_argument('--gpu', '-g', type=int, default=-1)
+    parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
     args = parser.parse_args()
 
@@ -63,6 +63,7 @@ def training(train_data, test_data, domain, case):
     os.mkdir('{0}/{1}'.format(output_path, 'args'))
     os.mkdir('{0}/{1}'.format(output_path, 'log'))
     os.mkdir('{0}/{1}'.format(output_path, 'model'))
+    os.mkdir('{0}/{1}'.format(output_path, 'tmpmodel'))
 
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
