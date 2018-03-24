@@ -67,6 +67,8 @@ def training(train_data, test_data, domain, case):
 
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
+        args.__dict__['train_size'] = len(train_data)
+        args.__dict__['test_size'] = len(test_data)
         json.dump(args.__dict__, f, indent=2)
 
     feature_size = train_data[0][0].shape[1]
@@ -136,6 +138,21 @@ def main(train_test_ratio=0.8):
     train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ni)
     test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
     training(train_data, test_data, 'all', 'ni')
+    all_train_x = np.array(all_train_x)
+    all_train_ga = np.array(all_train_ga)
+    all_train_o = np.array(all_train_o)
+    all_train_ni = np.array(all_train_ni)
+    for N in range(10000, len(all_train_x), 10000):
+        perm = np.random.permutation(N)
+        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ga[perm])
+        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ga')
+        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_o[perm])
+        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'o')
+        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ni[perm])
+        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ni')
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:size]
