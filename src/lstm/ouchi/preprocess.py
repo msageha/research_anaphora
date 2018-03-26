@@ -7,6 +7,7 @@ import os
 from collections import defaultdict
 import chainer.links as L
 import pickle
+import random
 
 research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
@@ -128,7 +129,7 @@ def df_drop(df):
     df = df.drop('word', axis=1)
     return df
 
-def make_pred_context_vector(sentence, pred_number, max_pred_context_size=24):
+def make_pred_context_vector(sentence, pred_number, max_pred_context_size=20):
     word_number = 0
     pred_context = []
     for i, line in enumerate(sentence.split('\n')):
@@ -147,8 +148,7 @@ def make_pred_context_vector(sentence, pred_number, max_pred_context_size=24):
     for i in range(len(pred_context), max_pred_context_size):
         pred_context_vector = np.hstack((pred_context_vector, np.zeros(200)))
     if len(pred_context_vector)/200 > max_pred_context_size:
-        print(f'error!!! {len(pred_context_vector)}')
-        print(pred_context)
+        pred_context_vector = pred_context_vector[:max_pred_context_size*200]
     return ','.join(pred_context), pred_context_vector
 
 def df_pred_vector(sentence, pred_number):
@@ -210,9 +210,11 @@ def reduction_dataframe(df_list):
     for df in df_list:
       df = df.fillna(0)
       if df['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
-        "ガ格，ヲ格，ニ格がいずれもないものは，対象としない"
+        "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/20だけデータに入れる．"
+        if random.randint(0, 19) == 0:
+            reduction_df_list.append(df)
         continue
-      reduction_df_list.append(df)
+        reduction_df_list.append(df)
     return reduction_df_list
 
 def main():
@@ -221,7 +223,7 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
-            # df_list = reduction_dataframe(df_list)
+            df_list = reduction_dataframe(df_list)
             dataset += df_list
         with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
             pickle.dump(dataset, f)
