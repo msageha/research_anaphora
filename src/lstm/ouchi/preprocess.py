@@ -175,7 +175,6 @@ def df_pred_vector(sentence, pred_number):
     return df_pred
 
 def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id):
-    print(type(ga_case_id))
     word_number = 0 #何単語目に出現したか
     df = pd.DataFrame()
     df_pred = df_pred_vector(sentence, pred_number)
@@ -189,8 +188,6 @@ def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id)
 
         #正解ラベルか確認して，正解を入れる．
         tag_id = get_tag_id(tag)
-        print(word, tag_id)
-        print(type(tag_id))
         if ga_case_id == tag_id:
             df_['ga_case'] = 1
         else:
@@ -212,7 +209,7 @@ def reduction_dataframe(df_list):
     reduction_df_list = []
     for df in df_list:
       df = df.fillna(0)
-      if df.iloc[0]['ga_case'] == 1 and df.iloc[0]['o_case'] == 1 and df.iloc[0]['ni_case'] == 1:
+      if df.['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
         "ガ格，ヲ格，ニ格がいずれもないものは，対象としない"
         continue
       reduction_df_list.append(df)
@@ -224,7 +221,8 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
-            dataset += reduction_dataframe(df_list)
+            # df_list = reduction_dataframe(df_list)
+            dataset += df_list
         with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
             pickle.dump(dataset, f)
         del r
