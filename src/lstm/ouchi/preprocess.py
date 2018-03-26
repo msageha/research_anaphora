@@ -220,7 +220,7 @@ def reduction_dataframe(df_list):
 def main():
     for domain in domain_dict:
         print('start {}'.format(domain))
-        r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir(f'{directory}{domain}/')])
+        r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir('{0}{1}/'.format(directory, domain))])
         dataset = []
         for df_list in r:
             df_list = reduction_dataframe(df_list)
