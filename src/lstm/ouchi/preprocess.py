@@ -63,7 +63,7 @@ class Word2Vec:
     def word_to_dataframe(self, word):
         vector = self.word_to_vector(word)
         df = pd.DataFrame([vector])
-        df.columns = [f'word2vec:{i}' for i in range(200)]
+        df.columns = ['word2vec:{0}'.format(i) for i in range(200)]
         df['word'] = word
         return df
 
@@ -166,10 +166,10 @@ def df_pred_vector(sentence, pred_number):
     pred_context, pred_context_vector = make_pred_context_vector(sentence, pred_number)
 
     df_pred_vector = pd.DataFrame([pred_vector])
-    df_pred_vector.columns = [f'pred_vec:{i}' for i in range(200)]
+    df_pred_vector.columns = ['pred_vec:{0}'.format(i) for i in range(200)]
     df_pred_vector['pred'] = pred
     df_pred_context_vector = pd.DataFrame([pred_context_vector])
-    df_pred_context_vector.columns = [f'pred_context_vec:{i}' for i in range(len(pred_context_vector))]
+    df_pred_context_vector.columns = ['pred_context_vec:{0}'.format(i) for i in range(len(pred_context_vector))]
     df_pred_context_vector['pred_context'] = pred_context
     df_pred = pd.merge(df_pred_vector, df_pred_context_vector, left_index=True, right_index=True, how='outer')
     return df_pred
@@ -219,13 +219,13 @@ def reduction_dataframe(df_list):
 
 def main():
     for domain in domain_dict:
-        print(f'start {domain}')
-        r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
+        print('start {}'.format(domain))
+        r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
             df_list = reduction_dataframe(df_list)
             dataset += df_list
-        with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
+        with open('./dataframe/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
             pickle.dump(dataset, f)
         del r
         del dataset
