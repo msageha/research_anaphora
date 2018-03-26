@@ -8,7 +8,7 @@ from collections import defaultdict
 import chainer.links as L
 import pickle
 
-research_path = '../../data/'
+research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
 domain_dict = {'OC':'Yahoo!知恵袋','OW':'白書','OY':'Yahoo!ブログ',
