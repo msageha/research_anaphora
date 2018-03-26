@@ -209,7 +209,7 @@ def reduction_dataframe(df_list):
     reduction_df_list = []
     for df in df_list:
       df = df.fillna(0)
-      if df.['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
+      if df['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
         "ガ格，ヲ格，ニ格がいずれもないものは，対象としない"
         continue
       reduction_df_list.append(df)
