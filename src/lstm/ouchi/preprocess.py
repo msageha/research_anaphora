@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import gensim
 import re
 from joblib import Parallel, delayed
 import os
@@ -14,7 +13,11 @@ w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
 domain_dict = {'OC':'Yahoo!知恵袋','OW':'白書','OY':'Yahoo!ブログ',
     'PB':'書籍','PM':'雑誌','PN':'新聞'}
-
+tsubame = True
+if tsubame == True:
+    w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
+else:
+    import gensim
 #正規表現
 def get_tag_id(text):
     m = re.search(r'id="([0-9]+)"', text)
@@ -51,11 +54,18 @@ def is_num(text):
 
 class Word2Vec:
     def __init__(self, model_file_path):
-        model = gensim.models.KeyedVectors.load_word2vec_format(model_file_path)
+        if tsubame:
+            with open(model_file_path, 'rb') as f:
+                model = pickle.load(f)
+            words = model.keys()
+        else:
+            model = gensim.models.KeyedVectors.load_word2vec_format(model_file_path)
+            model.vocab.keys()
         self.model = model
+        self.words = words
 
     def word_to_vector(self, word):
-        if word and word in self.model.vocab:
+        if word and word in self.words:
             return self.model[word]
         else:
             return np.zeros(200, dtype=np.float32)
