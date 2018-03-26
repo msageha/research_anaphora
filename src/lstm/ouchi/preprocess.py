@@ -72,7 +72,7 @@ def file_to_dataframe_list(file_path):
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
-            df_list.append(df])
+            df_list.append(df)
     return df_list
 
 def load_file(file_path):
