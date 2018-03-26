@@ -125,7 +125,7 @@ def sentence_find_verb(sentence):
 
 def df_drop(df):
     for i in range(17):
-        df = df.drop(f"feature:{i}", axis=1)
+        df = df.drop('feature:{0}'.format(i), axis=1)
     df = df.drop('word', axis=1)
     return df
 
