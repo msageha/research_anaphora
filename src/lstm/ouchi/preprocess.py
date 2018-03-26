@@ -235,9 +235,9 @@ def main():
         for df_list in r:
             df_list = reduction_dataframe(df_list)
             dataset += df_list
+        del r
         with open('./dataframe/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
             pickle.dump(dataset, f)
-        del r
         del dataset
 
 if __name__=='__main__':
