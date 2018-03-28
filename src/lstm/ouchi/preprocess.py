@@ -11,9 +11,8 @@ import random
 research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
-domain_dict = {'OW':'白書','OY':'Yahoo!ブログ',
+domain_dict = {'OC':'Yahoo!知恵袋', 'OW':'白書','OY':'Yahoo!ブログ',
     'PB':'書籍','PM':'雑誌','PN':'新聞'}
-    # 'OC':'Yahoo!知恵袋',
 tsubame = False
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
@@ -158,9 +157,9 @@ def df_pred_vector(sentence, pred_number):
                 pred = word
             elif word_number == pred_number + 1:
                 pred_next = word
-    pred_prev_vector = word2vec.word_2_vector(pred_prev)
+    pred_prev_vector = word2vec.word_to_vector(pred_prev)
     pred_vector = word2vec.word_to_vector(pred)
-    pred_next_vector = word2vec.word_2_vector(pred_next)
+    pred_next_vector = word2vec.word_to_vector(pred_next)
     pred_context_vector = np.hstack((pred_prev_vector, pred_vector, pred_next_vector))
     df_pred_context_vector = pd.DataFrame([pred_context_vector])
     df_pred_context_vector.columns = ['pred_context_vec:{0}'.format(i) for i in range(600)]
