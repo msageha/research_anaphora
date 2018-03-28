@@ -189,6 +189,10 @@ def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id)
         else:
             df_['marked'] = 0
 
+        if pred_number == word_number:
+            df_['pred'] = 1
+        else:
+            df_['pred'] = 0
         #正解ラベルか確認して，正解を入れる．
         tag_id = get_tag_id(tag)
         if ga_case_id == tag_id:
