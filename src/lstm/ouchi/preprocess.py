@@ -11,9 +11,8 @@ import random
 research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
-domain_dict = {'OY':'Yahoo!ブログ',
-    'PB':'書籍','PM':'雑誌','PN':'新聞', 'OW':'白書'}
-    # 'OC':'Yahoo!知恵袋', 
+domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書'}
+    # 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍',
 tsubame = False
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
@@ -227,7 +226,7 @@ def reduction_dataframe(df_list):
 def main():
     for domain in domain_dict:
         print('start {}'.format(domain))
-        r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir('{0}{1}/'.format(directory, domain))])
+        r = Parallel(n_jobs=8)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir('{0}{1}/'.format(directory, domain))])
         dataset = []
         for df_list in r:
             dataset += df_list
