@@ -61,7 +61,7 @@ class Word2Vec:
             words = model.keys()
         else:
             model = gensim.models.KeyedVectors.load_word2vec_format(model_file_path)
-            model.vocab.keys()
+            words = model.vocab.keys()
         self.model = model
         self.words = words
 
