@@ -14,7 +14,7 @@ directory = research_path + 'annotated/'
 domain_dict = {'OW':'白書','OY':'Yahoo!ブログ',
     'PB':'書籍','PM':'雑誌','PN':'新聞'}
     # 'OC':'Yahoo!知恵袋',
-tsubame = True
+tsubame = False
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
 else:
@@ -85,7 +85,7 @@ def file_to_dataframe_list(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
             df_list.append(df)
-    df_list = reduction_dataframe(df_list)
+    # df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
@@ -141,48 +141,34 @@ def df_drop(df):
     df = df.drop('word', axis=1)
     return df
 
-def make_pred_context_vector(sentence, pred_number, max_pred_context_size=20):
-    word_number = 0
-    pred_context = []
-    for i, line in enumerate(sentence.split('\n')):
-        if line[0] == '*':
-            if pred_number > word_number:
-                pred_context = []
-            else:
-                break
-            continue
-        word_number += 1
-        word, feature, tag = line.split('\t')
-        pred_context.append(word)
-    pred_context_vector = np.array([])
-    for word in pred_context:
-        pred_context_vector = np.hstack((pred_context_vector, word2vec.word_to_vector(word)))
-    for i in range(len(pred_context), max_pred_context_size):
-        pred_context_vector = np.hstack((pred_context_vector, np.zeros(200)))
-    if len(pred_context_vector)/200 > max_pred_context_size:
-        pred_context_vector = pred_context_vector[:max_pred_context_size*200]
-    return ','.join(pred_context), pred_context_vector
-
 def df_pred_vector(sentence, pred_number):
     word_number = 0
+    pred_prev = ''
     pred = ''
+    pred_next = ''
     for i, line in enumerate(sentence.split('\n')):
         if line[0] == '*':
             continue
         else:
             word_number += 1
             word, feature, tag = line.split('\t')
-            if word_number == pred_number:
+            if word_number == pred_number - 1:
+                pred_prev = word
+            elif word_number == pred_number:
                 pred = word
+            elif word_number == pred_number + 1:
+                pred_next = word
+    pred_prev_vector = word2vec.word_2_vector(pred_prev)
     pred_vector = word2vec.word_to_vector(pred)
-    pred_context, pred_context_vector = make_pred_context_vector(sentence, pred_number)
-
+    pred_next_vector = word2vec.word_2_vector(pred_next)
+    pred_context_vector = np.hstack((pred_prev_vector, pred_vector, pred_next_vector))
+    df_pred_context_vector = pd.DataFrame([pred_context_vector])
+    df_pred_context_vector.columns = ['pred_context_vec:{0}'.format(i) for i in range(600)]
+    df_pred_context_vector['pred_prev'] = pred_prev
+    df_pred_context_vector['pred'] = pred
+    df_pred_context_vector['pred_next'] = pred_next
     df_pred_vector = pd.DataFrame([pred_vector])
     df_pred_vector.columns = ['pred_vec:{0}'.format(i) for i in range(200)]
-    df_pred_vector['pred'] = pred
-    df_pred_context_vector = pd.DataFrame([pred_context_vector])
-    df_pred_context_vector.columns = ['pred_context_vec:{0}'.format(i) for i in range(len(pred_context_vector))]
-    df_pred_context_vector['pred_context'] = pred_context
     df_pred = pd.merge(df_pred_vector, df_pred_context_vector, left_index=True, right_index=True, how='outer')
     return df_pred
 
@@ -197,6 +183,11 @@ def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id)
         word, feature, tag = line.split('\t')
         df_word = word2vec.word_to_dataframe(word)
         df_ = pd.merge(df_word, df_pred, left_index=True, right_index=True, how='outer')
+
+        if pred_number-1 <= word_number and word_number <= pred_number+1:
+            df_['marked'] = 1
+        else:
+            df_['marked'] = 0
 
         #正解ラベルか確認して，正解を入れる．
         tag_id = get_tag_id(tag)
