@@ -46,7 +46,7 @@ def load_dataset():
         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
     return dataset_dict
 
-def training(train_data, test_data, domain, case):
+def training(train_data, test_data, domain, case, dump_path):
     print('training start domain-{0}, case-{1}'.format(domain, case))
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_layers', '-n', type=int, default=1)
@@ -57,9 +57,8 @@ def training(train_data, test_data, domain, case):
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
     args = parser.parse_args()
 
-    today = str(datetime.datetime.today())[:-16]
-    os.mkdir('{0}/{1}'.format(args.out, today))
-    output_path = args.out + '/' + today
+    os.mkdir('{0}/{1}'.format(args.out, dump_path))
+    output_path = args.out + '/' + dump_path
     os.mkdir('{0}/{1}'.format(output_path, 'args'))
     os.mkdir('{0}/{1}'.format(output_path, 'log'))
     os.mkdir('{0}/{1}'.format(output_path, 'model'))
@@ -109,6 +108,7 @@ def training(train_data, test_data, domain, case):
     trainer.run()
 
 def main(train_test_ratio=0.8):
+    today = str(datetime.datetime.today())[:-16]
     dataset_dict = load_dataset()
     print('start data load domain-all')
     all_train_x = []
@@ -131,13 +131,13 @@ def main(train_test_ratio=0.8):
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ga)
     test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-    training(train_data, test_data, 'all', 'ga')
+    training(train_data, test_data, 'all', 'ga', today)
     train_data = tuple_dataset.TupleDataset(all_train_x, all_train_o)
     test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-    training(train_data, test_data, 'all', 'o')
+    training(train_data, test_data, 'all', 'o', today)
     train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ni)
     test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-    training(train_data, test_data, 'all', 'ni')
+    training(train_data, test_data, 'all', 'ni', today)
     all_train_x = np.array(all_train_x)
     all_train_ga = np.array(all_train_ga)
     all_train_o = np.array(all_train_o)
@@ -146,13 +146,13 @@ def main(train_test_ratio=0.8):
         perm = np.random.permutation(N)
         train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ga[perm])
         test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ga')
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ga', today)
         train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_o[perm])
         test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'o')
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'o', today)
         train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ni[perm])
         test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ni')
+        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ni', today)
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:size]
@@ -161,17 +161,17 @@ def main(train_test_ratio=0.8):
         test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ga')
+        training(train_data, test_data, domain, 'ga', today)
         train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
         test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'o')
+        training(train_data, test_data, domain, 'o', today)
         train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
         test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ni')
+        training(train_data, test_data, domain, 'ni', today)
 
 if __name__ == '__main__':
     '''
