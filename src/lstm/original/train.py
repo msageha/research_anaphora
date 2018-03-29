@@ -56,13 +56,14 @@ def training(train_data, test_data, domain, case, dump_path):
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
     args = parser.parse_args()
-
-    os.mkdir('{0}/{1}'.format(args.out, dump_path))
+    if not os.path.exists('{0}/{1}'.format(args.out, dump_path)):
+        os.mkdir('{0}/{1}'.format(args.out, dump_path))
     output_path = args.out + '/' + dump_path
-    os.mkdir('{0}/{1}'.format(output_path, 'args'))
-    os.mkdir('{0}/{1}'.format(output_path, 'log'))
-    os.mkdir('{0}/{1}'.format(output_path, 'model'))
-    os.mkdir('{0}/{1}'.format(output_path, 'tmpmodel'))
+    if not os.path.exists('{0}/{1}'.format(output_path, 'args')):
+        os.mkdir('{0}/{1}'.format(output_path, 'args'))
+        os.mkdir('{0}/{1}'.format(output_path, 'log'))
+        os.mkdir('{0}/{1}'.format(output_path, 'model'))
+        os.mkdir('{0}/{1}'.format(output_path, 'tmpmodel'))
 
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
