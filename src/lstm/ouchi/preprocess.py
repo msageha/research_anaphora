@@ -11,8 +11,8 @@ import random
 research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
-domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書'}
-    # 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍',
+domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書', 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍'}
+
 tsubame = False
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
@@ -84,7 +84,7 @@ def file_to_dataframe_list(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
             df_list.append(df)
-    # df_list = reduction_dataframe(df_list)
+    df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
@@ -217,7 +217,7 @@ def reduction_dataframe(df_list):
       df = df.fillna(0)
       if df['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
         "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/20だけデータに入れる．"
-        if random.randint(0, 19) == 0:
+        if random.randint(0, 9) == 0:
             reduction_df_list.append(df)
         continue
         reduction_df_list.append(df)
