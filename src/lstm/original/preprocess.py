@@ -189,7 +189,8 @@ def sentence_find_verb(sentence):
     for i, line in enumerate(sentence.split('\n')):
         if line[0] != '*':
             word_number += 1
-        if '動詞' in line or '形容詞' in line or 'サ変可能' in line:
+        if '\t動詞' in line or '形容詞' in line or 'サ変可能' in line:
+            print(line)
             ga_case_id = get_ga_tag(line)
             o_case_id = get_o_tag(line)
             ni_case_id = get_ni_tag(line)
