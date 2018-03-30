@@ -8,12 +8,16 @@ from collections import defaultdict
 import chainer.links as L
 import pickle
 
-research_path = '/gs/hs0/tga-cl/sango-m-ab/research/'
-w2v_path = research_path + 'data/entity_vector/entity_vector.model.txt'
-directory = research_path + '/data/annotated/'
-domain_dict = {'OC':'Yahoo!知恵袋','OW':'白書','OY':'Yahoo!ブログ',
-    'PB':'書籍','PM':'雑誌','PN':'新聞'}
+research_path = '../../../data/'
+w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
+directory = research_path + 'annotated/'
+domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書', 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍'}
 
+tsubame = False
+if tsubame == True:
+    w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
+else:
+    import gensim
 #正規表現
 #正規表現
 def get_tag_id(text):
@@ -51,11 +55,18 @@ def is_num(text):
 
 class Word2Vec:
     def __init__(self, model_file_path):
-        model = gensim.models.KeyedVectors.load_word2vec_format(model_file_path)
+        if tsubame:
+            with open(model_file_path, 'rb') as f:
+                model = pickle.load(f)
+            words = model.keys()
+        else:
+            model = gensim.models.KeyedVectors.load_word2vec_format(model_file_path)
+            words = model.vocab.keys()
         self.model = model
+        self.words = words
 
     def word_to_vector(self, word):
-        if word and word in self.model.vocab:
+        if word and word in self.words:
             return self.model[word]
         else:
             return np.zeros(200, dtype=np.float32)
@@ -184,13 +195,13 @@ def sentence_find_verb(sentence):
             ni_case_id = get_ni_tag(line)
             if is_num(ga_case_id):
                 if not check_id_in_sentence(sentence, ga_case_id):
-                    ga_case_id = 'exog'
+                    ga_case_id = 'inter'
             if is_num(o_case_id):
                 if not check_id_in_sentence(sentence, o_case_id):
-                    o_case_id = 'exog'
+                    o_case_id = 'inter'
             if is_num(ni_case_id):
                 if not check_id_in_sentence(sentence, ni_case_id):
-                    ni_case_id = 'exog'
+                    ni_case_id = 'inter'
             yield sentence_to_vector(sentence, word_number, ga_case_id, o_case_id, ni_case_id)
         if line[0] == '*':
             continue
