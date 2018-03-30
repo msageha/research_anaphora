@@ -339,7 +339,7 @@ def main():
         dataset = []
         for df_list in r:
             dataset += df_list
-        dataset = reduction_dataframe(dataset)
+        # dataset = reduction_dataframe(dataset)
         with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
             pickle.dump(dataset, f)
         del r
