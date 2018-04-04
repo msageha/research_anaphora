@@ -13,7 +13,7 @@ w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
 domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書', 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍'}
 
-tsubame = True
+tsubame = False
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
 else:
