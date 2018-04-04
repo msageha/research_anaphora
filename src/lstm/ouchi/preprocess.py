@@ -214,13 +214,13 @@ def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id)
 def reduction_dataframe(df_list):
     reduction_df_list = []
     for df in df_list:
-      df = df.fillna(0)
-      if df['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
-        "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/20だけデータに入れる．"
-        if random.randint(0, 9) == 0:
+        df = df.fillna(0)
+        if df['ga_case'].max() == 0 and df['o_case'].max() == 0 and df['ni_case'].max() == 0:
+            "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/10だけデータに入れる．"
+            if random.randint(0, 9) == 0:
+                reduction_df_list.append(df)
+        else:
             reduction_df_list.append(df)
-        continue
-        reduction_df_list.append(df)
     return reduction_df_list
 
 def main():
