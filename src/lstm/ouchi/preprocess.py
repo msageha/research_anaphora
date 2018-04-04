@@ -79,7 +79,7 @@ class Word2Vec:
 
 def file_to_dataframe_list(file_path):
     df_list = []
-    print(file_path, flash=True)
+    print(file_path, flush=True)
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path

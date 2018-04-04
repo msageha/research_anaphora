@@ -7,6 +7,7 @@ import os
 from collections import defaultdict
 import chainer.links as L
 import pickle
+import random
 
 research_path = '../../../data/'
 w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
@@ -156,7 +157,7 @@ class FeatureToEmbedID:
 
 def file_to_dataframe_list(file_path):
     df_list = []
-    print(file_path)
+    print(file_path, flush=True)
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df_list.append(df)
