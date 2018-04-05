@@ -55,7 +55,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, dump_path, args
     test_iter = chainer.iterators.SerialIterator(test_data, args.batchsize, repeat=False, shuffle=False)
 
     updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu, converter=convert_seq)
-    trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=args.out)
+    trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=output_path)
 
     evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
     trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
@@ -65,7 +65,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, dump_path, args
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
     # trainer.extend(extensions.snapshot(filename='snapshot/domain-{0}_case-{1}_epoch-{{.updater.epoch}}'.format(domain, case)), trigger=(1, 'epoch'))
     # trainer.extend(extensions.MicroAverage('main/correct', 'main/total', 'main/accuracy'))
-    # trainer.extend(extensions.MicroAverage('validation/main/correct', 'validation/main/total', 'validation/main/accuracy'))
+    # trainer.extend(extensions.MicroAverage('validation/ma in/correct', 'validation/main/total', 'validation/main/accuracy'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
     trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
 
