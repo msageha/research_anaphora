@@ -60,7 +60,6 @@ class BiLSTMBase(Chain):
       # self.b_lstm = L.LSTM(None, feature_size, dropout)
             self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=input_size, dropout=dropout)
             self.l1 = L.Linear(input_size*2, n_labels)
-        self.dropout = dropout
 
     def __call__(self, xs, ys):
         pred_ys = self.traverse(xs)
