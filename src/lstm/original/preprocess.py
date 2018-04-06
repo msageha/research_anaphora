@@ -298,7 +298,7 @@ def sentence_to_vector(sentence, verb_number, ga_case_id, o_case_id, ni_case_id)
             df.at[1, 'ga_case'] = 1
         elif ga_case_id == 'exo2':
             df.at[2, 'ga_case'] = 1
-        elif ga_case_id == 'exog':
+        elif ga_case_id == 'exog' or ga_case_id == 'inter':
             df.at[3, 'ga_case'] = 1
         else:
             df.at[0, 'ga_case'] = 1
@@ -307,7 +307,7 @@ def sentence_to_vector(sentence, verb_number, ga_case_id, o_case_id, ni_case_id)
             df.at[1, 'o_case'] = 1
         elif o_case_id == 'exo2':
             df.at[2, 'o_case'] = 1
-        elif o_case_id == 'exog':
+        elif o_case_id == 'exog' or o_case_id == 'inter':
             df.at[3, 'o_case'] = 1
         else:
             df.at[0, 'o_case'] = 1
@@ -316,7 +316,7 @@ def sentence_to_vector(sentence, verb_number, ga_case_id, o_case_id, ni_case_id)
             df.at[1, 'ni_case'] = 1
         elif ni_case_id == 'exo2':
             df.at[2, 'ni_case'] = 1
-        elif ni_case_id == 'exog':
+        elif ni_case_id == 'exog' or ni_case_id == 'inter':
             df.at[3, 'ni_case'] = 1
         else:
             df.at[0, 'ni_case'] = 1
@@ -342,7 +342,7 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
-            df_list = reduction_dataframe(df_list)
+            # df_list = reduction_dataframe(df_list)
             dataset += df_list
         del r
         with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
