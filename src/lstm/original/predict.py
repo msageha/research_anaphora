@@ -120,7 +120,7 @@ def main(train_test_ratio=0.8):
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
         elif args.case == 'ni':
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-        predict(model, test_data, 'all', args)
+        predict(model, test_data, 'all', args.case, args)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
             test_x = dataset_dict['{0}_x'.format(domain)][size:]
@@ -131,7 +131,7 @@ def main(train_test_ratio=0.8):
             elif args.case == 'ni':
                 test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-            predict(model, test_data, domain, args)
+            predict(model, test_data, domain, args.case, args)
 
 
 if __name__ == '__main__':
