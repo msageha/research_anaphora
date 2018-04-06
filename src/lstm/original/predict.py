@@ -88,8 +88,8 @@ def predict(model_path, test_data, domain, case, args):
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n_layers', '-n', type=int, default=1)
-    parser.add_argument('--dropout', '-d', type=float, default=0.5)
+    parser.add_argument('--n_layers', '-n', type=int, default=2)
+    parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
@@ -120,7 +120,7 @@ def main(train_test_ratio=0.8):
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
         elif args.case == 'ni':
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-        predict(model, test_data, 'all', args.out, args.case)
+        predict(model, test_data, 'all', args)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
             test_x = dataset_dict['{0}_x'.format(domain)][size:]
@@ -131,7 +131,7 @@ def main(train_test_ratio=0.8):
             elif args.case == 'ni':
                 test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-            predict(model, test_data, domain, args.out, args.case)
+            predict(model, test_data, domain, args)
 
 
 if __name__ == '__main__':
