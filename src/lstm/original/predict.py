@@ -75,7 +75,7 @@ def predict(model_path, test_data, domain, case, args):
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
-        ys = ys.argmax()３
+        ys = ys.argmax()
         if pred_ys == ys:
             accuracy += 1
     accuracy /= len(test_data)
