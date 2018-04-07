@@ -161,6 +161,7 @@ def file_to_dataframe_list(file_path):
     for sentence in load_file(file_path):
         for df in sentence_find_verb(sentence):
             df_list.append(df)
+    df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
@@ -342,7 +343,6 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
         dataset = []
         for df_list in r:
-            # df_list = reduction_dataframe(df_list)
             dataset += df_list
         del r
         with open(f'./dataframe/dataframe_list_{domain}.pickle', 'wb') as f:
