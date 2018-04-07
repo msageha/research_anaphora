@@ -52,7 +52,7 @@ def training(train_data, test_data, domain, case, dump_path):
     parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
-    parser.add_argument('--epoch', '-e', type=int, default=20)
+    parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
     args = parser.parse_args()
@@ -127,50 +127,49 @@ def main(train_test_ratio=0.8):
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
         training(train_data, test_data, domain, 'ni', today)
-    print('start data load domain-all')
-    all_train_x = []
-    all_test_x = []
-    all_train_ga = []
-    all_test_ga = []
-    all_train_o = []
-    all_test_o = []
-    all_train_ni = []
-    all_test_ni = []
+    print('start data load domain-union')
+    union_train_x = []
+    union_test_x = []
+    union_train_ga = []
+    union_test_ga = []
+    union_train_o = []
+    union_test_o = []
+    union_train_ni = []
+    union_test_ni = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
-        all_train_x += dataset_dict['{0}_x'.format(domain)][:size]
-        all_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        all_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
-        all_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        all_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        all_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ga)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-    training(train_data, test_data, 'all', 'ga', today)
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_o)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-    training(train_data, test_data, 'all', 'o', today)
-    train_data = tuple_dataset.TupleDataset(all_train_x, all_train_ni)
-    test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-    training(train_data, test_data, 'all', 'ni', today)
-    all_train_x = np.array(all_train_x)
-    all_train_ga = np.array(all_train_ga)
-    all_train_o = np.array(all_train_o)
-    all_train_ni = np.array(all_train_ni)
-    for N in range(10000, len(all_train_x), 30000):
+        union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
+        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
+        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
+    training(train_data, test_data, 'union', 'ga', today)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+    training(train_data, test_data, 'union', 'o', today)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+    training(train_data, test_data, 'union', 'ni', today)
+    union_train_x = np.array(union_train_x)
+    union_train_ga = np.array(union_train_ga)
+    union_train_o = np.array(union_train_o)
+    union_train_ni = np.array(union_train_ni)
+    for N in range(10000, len(union_train_x), 30000):
         perm = np.random.permutation(N)
-        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ga[perm])
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ga', today)
-        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_o[perm])
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'o', today)
-        train_data = tuple_dataset.TupleDataset(all_train_x[perm], all_train_ni[perm])
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-        training(train_data, test_data, 'all_pert_{0}'.format(N), 'ni', today)
-
+        train_data = tuple_dataset.TupleDataset(union_train_x[perm], union_train_ga[perm])
+        test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
+        training(train_data, test_data, 'union_pert_{0}'.format(N), 'ga', today)
+        train_data = tuple_dataset.TupleDataset(union_train_x[perm], union_train_o[perm])
+        test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+        training(train_data, test_data, 'union_pert_{0}'.format(N), 'o', today)
+        train_data = tuple_dataset.TupleDataset(union_train_x[perm], union_train_ni[perm])
+        test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+        training(train_data, test_data, 'union_pert_{0}'.format(N), 'ni', today)
 
 if __name__ == '__main__':
     '''
