@@ -84,7 +84,7 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--out', '-o', type=str, default='fine_tuning', help='Directory to output the result')
     parser.add_argument('--model', '-m', type=str, default='')
     parser.add_argument('--case', '-c', type=str, default='')
-    parser.add_argument('--disable_update_lstm', type=bool, default=True)
+    parser.add_argument('--disable_update_lstm', action='store_true')
     args = parser.parse_args()
     dataset_dict = load_dataset()
     today = str(datetime.datetime.today())[:-16]

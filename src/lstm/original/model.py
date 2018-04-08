@@ -26,32 +26,6 @@ def convert_seq(batch, device=None, with_label=True):
     else:
         return to_device_batch([x for x in batch])
 
-# def convert(batch, device):
-#     if device is None:
-#         def to_device(x):
-#             return x
-#     elif device < 0:
-#         to_device = chainer.cuda.to_cpu
-#     else:
-#         def to_device(x):
-#             return chainer.cuda.to_gpu(x, device, chainer.cuda.Stream.null)
-
-#     def to_device_batch(batch):
-#         if device is None:
-#             return batch
-#         elif device < 0:
-#             return [to_device(x) for x in batch]
-#         else:
-#             xp = chainer.cuda.cupy.get_array_module(*batch)
-#             concat = xp.concatenate(batch, axis=0)
-#             sections = np.cumsum([len(x) for x in batch[:-1]], dtype='i')
-#             concat_dev = to_device(concat)
-#             batch_dev = chainer.cuda.cupy.split(concat_dev, sections)
-#             return batch_dev
-
-#     return tuple([to_device_batch([x for x, _ in batch]), to_device_batch([y for _, y in batch])])
-
-
 class BiLSTMBase(Chain):
     def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5):
         super(BiLSTMBase, self).__init__()
@@ -85,4 +59,3 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         return [self.l1(y) for y in ys]
-
