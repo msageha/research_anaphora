@@ -84,7 +84,7 @@ def file_to_dataframe_list(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
             df_list.append(df)
-    df_list = reduction_dataframe(df_list)
+    # df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
