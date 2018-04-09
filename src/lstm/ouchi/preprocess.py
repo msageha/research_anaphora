@@ -228,7 +228,7 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir('{0}{1}/'.format(directory, domain))])
         dataset = []
         for df_list in r:
-            df_list = reduction_dataframe(df_list)
+            # df_list = reduction_dataframe(df_list)
             dataset += df_list
         del r
         with open('./dataframe/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
