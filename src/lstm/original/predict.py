@@ -63,7 +63,7 @@ def load_model_path(path, case, part_flag=False):
     #             yield model_path
     #             break
     if part_flag:
-        for part in range(10000, 190001, 30000):
+        for part in range(40000, 190001, 30000):
             for epoch in range(20, 0, -1):
                 model_path = '{0}/domain-union_pert_{1}_case-{2}_epoch-{3}.npz'.format(path, part, case, epoch)
                 if os.path.exists(model_path):
