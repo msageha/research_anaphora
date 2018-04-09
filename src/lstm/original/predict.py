@@ -55,6 +55,22 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 #         dataset_dict['{0}_x_ni'.format(domain)] = x_ni_dataset
 #         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
 
+def load_model_path(path, case, pert_flag=False):
+    for domain in list(domain_dict) + ['union']:
+        for epoch in range(20, 0, -1):
+            model_path = '{0}/domain-{1}_case-{2}_epoch-{3}'.format(path, domain, case, epoch)
+            if os.path.exists(model_path):
+                yield model_path
+                break
+    if pert_flag:
+        for part in range(1000, 19001, 3000):
+            for epoch in range(20, 0, -1):
+                model_path = '{0}/domain-union_part_{1}_case-{2}_epoch-{3}'.format(path, part, case, epoch)
+                if os.path.exists(model_path):
+                    yield model_path
+                    break
+
+
 def predict(model_path, test_data, domain, case, args):
 
     feature_size = test_data[0][0].shape[1]
@@ -94,8 +110,9 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--batchsize', '-b', type=int, default=30)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
-    parser.add_argument('--model', '-m', type=str, default='')
+    parser.add_argument('--model_dir', '-m', type=str, default='')
     parser.add_argument('--case', '-c', type=str, default='')
+    parser.add_argument('--part_flag', action='store_true')
     args = parser.parse_args()
 
     dataset_dict = load_dataset()
@@ -111,10 +128,7 @@ def main(train_test_ratio=0.8):
         all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
 
-    model_list = ['domain-OC_case-ga_epoch-15.npz', 'domain-OW_case-ga_epoch-4.npz', 'domain-OY_case-ga_epoch-12.npz', 'domain-PB_case-ga_epoch-7.npz', 'domain-PM_case-ga_epoch-13.npz', 'domain-PN_case-ga_epoch-5.npz',
-    'domain-all_case-ga_epoch-5.npz', 'domain-all_pert_10000_case-ga_epoch-19.npz', 'domain-all_pert_30000_case-ga_epoch-6.npz', 'domain-all_pert_50000_case-ga_epoch-5.npz', 'domain-all_pert_70000_case-ga_epoch-8.npz']
-    for model in model_list:
-        model = '/home/mzk/デスクトップ/research_anaphora/src/lstm/original/normal/2018-04-05/model/' + model
+    for model in load_model_path(args.model_dir, args.case, args.pert_flag):
         if args.case == 'ga':
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
         elif args.case == 'o':
