@@ -27,7 +27,7 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 
 def load_dataset(dataframe_path):
     dataset_dict = {}
-    zeros = np.zeros((278, 234))
+    zeros = np.zeros((30, 234))
     le = preprocessing.LabelEncoder()
     le.fit(list(domain_dict.keys()))
     x_dataset = []
@@ -39,7 +39,7 @@ def load_dataset(dataframe_path):
         for df in df_list:
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
-            x = np.vstack((x, zeros))[:278]
+            x = np.vstack((x, zeros))[:30]
             x_dataset.append(x)
             y_dataset.append(domain)
 
