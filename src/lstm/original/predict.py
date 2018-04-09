@@ -105,7 +105,7 @@ def predict(model_path, test_data, domain, case, args):
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n_layers', '-n', type=int, default=2)
+    parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
     parser.add_argument('--gpu', '-g', type=int, default=0)
