@@ -55,14 +55,14 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 #         dataset_dict['{0}_x_ni'.format(domain)] = x_ni_dataset
 #         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
 
-def load_model_path(path, case, pert_flag=False):
+def load_model_path(path, case, part_flag=False):
     for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/domain-{1}_case-{2}_epoch-{3}'.format(path, domain, case, epoch)
             if os.path.exists(model_path):
                 yield model_path
                 break
-    if pert_flag:
+    if part_flag:
         for part in range(1000, 19001, 3000):
             for epoch in range(20, 0, -1):
                 model_path = '{0}/domain-union_part_{1}_case-{2}_epoch-{3}'.format(path, part, case, epoch)
@@ -128,7 +128,7 @@ def main(train_test_ratio=0.8):
         all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
 
-    for model in load_model_path(args.model_dir, args.case, args.pert_flag):
+    for model in load_model_path(args.model_dir, args.case, args.part_flag):
         if args.case == 'ga':
             test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
         elif args.case == 'o':
