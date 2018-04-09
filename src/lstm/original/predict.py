@@ -59,14 +59,13 @@ def load_model_path(path, case, part_flag=False):
     for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
-            print(model_path)
             if os.path.exists(model_path):
                 yield model_path
                 break
     if part_flag:
         for part in range(1000, 19001, 3000):
             for epoch in range(20, 0, -1):
-                model_path = '{0}/domain-union_part_{1}_case-{2}_epoch-{3}.npz'.format(path, part, case, epoch)
+                model_path = '{0}/domain-union_pert_{1}_case-{2}_epoch-{3}.npz'.format(path, part, case, epoch)
                 if os.path.exists(model_path):
                     yield model_path
                     break
@@ -97,12 +96,12 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             accuracy += 1
     accuracy /= len(test_data)
-    print('model_path:{0}_domain:{1}_accuracy:{2}'.format(model_path, domain, accuracy))
+    print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy*100))
     if not os.path.exists('{0}/domain-{1}_caes-{2}.tsv'.format(args.out, domain, case)):
         with open('{0}/domain-{1}_caes-{2}.txt'.format(args.out, domain, case), 'w') as f:
             f.write('model_path\tdomain\taccuracy\ttest_data_size\n')
     with open('{0}/domain-{1}_caes-{2}.txt'.format(args.out, domain, case), 'a') as f:
-        f.write('{0}\t{1}\t{2}\t{3}'.format(model_path, domain, accuracy, len(test_data)))
+        f.write('{0}\t{1}\t{2:.3f}\t{3}'.format(model_path, domain, accuracy*100, len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
