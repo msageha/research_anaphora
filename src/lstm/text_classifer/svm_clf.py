@@ -67,7 +67,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--c', '-c', type=int, default=1)
     parser.add_argument('--kernel', '-k', type=str, default='rbf')
-    parser.add_argument('--gamma', 'g', type=float, default=1e-2)
+    parser.add_argument('--gamma', '-g', type=float, default=1e-2)
     parser.add_argument('--df_path', default='')
     args = parser.parse_args()
 
