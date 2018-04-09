@@ -84,6 +84,7 @@ def file_to_dataframe_list(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
             df_list.append(df)
+    df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
@@ -228,10 +229,10 @@ def main():
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)('{0}{1}/{2}'.format(directory, domain, file)) for file in os.listdir('{0}{1}/'.format(directory, domain))])
         dataset = []
         for df_list in r:
-            # df_list = reduction_dataframe(df_list)
+            
             dataset += df_list
         del r
-        with open('./dataframe/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
+        with open('./dataframe_short/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
             pickle.dump(dataset, f)
         del dataset
 
