@@ -49,7 +49,7 @@ def load_dataset(dataframe_path):
 def one_versus_the_rest(x_dataset, y_dataset, args):
     train_x, test_x, train_y, test_y = train_test_split(x_dataset, y_dataset)
 
-    estimator = SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
+    estimator = svm.SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
     classifier = OneVsRestClassifier(estimator)
     classifier.fit(train_x, train_y)
     pred_y = classifier.predict(test_x)
@@ -58,10 +58,10 @@ def one_versus_the_rest(x_dataset, y_dataset, args):
 def one_versus_the_one(x_dataset, y_dataset, args):
     train_x, test_x, train_y, test_y = train_test_split(x_dataset, y_dataset)
 
-    classifier = SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
+    classifier = svm.SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
     classifier.fit(train_x, train_y)
-    pred_y = classifier2.predict(test_x)
-    print('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y2)))
+    pred_y = classifier.predict(test_x)
+    print('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)))
 
 def main():
     parser = argparse.ArgumentParser()
