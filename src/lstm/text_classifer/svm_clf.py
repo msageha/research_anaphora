@@ -5,15 +5,8 @@ import json
 import datetime
 import os
 
-import matplotlib
-matplotlib.use('Agg')
-
 import numpy as np
 import pandas as pd
-import chainer
-from chainer.datasets import tuple_dataset
-from chainer import serializers
-from chainer.training import extensions
 
 from sklearn import preprocessing
 from sklearn.datasets import load_digits
@@ -26,7 +19,6 @@ from sklearn.metrics import accuracy_score
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset(dataframe_path):
-    dataset_dict = {}
     zeros = np.zeros((30, 234))
     le = preprocessing.LabelEncoder()
     le.fit(list(domain_dict.keys()))
@@ -39,7 +31,7 @@ def load_dataset(dataframe_path):
         for df in df_list:
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
-            x = np.vstack((x, zeros))[:30]
+            x = np.vstack((x, zeros))[:30].reshape(-1)
             x_dataset.append(x)
             y_dataset.append(domain)
 
