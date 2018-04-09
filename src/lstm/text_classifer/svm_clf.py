@@ -27,7 +27,7 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 
 def load_dataset(dataframe_path):
     dataset_dict = {}
-    zeros = np.zeros((278, 240))
+    zeros = np.zeros((278, 234))
     le = preprocessing.LabelEncoder()
     le.fit(list(domain_dict.keys()))
     x_dataset = []
