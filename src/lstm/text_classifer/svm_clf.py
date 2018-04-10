@@ -39,6 +39,7 @@ def load_dataset(dataframe_path):
     return x_dataset, y_dataset
 
 def one_versus_the_rest(x_dataset, y_dataset, args):
+    print('start one_versus_the_rest classifer')
     train_x, test_x, train_y, test_y = train_test_split(x_dataset, y_dataset)
 
     estimator = svm.SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
@@ -46,14 +47,21 @@ def one_versus_the_rest(x_dataset, y_dataset, args):
     classifier.fit(train_x, train_y)
     pred_y = classifier.predict(test_x)
     print('One-versus-the-rest: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+    with open('./log.txt' , 'a') as f:
+        f.write('One-versus-the-rest: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+        f.write('\n')
 
 def one_versus_the_one(x_dataset, y_dataset, args):
+    print('start one_versus_the_one classifer')
     train_x, test_x, train_y, test_y = train_test_split(x_dataset, y_dataset)
 
     classifier = svm.SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
     classifier.fit(train_x, train_y)
     pred_y = classifier.predict(test_x)
     print('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+    with open('./log.txt' , 'a') as f:
+        f.write('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+        f.write('\n')
 
 def main():
     parser = argparse.ArgumentParser()
