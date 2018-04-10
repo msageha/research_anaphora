@@ -25,7 +25,7 @@ def load_dataset(dataframe_path):
     x_dataset = []
     y_dataset = []
     for domain in domain_dict:
-        print('start data load domain-{0}'.format(domain))
+        print('start data load domain-{0}'.format(domain), flush=True)
         with open('{0}/dataframe_list_{1}.pickle'.format(dataframe_path, domain), 'rb') as f:
             df_list = pickle.load(f)
         for df in df_list:
@@ -58,9 +58,9 @@ def one_versus_the_one(x_dataset, y_dataset, args):
     classifier = svm.SVC(C=args.c, kernel=args.kernel, gamma=args.gamma)
     classifier.fit(train_x, train_y)
     pred_y = classifier.predict(test_x)
-    print('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+    print('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)), flush=True)
     with open('./log.txt' , 'a') as f:
-        f.write('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)))
+        f.write('One-versus-one: {:.5f}'.format(accuracy_score(test_y, pred_y)), flush=True)
         f.write('\n')
 
 def main():
