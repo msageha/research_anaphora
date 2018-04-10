@@ -96,12 +96,13 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             accuracy += 1
     accuracy /= len(test_data)
+    dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(args.out, domain, case)
     print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy*100))
-    if not os.path.exists('{0}/domain-{1}_caes-{2}.tsv'.format(args.out, domain, case)):
-        with open('{0}/domain-{1}_caes-{2}.txt'.format(args.out, domain, case), 'w') as f:
+    if not os.path.exists(dump_path):
+        with open(dump_path, 'w') as f:
             f.write('model_path\tdomain\taccuracy\ttest_data_size\n')
-    with open('{0}/domain-{1}_caes-{2}.txt'.format(args.out, domain, case), 'a') as f:
-        f.write('{0}\t{1}\t{2:.3f}\t{3}'.format(model_path, domain, accuracy*100, len(test_data)))
+    with open(dump_path, 'a') as f:
+        f.write('{0}\t{1}\t{2:.3f}\t{3}\n'.format(model_path, domain, accuracy*100, len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
@@ -111,7 +112,6 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
     parser.add_argument('--model_dir', '-m', type=str, default='')
-    parser.add_argument('--case', '-c', type=str, default='')
     parser.add_argument('--part_flag', action='store_true')
     args = parser.parse_args()
 
@@ -127,26 +127,26 @@ def main(train_test_ratio=0.8):
         all_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
         all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-
-    for model in load_model_path(args.model_dir, args.case, args.part_flag):
-        if args.case == 'ga':
-            test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
-        elif args.case == 'o':
-            test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
-        elif args.case == 'ni':
-            test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
-        predict(model, test_data, 'all', args.case, args)
-        for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            if args.case == 'ga':
-                test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
-            elif args.case == 'o':
-                test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-            elif args.case == 'ni':
-                test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-            test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-            predict(model, test_data, domain, args.case, args)
+    for case in ['ga', 'o', 'ni']:
+        for model in load_model_path(args.model_dir, case, args.part_flag):
+            if case == 'ga':
+                test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+            elif case == 'o':
+                test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_o)
+            elif case == 'ni':
+                test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ni)
+            predict(model, test_data, 'union', case, args)
+            for domain in domain_dict:
+                size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
+                test_x = dataset_dict['{0}_x'.format(domain)][size:]
+                if case == 'ga':
+                    test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+                elif case == 'o':
+                    test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+                elif case == 'ni':
+                    test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+                test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+                predict(model, test_data, domain, case, args)
 
 
 if __name__ == '__main__':
