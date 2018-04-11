@@ -24,7 +24,7 @@ def load_dataset():
     dataset_dict = {}
     for domain in domain_dict:
         print('start data load domain-{0}'.format(domain))
-        with open('./dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
+        with open('../original/dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
             df_list = pickle.load(f)
         x_dataset = []
         y_dataset = []
