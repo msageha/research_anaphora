@@ -44,7 +44,7 @@ def load_dataset():
 def training(train_data, test_data, domain, dump_path):
     print('training start domain-{0}'.format(domain,))
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n_layers', '-n', type=int, default=1)
+    parser.add_argument('--n_layers', '-n', type=int, default=2)
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
     parser.add_argument('--epoch', '-e', type=int, default=10)
