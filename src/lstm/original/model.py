@@ -7,19 +7,22 @@ from chainer import reporter
 import chainer.links as L
 import chainer.functions as F
 
+import ipdb
+
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
         if device is None:
             return batch
-        elif device < 0:
-            return [chainer.dataset.to_device(device, x) for x in batch]
+        # else device < 0:
         else:
-            xp = cuda.cupy.get_array_module(*batch)
-            concat = xp.concatenate(batch, axis=0)
-            sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
-            concat_dev = chainer.dataset.to_device(device, concat)
-            batch_dev = cuda.cupy.split(concat_dev, sections)
-            return batch_dev
+            return [chainer.dataset.to_device(device, x) for x in batch]
+        # else:
+        #     xp = cuda.cupy.get_array_module(*batch)
+        #     concat = xp.concatenate(batch, axis=0)
+        #     sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
+        #     concat_dev = chainer.dataset.to_device(device, concat)
+        #     batch_dev = cuda.cupy.split(concat_dev, sections)
+        #     return batch_dev
     if with_label:
         return {'xs': to_device_batch([x for x, _ in batch]),
                 'ys': to_device_batch([y for _, y in batch])}
@@ -44,6 +47,8 @@ class BiLSTMBase(Chain):
             loss += _loss
         reporter.report({'loss': loss.data}, self)
         
+        ipdb.set_trace()
+
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
