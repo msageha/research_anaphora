@@ -31,7 +31,7 @@ def load_dataset(dataframe_path):
         for df in df_list:
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             for i in range(200):
-                df = df.drop('word2vec:{0}'.format(i))
+                df = df.drop('word2vec:{0}'.format(i), axis=1)
             x = np.array(df, dtype=np.float32)
             x = np.vstack((x, zeros))[:30].reshape(-1)
             x_dataset.append(x)
