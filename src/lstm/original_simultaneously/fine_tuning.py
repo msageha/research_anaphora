@@ -20,7 +20,7 @@ from train import load_dataset
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def fine_tuning(model_path, train_data, test_data, domain, dump_path, args):
-    print('fine_tuning start domain-{0}, case-{1}'.format(domain, case))
+    print('fine_tuning start domain-{0}'.format(domain))
 
     if not os.path.exists('./{0}/{1}'.format(args.out, dump_path)):
         os.mkdir('./{0}/{1}'.format(args.out, dump_path))
