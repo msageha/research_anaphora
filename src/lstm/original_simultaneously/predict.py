@@ -57,7 +57,7 @@ def predict(model_path, test_data, domain, args):
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])
         pred_ys = [pred_y.T for pred_y in pred_ys]
-        pred_ys = [pred_y.data.argmax(axis=1) for pred_y in pred_ys]
+        pred_ys = pred_y.data.argmax(axis=1) for pred_y in pred_ys
         ys = ys.argmax(axis=0)
         if pred_ys[0] == ys[0]:
             accuracy_ga += 1
