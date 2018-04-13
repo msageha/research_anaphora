@@ -37,7 +37,7 @@ def predict(model_path, test_data, domain, args):
 
     feature_size = test_data[0][0].shape[1]
 
-    model = BiLSTMBase(input_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
+    model = BiLSTMBase(input_size=feature_size, n_labels=3, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
     accuracy_ga = .0
     accuracy_o = .0
