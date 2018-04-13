@@ -101,7 +101,7 @@ def main(train_test_ratio=0.8):
         all_test_y += dataset_dict['{0}_y'.format(domain)][size:]
 
     for model in load_model_path(args.model_dir, args.part_flag):
-        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
+        test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_y)
         predict(model, test_data, 'union', args)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
