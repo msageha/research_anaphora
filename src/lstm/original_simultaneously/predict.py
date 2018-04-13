@@ -20,14 +20,14 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 def load_model_path(path, part_flag=False):
     for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
-            model_path = '{0}/domain-{1}_epoch-{3}.npz'.format(path, domain, epoch)
+            model_path = '{0}/domain-{1}_epoch-{2}.npz'.format(path, domain, epoch)
             if os.path.exists(model_path):
                 yield model_path
                 break
     if part_flag:
         for part in range(10000, 190001, 30000):
             for epoch in range(20, 0, -1):
-                model_path = '{0}/domain-union_pert_{1}_epoch-{3}.npz'.format(path, part, epoch)
+                model_path = '{0}/domain-union_pert_{1}_epoch-{2}.npz'.format(path, part, epoch)
                 if os.path.exists(model_path):
                     yield model_path
                     break
