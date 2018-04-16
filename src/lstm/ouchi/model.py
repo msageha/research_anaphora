@@ -1,0 +1,100 @@
+import chainer
+from chainer import Variable
+from chainer import cuda
+import numpy as np
+from chainer import Chain
+from chainer import reporter
+import chainer.links as L
+import chainer.functions as F
+import ipdb
+
+def convert_seq(batch, device=None, with_label=True):
+    def to_device_batch(batch):
+        if device is None:
+            return batch
+        elif device < 0:
+            return [chainer.dataset.to_device(device, x) for x in batch]
+        else:
+            xp = cuda.cupy.get_array_module(*batch)
+            concat = xp.concatenate(batch, axis=0)
+            sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
+            concat_dev = chainer.dataset.to_device(device, concat)
+            batch_dev = cuda.cupy.split(concat_dev, sections)
+            return batch_dev
+    if with_label:
+        return {'xs': to_device_batch([x for x, _ in batch]),
+                'ys': to_device_batch([y for _, y in batch])}
+    else:
+        return to_device_batch([x for x in batch])
+
+class BiGRU(Chain):
+    def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5):
+        super(BiGRU, self).__init__()
+        with self.init_scope():
+      # self.f_lstm = L.LSTM(None, feature_size, dropout)
+      # self.b_lstm = L.LSTM(None, feature_size, dropout)
+            self.nstep_bigru = L.NStepBiGRU(n_layers=n_layers, in_size=input_size, out_size=input_size, dropout=dropout)
+            self.l1 = L.Linear(input_size*2, n_labels)
+        self.dropout = dropout
+
+    def __call__(self, xs, ys):
+        pred_ys = self.traverse(xs)
+
+        loss = .0
+        for pred_y, y in zip(pred_ys, ys):
+            _loss = F.softmax_cross_entropy(pred_y, y)
+            loss += _loss
+        reporter.report({'loss': loss.data}, self)
+        
+        accuracy = .0
+        ipdb.set_trace()
+        pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
+
+        
+        accuracy = {'ga':0., 'o':0., 'ni':0.}
+        predict_index_list = {'ga':[], 'o':[], 'ni':[]}
+        correct_index_list = {'ga':[], 'o':[], 'ni':[]}
+
+        for pred_y, y in zip(pred_ys):
+            pred_ga = {'index':-1, 'probability':0}
+            pred_o = {'index':-1, 'probability':0}
+            pred_ni = {'index':-1, 'probability':0}
+            pred_argmax_y = pred_y.data.argmax(axis=1)
+            for index, tag in enumerate(pred_argmax_y):
+                if tag == 1 and pred_ga['probability'] < pred_y.data[index][tag]:
+                    pred_ga['probability'] = pred_y.data[index][tag]
+                    pred_ga['index'] = index
+                if tag == 2 and pred_ga['probability'] < pred_y.data[index][tag]:
+                    pred_o['probability'] = pred_y.data[index][tag]
+                    pred_o['index'] = index
+                if tag == 3 and pred_ga['probability'] < pred_y.data[index][tag]:
+                    pred_ni['probability'] = pred_y.data[index][tag]
+                    pred_ni['index'] = index
+            if pred_ga['index'] != -1:
+                if y[pred_ga['index']][1] == 1:
+                  accuracy['ga'] += 1/len(ys)
+            if pred_o['index'] != -1:
+                if y[pred_o['index']][2] == 1:
+                  accuracy['o'] += 1/len(ys)
+            if pred_ni['index'] != -1:
+                if y[pred_ni['index']][3] == 1:
+                  accuracy['ni'] += 1/len(ys)
+            predict_index_list['ga'].append(pred_ga['index'])
+            predict_index_list['ga'].append(pred_o['index'])
+            predict_index_list['ga'].append(pred_ni['index'])
+
+        ys = [y.argmax(axis=0) for y in ys]
+        
+        for pred_y, y in zip(pred_argmax_ys, ys):
+            
+            if y == pred_y:
+                accuracy += 1/len(ys)
+        reporter.report({'accuracy': accuracy}, self)
+        return loss
+
+    def traverse(self, xs):
+        xs = [Variable(x) for x in xs]
+        hx, cx = None, None
+        hx, cx, ys = self.nstep_bigru(xs=xs, hx=hx, cx=cx)
+        return [self.l1(y) for y in ys]
+
