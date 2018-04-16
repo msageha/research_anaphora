@@ -42,7 +42,6 @@ class BiLSTMBase(Chain):
         pred_ys = self.traverse(xs)
         
         loss = .0
-        ipdb.set_trace()
         for pred_y, y in zip(pred_ys, ys):
             _loss = F.softmax_cross_entropy(pred_y, y)
             loss += _loss
