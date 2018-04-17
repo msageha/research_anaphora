@@ -63,24 +63,30 @@ class BiGRU(Chain):
                     predict_num += 1
                 if y[index].max() != 0 and pred_y[index].max() != 0 and y[index].argmax() == pred_y[index].argmax():
                     hit_num += 1
-            precision[case] = hit_num/correct_num
-            recall[case] = hit_num/predict_num
-            f1[case] = (2*hit_num)/(2*hit_num+correct_num+predict_num)
+            if correct_num:
+                precision[case] = hit_num/correct_num
+            if predict_num:
+                recall[case] = hit_num/predict_num
+            if (2*hit_num+correct_num+predict_num):
+                f1[case] = (2*hit_num)/(2*hit_num+correct_num+predict_num)
             all_correct_num += correct_num
             all_predict_num += predict_num
             all_hit_num += hit_num
-        precision['all'] = all_hit_num/all_correct_num
-        recall['all'] = all_hit_num/all_predict_num
-        f1['all'] = (2*all_hit_num)/(2*all_hit_num+all_correct_num+all_predict_num)
+        if all_correct_num:
+            precision['all'] = all_hit_num/all_correct_num
+        if all_predict_num:
+            recall['all'] = all_hit_num/all_predict_num
+        if 2*all_hit_num+all_correct_num+all_predict_num:
+            f1['all'] = (2*all_hit_num)/(2*all_hit_num+all_correct_num+all_predict_num)
 
         # pred_y.shape ==  (9, 5)
         # y.shape == (9, 5)
         # pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
 
-        reporter.report({'accuracy': loss.data}, self)
-        reporter.report({'precision': loss.data}, self)
-        reporter.report({'recall': loss.data}, self)
-        reporter.report({'f1': loss.data}, self)
+        # reporter.report({'accuracy': loss.data}, self)
+        reporter.report({'precision': precision['all'].data}, self)
+        reporter.report({'recall': recall['all'].data}, self)
+        reporter.report({'f1': f1['all'].data}, self)
 
         return loss
 
