@@ -36,13 +36,13 @@ def load_dataset(short_flag):
             y_ga = np.array(df['ga_case'], dtype=np.int32)
             y_o = np.array(df['o_case'], dtype=np.int32)
             y_ni = np.array(df['ni_case'], dtype=np.int32)
-            y_pred = np.array(df['pred'], dtype=np.int32)
+            y_pred = np.array(df['is_pred'], dtype=np.int32)
             y_none = np.zeros(y_ga.shape[0], dtype=np.int32)
             for i, data in enumerate(zip(y_ga, y_o, y_ni, y_pred)):
                 if max(data) == 0:
                     y_none[i] = 1
             y = np.vstack((y_none, y_pred, y_ga, y_o, y_ni)).T
-            df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('word', axis=1).drop('pred_prev', axis=1).drop('pred_next', axis=1).drop('file_path', axis=1)
+            df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('word', axis=1).drop('pred_prev', axis=1).drop('pred', axis=1).drop('pred_next', axis=1).drop('file_path', axis=1)
             x = np.array(df, dtype=np.float32)
             x_dataset.append(x)
             y_dataset.append(y)
