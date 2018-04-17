@@ -39,7 +39,7 @@ def load_dataset():
                     y_none[i] = 1
             y = np.vstack((y_none, y_pred, y_ga, y_o, y_ni)).T
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('word', axis=1).drop('pred_prev', axis=1).drop('pred_next', axis=1).drop('file_path', axis=1)
-            x = np.array(df, dtype=np.float)
+            x = np.array(df, dtype=np.float32)
             x_dataset.append(x)
             y_dataset.append(y)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
