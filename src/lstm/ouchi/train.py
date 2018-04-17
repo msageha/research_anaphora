@@ -94,7 +94,7 @@ def training(train_data, test_data, domain, dump_path):
     trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=output_path)
 
     evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
-    trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/f1', trigger=(1, 'epoch'))
+    # trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/f1', trigger=(1, 'epoch'))
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}.log'.format(domain)), trigger=(1, 'epoch'))
