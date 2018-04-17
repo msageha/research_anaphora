@@ -36,18 +36,43 @@ class BiGRU(Chain):
 
         loss = .0
         for pred_y, y in zip(pred_ys, ys):
+            pred_y = F.relu(pred_y)
             _loss = F.sigmoid_cross_entropy(pred_y.reshape(1, -1), y.reshape(1,-1))
             loss += _loss
         reporter.report({'loss': loss.data}, self)
-        
-        accuracy = .0
 
-        accuracy = {'ga':0., 'o':0., 'ni':0.}
-        precision = {'ga':0., 'o':0., 'ni':0.}
-        recall = {'ga':0., 'o':0., 'ni':0.}
-        f1 = {'ga':0., 'o':0., 'ni':0.}
+        # accuracy = {'ga':0., 'o':0., 'ni':0., 'all':0.}
+        precision = {'ga':0., 'o':0., 'ni':0., 'all':0.}
+        recall = {'ga':0., 'o':0., 'ni':0., 'all':0.}
+        f1 = {'ga':0., 'o':0., 'ni':0., 'all':0.}
 
-        ipdb.set_trace()
+        all_correct_num = 0
+        all_predict_num = 0
+        all_hit_num = 0
+        for index, case in {2:'ga', 3:'o', 4:'ni'}.items():
+            correct_num = 0
+            predict_num = 0
+            hit_num = 0
+            for pred_y, y in zip(pred_ys, ys):
+                pred_y = pred_y.data.T
+                y = y.T
+                
+                if y[index].max() != 0:
+                    correct_num += 1
+                if pred_y[index].max() != 0:
+                    predict_num += 1
+                if y[index].max() != 0 and pred_y[index].max() != 0 and y[index].argmax() == pred_y[index].argmax():
+                    hit_num += 1
+            precision[case] = hit_num/correct_num
+            recall[case] = hit_num/predict_num
+            f1[case] = (2*hit_num)/(2*hit_num+correct_num+predict_num)
+            all_correct_num += correct_num
+            all_predict_num += predict_num
+            all_hit_num += hit_num
+        precision['all'] = all_hit_num/all_correct_num
+        recall['all'] = all_hit_num/all_predict_num
+        f1['all'] = (2*all_hit_num)/(2*all_hit_num+all_correct_num+all_predict_num)
+
         # pred_y.shape ==  (9, 5)
         # y.shape == (9, 5)
         # pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
