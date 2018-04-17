@@ -4,7 +4,6 @@ import re
 from joblib import Parallel, delayed
 import os
 from collections import defaultdict
-import chainer.links as L
 import pickle
 import random
 
