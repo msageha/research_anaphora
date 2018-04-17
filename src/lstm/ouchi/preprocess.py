@@ -84,7 +84,7 @@ def file_to_dataframe_list(file_path):
         for df in sentence_find_verb(sentence):
             df['file_path'] = file_path
             df_list.append(df)
-    # df_list = reduction_dataframe(df_list)
+    df_list = reduction_dataframe(df_list)
     return df_list
 
 def load_file(file_path):
@@ -189,9 +189,9 @@ def sentence_to_vector(sentence, pred_number, ga_case_id, o_case_id, ni_case_id)
             df_['marked'] = 0
 
         if pred_number == word_number:
-            df_['pred'] = 1
+            df_['is_pred'] = 1
         else:
-            df_['pred'] = 0
+            df_['is_pred'] = 0
         #正解ラベルか確認して，正解を入れる．
         tag_id = get_tag_id(tag)
         if ga_case_id == tag_id:
@@ -232,7 +232,7 @@ def main():
             
             dataset += df_list
         del r
-        with open('./dataframe/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
+        with open('./dataframe_short/dataframe_list_{}.pickle'.format(domain), 'wb') as f:
             pickle.dump(dataset, f)
         del dataset
 
