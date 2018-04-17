@@ -84,9 +84,9 @@ class BiGRU(Chain):
         # pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
 
         # reporter.report({'accuracy': loss.data}, self)
-        reporter.report({'precision': precision['all'].data}, self)
-        reporter.report({'recall': recall['all'].data}, self)
-        reporter.report({'f1': f1['all'].data}, self)
+        reporter.report({'precision': precision['all']}, self)
+        reporter.report({'recall': recall['all']}, self)
+        reporter.report({'f1': f1['all']}, self)
 
         return loss
 
