@@ -15,7 +15,7 @@ from chainer.training import extensions
 from model import BiGRU
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋'}#, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset():
     dataset_dict = {}
@@ -53,10 +53,13 @@ def training(train_data, test_data, domain, dump_path):
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
+    parser.add_argument('--short', action='store_true')
     args = parser.parse_args()
     if not os.path.exists('{0}/{1}'.format(args.out, dump_path)):
         os.mkdir('{0}/{1}'.format(args.out, dump_path))
     output_path = args.out + '/' + dump_path
+    if args.short:
+        output_path = args.out + '_short/' + dump_path
     if not os.path.exists('{0}/{1}'.format(output_path, 'args')):
         os.mkdir('{0}/{1}'.format(output_path, 'args'))
         os.mkdir('{0}/{1}'.format(output_path, 'log'))
