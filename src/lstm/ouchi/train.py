@@ -100,7 +100,7 @@ def training(train_data, test_data, domain, dump_path):
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}.log'.format(domain)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/precision', 'main/recall', 'main/f1',
     'validation/main/loss', 'validation/main/precision', 'validation/main/recall', 'validation/main/f1', 'elapsed_time']), trigger=(1, 'epoch'))
-    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_epoch-{{.updater.epoch}}.npz'.format(domain)), trigger=trigger)
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_epoch-{{.updater.epoch}}.npz'.format(domain)), trigger=(1, 'epoch'))
 
     trainer.run()
 
