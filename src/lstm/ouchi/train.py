@@ -5,9 +5,6 @@ import json
 import datetime
 import os
 
-import matplotlib
-matplotlib.use('Agg')
-
 import numpy as np
 import pandas as pd
 import chainer
