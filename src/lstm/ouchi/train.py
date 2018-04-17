@@ -54,11 +54,13 @@ def load_dataset(short_flag):
 def training(train_data, test_data, domain, dump_path, args):
     print('training start domain-{0}'.format(domain,))
 
-    if not os.path.exists('{0}/{1}'.format(args.out, dump_path)):
-        os.mkdir('{0}/{1}'.format(args.out, dump_path))
-    output_path = args.out + '/' + dump_path
+    output_path = args.out
     if args.short:
-        output_path = args.out + '_short/' + dump_path
+        output_path = args.out + '_short/'
+    
+    if not os.path.exists('{0}/{1}'.format(output_path, dump_path)):
+        os.mkdir('{0}/{1}'.format(output_path, dump_path))
+    output_path = output_path + dump_path
     if not os.path.exists('{0}/{1}'.format(output_path, 'args')):
         os.mkdir('{0}/{1}'.format(output_path, 'args'))
         os.mkdir('{0}/{1}'.format(output_path, 'log'))
