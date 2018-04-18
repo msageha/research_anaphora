@@ -75,7 +75,7 @@ def predict(model_path, test_data, domain, case, args):
         if case_num[key]:
             accuracy[key] = correct_num[key]/case_num[key]*100
         else:
-            accuracy[key] = None
+            accuracy[key] = 999
 
     output_path = args.out
     if args.is_short:

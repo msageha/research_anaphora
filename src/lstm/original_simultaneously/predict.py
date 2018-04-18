@@ -78,13 +78,13 @@ def predict(model_path, test_data, domain, args):
             if case_dict[case]['item_num'][item_type]:
                 case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type]/case_dict[case]['item_num'][item_type]*100
             else:
-                case_dict[case]['accuracy'][item_type] = None
+                case_dict[case]['accuracy'][item_type] = 999
             case_dict['all_case']['correct_num'][item_type] += case_dict[case]['correct_num'][item_type]
             case_dict['all_case']['item_num'][item_type] += case_dict[case]['item_num'][item_type]
         if case_dict['all_case']['item_num'][item_type]:
             case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type]/case_dict['all_case']['item_num'][item_type]*100
         else:
-            case_dict['all_case']['accuracy'][item_type] = None
+            case_dict['all_case']['accuracy'][item_type] = 999
 
     output_path = args.out
     if args.is_short:
