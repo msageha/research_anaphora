@@ -32,18 +32,22 @@ def load_model_path(path, part_flag=False):
                     yield model_path
                     break
 
+def return_item_type(num):
+    if num == 0: return '照応なし'
+    elif num == 1: return '発信者'
+    elif num == 2: return '受信者'
+    elif num == 3: return '項不定'
+    else: return '文内'
 
 def predict(model_path, test_data, domain, args):
-
     feature_size = test_data[0][0].shape[1]
 
     model = BiLSTMBase(input_size=feature_size, n_labels=3, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-    accuracy_ga = .0
-    accuracy_o = .0
-    accuracy_ni = .0
-    accuracy_all = .0
-
+    correct_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    item_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    accuracy = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    case_dict = {'ga':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'o':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'ni':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'all_case':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}}
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
@@ -59,32 +63,41 @@ def predict(model_path, test_data, domain, args):
         pred_ys = pred_ys.T
         pred_ys = pred_ys.data.argmax(axis=1)
         ys = ys.argmax(axis=0)
-        if pred_ys[0] == ys[0]:
-            accuracy_ga += 1
-            accuracy_all += 1
-        if pred_ys[1] == ys[1]:
-            accuracy_o += 1
-            accuracy_all += 1
-        if pred_ys[2] == ys[2]:
-            accuracy_ni += 1
-            accuracy_all += 1
-    accuracy_ga /= len(test_data)
-    accuracy_o /= len(test_data)
-    accuracy_ni /= len(test_data)
-    accuracy_all /= 3*len(test_data)
-    
+
+        for i, case in enumerate(['ga', 'o', 'ni']):
+            item_type = return_item_type(ys[i])
+            case_dict[case]['item_num'][item_type] += 1
+            case_dict[case]['item_num']['all'] += 1
+            if pred_ys[i] == ys[i]:
+                case_dict[case]['correct_num'][item_type] += 1
+                case_dict[case]['correct_num']['all'] += 1
+
+        for item_type in ['all', '照応なし', '文内', '発信者', '受信者', '項不定']:
+            for case in ['ga', 'o', 'ni']:
+                if case_dict[case]['item_num'][item_type]:
+                    case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type] / case_dict[case]['item_num'][item_type]
+                else:
+                    case_dict[case]['accuracy'][item_type] = None
+                case_dict['all_case']['correct_num'][item_type] += case_dict[case]['correct_num'][item_type]
+                case_dict['all_case']['item_num'][item_type] += case_dict[case]['item_num'][item_type]
+            if case_dict['all_case']['item_num'][item_type]:
+                case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type] / case_dict['all_case']['item_num'][item_type]
+            else:
+                case_dict['all_case']['accuracy'][item_type] = None
+
     output_path = args.out
     if args.is_short:
         output_path += '_short'
     else:
         output_path += '_long'
     dump_path = '{0}/domain-{1}.tsv'.format(output_path, domain)
-    print('model_path:{0}_domain:{1}_accuracy_all:{2:.3f}'.format(model_path, domain, accuracy_all*100))
+    print('model_path:{0}_domain:{1}_accuracy_all:{2:.3f}'.format(model_path, domain, case_dict['all_case']['accuracy']['all']*100))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
-            f.write('model_path\tdomain\taccuracy_ga\taccuracy_o\taccuracy_ni\taccuracy_all\ttest_data_size\n')
+            f.write('model_path\tdomain\tcase\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\ttest_data_size\n')
     with open(dump_path, 'a') as f:
-        f.write('{0}\t{1}\t{2:.3f}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6}\n'.format(model_path, domain, accuracy_ga*100, accuracy_o*100, accuracy_ni*100, accuracy_all*100, len(test_data)))
+        for case in ['ga', 'o', 'ni', 'all_case']:
+            f.write('{0}\t{1}\t{2}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8:.3f}\t{9}\n'.format(model_path, domain, case, case_dict[case]['accuracy']['all']*100, case_dict[case]['accuracy']['all']*100, case_dict[case]['accuracy']['照応なし']*100, case_dict[case]['accuracy']['発信者']*100, case_dict[case]['accuracy']['受信者']*100, case_dict[case]['accuracy']['項不定']*100, case_dict[case]['accuracy']['文内']*100, len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
