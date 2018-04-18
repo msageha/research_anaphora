@@ -15,6 +15,7 @@ from model import BiLSTMBase
 from train import load_dataset
 import os
 
+from collections import defaultdict
 import ipdb
 
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
@@ -46,10 +47,8 @@ def predict(model_path, test_data, domain, args):
 
     model = BiLSTMBase(input_size=feature_size, n_labels=3, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-    correct_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
-    item_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
-    accuracy = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
-    case_dict = {'ga':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'o':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'ni':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}, 'all_case':{'correct_num':correct_num, 'item_num':item_num, 'accuracy':accuracy}}
+
+    case_dict = {'ga':{'correct_num':defaultdict(float), 'item_num':defaultdict(float), 'accuracy':defaultdict(float)}, 'o':{'correct_num':defaultdict(float), 'item_num':defaultdict(float), 'accuracy':defaultdict(float)}, 'ni':{'correct_num':defaultdict(float), 'item_num':defaultdict(float), 'accuracy':defaultdict(float)}, 'all_case':{'correct_num':defaultdict(float), 'item_num':defaultdict(float), 'accuracy':defaultdict(float)}}
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
