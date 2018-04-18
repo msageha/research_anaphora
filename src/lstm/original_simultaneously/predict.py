@@ -15,6 +15,8 @@ from model import BiLSTMBase
 from train import load_dataset
 import os
 
+import ipdb
+
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_model_path(path, part_flag=False):
@@ -60,8 +62,8 @@ def predict(model_path, test_data, domain, args):
     for xs, ys in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])[0]
-        pred_ys = pred_ys.T
-        pred_ys = pred_ys.data.argmax(axis=1)
+        pred_ys = F.softmax(pred_ys)
+        pred_ys = pred_ys.data.argmax(axis=0)
         ys = ys.argmax(axis=0)
 
         for i, case in enumerate(['ga', 'o', 'ni']):
@@ -72,18 +74,18 @@ def predict(model_path, test_data, domain, args):
                 case_dict[case]['correct_num'][item_type] += 1
                 case_dict[case]['correct_num']['all'] += 1
 
-        for item_type in ['all', '照応なし', '文内', '発信者', '受信者', '項不定']:
-            for case in ['ga', 'o', 'ni']:
-                if case_dict[case]['item_num'][item_type]:
-                    case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type] / case_dict[case]['item_num'][item_type]
-                else:
-                    case_dict[case]['accuracy'][item_type] = None
-                case_dict['all_case']['correct_num'][item_type] += case_dict[case]['correct_num'][item_type]
-                case_dict['all_case']['item_num'][item_type] += case_dict[case]['item_num'][item_type]
-            if case_dict['all_case']['item_num'][item_type]:
-                case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type] / case_dict['all_case']['item_num'][item_type]
+    for item_type in ['all', '照応なし', '文内', '発信者', '受信者', '項不定']:
+        for case in ['ga', 'o', 'ni']:
+            if case_dict[case]['item_num'][item_type]:
+                case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type] / case_dict[case]['item_num'][item_type]
             else:
-                case_dict['all_case']['accuracy'][item_type] = None
+                case_dict[case]['accuracy'][item_type] = None
+            case_dict['all_case']['correct_num'][item_type] += case_dict[case]['correct_num'][item_type]
+            case_dict['all_case']['item_num'][item_type] += case_dict[case]['item_num'][item_type]
+        if case_dict['all_case']['item_num'][item_type]:
+            case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type] / case_dict['all_case']['item_num'][item_type]
+        else:
+            case_dict['all_case']['accuracy'][item_type] = None
 
     output_path = args.out
     if args.is_short:
