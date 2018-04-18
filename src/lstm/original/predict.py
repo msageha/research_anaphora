@@ -72,8 +72,11 @@ def predict(model_path, test_data, domain, case, args):
             correct_num[item_type] += 1
 
     for key in accuracy:
-        accuracy[key] = correct_num[key]/case_num[key]
-    
+        if case_num[key]:
+            accuracy[key] = correct_num[key]/case_num[key]
+        else:
+            accuracy[key] = None
+
     output_path = args.out
     if args.is_short:
         output_path += '_short'
