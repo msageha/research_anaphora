@@ -17,44 +17,6 @@ import os
 
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
-# def load_dataset_without_dep():
-#     dataset_dict = {}
-#     for domain in domain_dict:
-#         print('start data load domain-{0}'.format(domain))
-#         with open('./dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
-#             df_list = pickle.load(f)
-#         x_ga_dataset = []
-#         y_ga_dataset = []
-#         x_o_dataset = []
-#         y_o_dataset = []
-#         x_ni_dataset = []
-#         y_ni_dataset = []
-#         size = math.ceil(len(df_list)*0.8)
-#         for df in df_list[size:]:
-#             y_ga = np.array(df['ga_case'], dtype=np.int32)
-#             y_o = np.array(df['o_case'], dtype=np.int32)
-#             y_ni = np.array(df['ni_case'], dtype=np.int32)
-#             x = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
-#             x = np.array(x, dtype=np.float32)
-#             if df['ga_dep_tag'].any() != 'dep':
-#                 x_ga_dataset.append(x)
-#                 y_ga_dataset.append(y_ga)
-#             if df['o_dep_tag'].any() != 'dep':
-#                 x_o_dataset.append(x)
-#                 y_o_dataset.append(y_o)
-#             if df['ni_dep_tag'].any() != 'dep':
-#                 x_ni_dataset.append(x)
-#                 y_ni_dataset.append(y_ni)
-#         print('domain-{0}_case-ga_size-{1}'.format(domain, len(y_ga_dataset)))
-#         print('domain-{0}_case-o_size-{1}'.format(domain, len(y_o_dataset)))
-#         print('domain-{0}_case-ni_size-{1}'.format(domain, len(y_ni_dataset)))
-#         dataset_dict['{0}_x_ga'.format(domain)] = x_ga_dataset
-#         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
-#         dataset_dict['{0}_x_o'.format(domain)] = x_o_dataset
-#         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
-#         dataset_dict['{0}_x_ni'.format(domain)] = x_ni_dataset
-#         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
-
 def load_model_path(path, case, part_flag=False):
     for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
@@ -111,7 +73,13 @@ def predict(model_path, test_data, domain, case, args):
 
     for key in accuracy:
         accuracy[key] = correct_num[key]/case_num[key]
-    dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(args.out, domain, case)
+    
+    output_path = args.out
+    if args.is_short:
+        output_path += '_short'
+    else:
+        output_path += '_long'
+    dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
     print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy['all']*100))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
@@ -128,9 +96,10 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
     parser.add_argument('--model_dir', '-m', type=str, default='')
     parser.add_argument('--part_flag', action='store_true')
+    parser.add_argument('--is_short', action='store_true')
     args = parser.parse_args()
 
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset(args.is_short)
     print('start data load domain-all')
     all_test_x = []
     all_test_ga = []
