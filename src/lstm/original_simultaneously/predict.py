@@ -76,13 +76,13 @@ def predict(model_path, test_data, domain, args):
     for item_type in ['all', '照応なし', '文内', '発信者', '受信者', '項不定']:
         for case in ['ga', 'o', 'ni']:
             if case_dict[case]['item_num'][item_type]:
-                case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type] / case_dict[case]['item_num'][item_type]
+                case_dict[case]['accuracy'][item_type] = case_dict[case]['correct_num'][item_type]/case_dict[case]['item_num'][item_type]*100
             else:
                 case_dict[case]['accuracy'][item_type] = None
             case_dict['all_case']['correct_num'][item_type] += case_dict[case]['correct_num'][item_type]
             case_dict['all_case']['item_num'][item_type] += case_dict[case]['item_num'][item_type]
         if case_dict['all_case']['item_num'][item_type]:
-            case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type] / case_dict['all_case']['item_num'][item_type]
+            case_dict['all_case']['accuracy'][item_type] = case_dict['all_case']['correct_num'][item_type]/case_dict['all_case']['item_num'][item_type]*100
         else:
             case_dict['all_case']['accuracy'][item_type] = None
 
@@ -92,13 +92,13 @@ def predict(model_path, test_data, domain, args):
     else:
         output_path += '_long'
     dump_path = '{0}/domain-{1}.tsv'.format(output_path, domain)
-    print('model_path:{0}_domain:{1}_accuracy_all:{2:.3f}'.format(model_path, domain, case_dict['all_case']['accuracy']['all']*100))
+    print('model_path:{0}_domain:{1}_accuracy_all:{2:.3f}'.format(model_path, domain, case_dict['all_case']['accuracy']['all']))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
             f.write('model_path\tdomain\tcase\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\ttest_data_size\n')
     with open(dump_path, 'a') as f:
         for case in ['ga', 'o', 'ni', 'all_case']:
-            f.write('{0}\t{1}\t{2}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8:.3f}\t{9}\n'.format(model_path, domain, case, case_dict[case]['accuracy']['all']*100, case_dict[case]['accuracy']['all']*100, case_dict[case]['accuracy']['照応なし']*100, case_dict[case]['accuracy']['発信者']*100, case_dict[case]['accuracy']['受信者']*100, case_dict[case]['accuracy']['項不定']*100, case_dict[case]['accuracy']['文内']*100, len(test_data)))
+            f.write('{0}\t{1}\t{2}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8:.3f}\t{9}\n'.format(model_path, domain, case, case_dict[case]['accuracy']['all'], case_dict[case]['accuracy']['all'], case_dict[case]['accuracy']['照応なし'], case_dict[case]['accuracy']['発信者'], case_dict[case]['accuracy']['受信者'], case_dict[case]['accuracy']['項不定'], case_dict[case]['accuracy']['文内'], len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
