@@ -15,8 +15,6 @@ from model import BiLSTMBase
 from train import load_dataset
 import os
 
-import ipdb
-
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 # def load_dataset_without_dep():
@@ -72,6 +70,12 @@ def load_model_path(path, case, part_flag=False):
                     yield model_path
                     break
 
+def return_item_type(num):
+    if num == 0: return '照応なし'
+    elif num == 1: return '発信者'
+    elif num == 2: return '受信者'
+    elif num == 3: return '項不定'
+    else: return '文内'
 
 def predict(model_path, test_data, domain, case, args):
 
@@ -79,7 +83,9 @@ def predict(model_path, test_data, domain, case, args):
 
     model = BiLSTMBase(input_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-    accuracy = 0.
+    correct_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    case_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    accuracy = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
@@ -94,18 +100,24 @@ def predict(model_path, test_data, domain, case, args):
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
+        pred_ys = int(pred_ys[0])
         ys = ys.argmax()
+        item_type = return_item_type(ys)
+        case_num['all'] += 1
+        case_num[item_type] += 1
         if pred_ys == ys:
-            accuracy += 1
-        ipdb.set_trace()
-    accuracy /= len(test_data)
+            correct_num['all'] += 1
+            correct_num[item_type] += 1
+
+    for key in accuracy:
+        accuracy[key] = correct_num[key]/case_num[key]
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(args.out, domain, case)
-    print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy*100))
+    print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy['all']*100))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
-            f.write('model_path\tdomain\taccuracy\ttest_data_size\n')
+            f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\ttest_data_size\n')
     with open(dump_path, 'a') as f:
-        f.write('{0}\t{1}\t{2:.3f}\t{3}\n'.format(model_path, domain, accuracy*100, len(test_data)))
+        f.write('{0}\t{1}\t{2:.3f}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8}\n'.format(model_path, domain, accuracy['all']*100, accuracy['照応なし']*100, accuracy['発信者']*100, accuracy['受信者']*100, accuracy['項不定']*100, accuracy['文内']*100, len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
