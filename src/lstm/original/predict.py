@@ -73,7 +73,7 @@ def predict(model_path, test_data, domain, case, args):
 
     for key in accuracy:
         if case_num[key]:
-            accuracy[key] = correct_num[key]/case_num[key]
+            accuracy[key] = correct_num[key]/case_num[key]*100
         else:
             accuracy[key] = None
 
@@ -83,12 +83,12 @@ def predict(model_path, test_data, domain, case, args):
     else:
         output_path += '_long'
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
-    print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy['all']*100))
+    print('model_path:{0}_domain:{1}_accuracy:{2:.3f}'.format(model_path, domain, accuracy['all']))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
             f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\ttest_data_size\n')
     with open(dump_path, 'a') as f:
-        f.write('{0}\t{1}\t{2:.3f}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8}\n'.format(model_path, domain, accuracy['all']*100, accuracy['照応なし']*100, accuracy['発信者']*100, accuracy['受信者']*100, accuracy['項不定']*100, accuracy['文内']*100, len(test_data)))
+        f.write('{0}\t{1}\t{2:.3f}\t{3:.3f}\t{4:.3f}\t{5:.3f}\t{6:.3f}\t{7:.3f}\t{8}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], len(test_data)))
 
 def main(train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
