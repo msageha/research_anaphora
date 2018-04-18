@@ -5,8 +5,6 @@ import math
 import numpy as np
 import pandas as pd
 
-from train import load_dataset
-
 domain_dict = {'OC':'Yahoo!知恵袋', 'OW':'白書', 'OY':'Yahoo!ブログ', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def main():
@@ -15,7 +13,7 @@ def main():
     all_ni_count = defaultdict(int)
     for domain in domain_dict:
         print('start data load domain-{0}'.format(domain))
-        with open('./dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
+        with open('./original/dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
             df_list = pickle.load(f)
         ga_count = defaultdict(int)
         o_count = defaultdict(int)
@@ -76,6 +74,6 @@ def dataset_size():
         print('domain:{0}, train_size:{1}, test_size{2}'.format(domain, train_x_size, test_x_size))
 
 if __name__=='__main__':
-    # main()
-    dataset_size()
+    main()
+    # dataset_size()
 
