@@ -72,7 +72,13 @@ def predict(model_path, test_data, domain, args):
     accuracy_o /= len(test_data)
     accuracy_ni /= len(test_data)
     accuracy_all /= 3*len(test_data)
-    dump_path = '{0}/domain-{1}.tsv'.format(args.out, domain)
+    
+    output_path = args.out
+    if args.is_short:
+        output_path += '_short'
+    else:
+        output_path += '_long'
+    dump_path = '{0}/domain-{1}.tsv'.format(output_path, domain)
     print('model_path:{0}_domain:{1}_accuracy_all:{2:.3f}'.format(model_path, domain, accuracy_all*100))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
@@ -89,9 +95,10 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
     parser.add_argument('--model_dir', '-m', type=str, default='')
     parser.add_argument('--part_flag', action='store_true')
+    parser.add_argument('--is_short', action='store_true')
     args = parser.parse_args()
 
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset(args.is_short)
     print('start data load domain-all')
     all_test_x = []
     all_test_y = []

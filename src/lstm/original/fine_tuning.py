@@ -97,7 +97,7 @@ def main(train_test_ratio=0.8):
     if args.disable_update_lstm:
         today += '_disable_update_lstm'
     else:
-        today += 'update_lstm'
+        today += '_update_lstm'
 
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)

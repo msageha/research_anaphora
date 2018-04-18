@@ -22,9 +22,14 @@ domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'P
 def fine_tuning(model_path, train_data, test_data, domain, dump_path, args):
     print('fine_tuning start domain-{0}'.format(domain))
 
-    if not os.path.exists('./{0}/{1}'.format(args.out, dump_path)):
-        os.mkdir('./{0}/{1}'.format(args.out, dump_path))
-    output_path = args.out + '/' + dump_path
+    output_path = args.out
+    if args.is_short:
+        output_path += '_short'
+    else:
+        output_path += '_long'
+    if not os.path.exists('./{0}/{1}'.format(output_path, dump_path)):
+        os.mkdir('./{0}/{1}'.format(output_path, dump_path))
+    output_path += '/' + dump_path
     if not os.path.exists('{0}/{1}'.format(output_path, 'args')):
         os.mkdir('{0}/{1}'.format(output_path, 'args'))
         os.mkdir('{0}/{1}'.format(output_path, 'log'))
@@ -81,9 +86,14 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--out', '-o', type=str, default='fine_tuning', help='Directory to output the result')
     parser.add_argument('--model', '-m', type=str, default='')
     parser.add_argument('--disable_update_lstm', action='store_true')
+    parser.add_argument('--is_short', action='store_true')
     args = parser.parse_args()
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset(args.is_short)
     today = str(datetime.datetime.today())[:-16]
+    if args.disable_update_lstm:
+        today += '_disable_update_lstm'
+    else:
+        today += '_update_lstm'
 
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)

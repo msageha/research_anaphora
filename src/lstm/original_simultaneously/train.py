@@ -20,12 +20,16 @@ from model import convert_seq
 
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
-def load_dataset():
+def load_dataset(is_short):
     dataset_dict = {}
     for domain in domain_dict:
         print('start data load domain-{0}'.format(domain))
-        with open('../original/dataframe/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
-            df_list = pickle.load(f)
+        if is_short:
+            with open('../original/dataframe_short/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
+                df_list = pickle.load(f)
+        else:
+            with open('../original/dataframe_long/dataframe_list_{0}.pickle'.format(domain), 'rb') as f:
+                df_list = pickle.load(f)
         x_dataset = []
         y_dataset = []
         for df in df_list:
@@ -41,19 +45,17 @@ def load_dataset():
         dataset_dict['{0}_y'.format(domain)] = y_dataset
     return dataset_dict
 
-def training(train_data, test_data, domain, dump_path):
+def training(train_data, test_data, domain, dump_path, args):
     print('training start domain-{0}'.format(domain,))
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--n_layers', '-n', type=int, default=2)
-    parser.add_argument('--dropout', '-d', type=float, default=0.3)
-    parser.add_argument('--batchsize', '-b', type=int, default=30)
-    parser.add_argument('--epoch', '-e', type=int, default=10)
-    parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
-    args = parser.parse_args()
-    if not os.path.exists('{0}/{1}'.format(args.out, dump_path)):
-        os.mkdir('{0}/{1}'.format(args.out, dump_path))
-    output_path = args.out + '/' + dump_path
+
+    output_path = args.out
+    if args.is_short:
+        output_path += '_short'
+    else:
+        output_path += '_long'
+    if not os.path.exists('{0}/{1}'.format(output_path, dump_path)):
+        os.mkdir('{0}/{1}'.format(output_path, dump_path))
+    output_path += '/' + dump_path
     if not os.path.exists('{0}/{1}'.format(output_path, 'args')):
         os.mkdir('{0}/{1}'.format(output_path, 'args'))
         os.mkdir('{0}/{1}'.format(output_path, 'log'))
@@ -96,8 +98,18 @@ def training(train_data, test_data, domain, dump_path):
     trainer.run()
 
 def main(train_test_ratio=0.8):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n_layers', '-n', type=int, default=2)
+    parser.add_argument('--dropout', '-d', type=float, default=0.3)
+    parser.add_argument('--batchsize', '-b', type=int, default=30)
+    parser.add_argument('--epoch', '-e', type=int, default=10)
+    parser.add_argument('--gpu', '-g', type=int, default=0)
+    parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
+    parser.add_argument('--is_short', action='store_true')
+    args = parser.parse_args()
+
     today = str(datetime.datetime.today())[:-16]
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset(args.is_short)
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:size]
@@ -106,7 +118,7 @@ def main(train_test_ratio=0.8):
         test_y = dataset_dict['{0}_y'.format(domain)][size:]
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, today)
+        training(train_data, test_data, domain, today, args)
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
@@ -120,7 +132,7 @@ def main(train_test_ratio=0.8):
         union_test_y += dataset_dict['{0}_y'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_y)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_y)
-    training(train_data, test_data, 'union', today)
+    training(train_data, test_data, 'union', today, args)
 
     union_train_x = np.array(union_train_x)
     union_train_y = np.array(union_train_y)
@@ -128,7 +140,7 @@ def main(train_test_ratio=0.8):
         perm = np.random.permutation(N)
         train_data = tuple_dataset.TupleDataset(union_train_x[perm], union_train_y[perm])
         test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_y)
-        training(train_data, test_data, 'union_pert_{0}'.format(N), today)
+        training(train_data, test_data, 'union_pert_{0}'.format(N), today, args)
 
 if __name__ == '__main__':
     '''
