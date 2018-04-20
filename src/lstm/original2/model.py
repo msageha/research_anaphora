@@ -22,7 +22,7 @@ def convert_seq(batch, device=None, with_label=True):
         return to_device_batch([x for x in batch])
 
 class BiLSTMBase(Chain):
-    def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5, case):
+    def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5, case=''):
         super(BiLSTMBase, self).__init__()
         with self.init_scope():
             self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=input_size, dropout=dropout)
@@ -80,4 +80,5 @@ class BiLSTMBase(Chain):
         xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
+
         return [self.l1(y) for y in ys]
