@@ -63,10 +63,7 @@ class BiLSTMBase(Chain):
 
     def __call__(self, xs, ys, zs):
         pred_ys = self.traverse(xs, zs)
-        for pred_y in pred_ys:
-            tmp = self.domain_statistics['union.I'][:pred_y.shape[0], :pred_y.shape[0]]
 
-        ipdb.set_trace()
         loss = .0
         for pred_y, y in zip(pred_ys, ys):
             _loss = F.softmax_cross_entropy(pred_y, y)
@@ -75,7 +72,7 @@ class BiLSTMBase(Chain):
 
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
-        pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
+        pred_ys = [pred_y.data.argmax(axis=0)[0] for pred_y in pred_ys]
         ys = [y.argmax(axis=0) for y in ys]
         for pred_y, y in zip(pred_ys, ys):
             if y == pred_y:
