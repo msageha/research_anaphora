@@ -143,8 +143,8 @@ def main(train_test_ratio=0.8):
         union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
         union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-        union_train_z += dataset_dict['{0}_z'.format(domain)][size:]
-        union_test_z += dataset_dict['{0}_z'.format(domain)][:size]
+        union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
+        union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
     training(train_data, test_data, 'union', 'ga', today, args)
