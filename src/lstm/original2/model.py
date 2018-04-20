@@ -72,7 +72,7 @@ class BiLSTMBase(Chain):
 
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
-        pred_ys = [pred_y.data.argmax(axis=0)[0] for pred_y in pred_ys]
+        pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         ys = [y.argmax(axis=0) for y in ys]
         for pred_y, y in zip(pred_ys, ys):
             if y == pred_y:
@@ -85,6 +85,7 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
+        ipdb.set_trace()
         ys = [F.matmul(self.domain_statistics[z][:y.shape[0], :y.shape[0]], y) for y, z in zip(ys, zs)]
         ys = [self.l2(y) for y in ys]
         return ys
