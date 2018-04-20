@@ -54,7 +54,7 @@ class BiLSTMBase(Chain):
         tmp[1] = statistics_union[case][1]
         tmp[2] = statistics_union[case][2]
         tmp[3] = statistics_union[case][3]
-        tmp = np.diag(tmp, dtype=np.float32))
+        tmp = np.diag(tmp, dtype=np.float32)
         domain_statistics['union.I'] = tmp.I
         self.domain_statistics = domain_statistics
 
