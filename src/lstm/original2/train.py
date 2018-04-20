@@ -77,7 +77,7 @@ def training(train_data, test_data, domain, case, dump_path, args):
 
     feature_size = train_data[0][0].shape[1]
 
-    model = BiLSTMBase(input_size=feature_size, n_labels=3, n_layers=args.n_layers, dropout=args.dropout)
+    model = BiLSTMBase(input_size=feature_size, n_labels=1, n_layers=args.n_layers, dropout=args.dropout, case=case)
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
