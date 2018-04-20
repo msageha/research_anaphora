@@ -23,7 +23,7 @@ def convert_seq(batch, device=None, with_label=True):
         return to_device_batch([x for x in batch])
 
 class BiLSTMBase(Chain):
-    def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5, case=''):
+    def __init__(self, input_size, n_labels, n_layers=1, dropout=0.5, case='', device=0):
         super(BiLSTMBase, self).__init__()
         with self.init_scope():
             self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=input_size, dropout=dropout)
@@ -41,14 +41,7 @@ class BiLSTMBase(Chain):
 
         statistics_dict = {'OC':statistics_OC, 'OY':statistics_OY, 'OW':statistics_OW, 'PB':statistics_PB, 'PM':statistics_PM, 'PN':statistics_PN}
         domain_statistics = {}
-        for domain, statistics in statistics_dict.items():
-            tmp = np.full((sentence_length, ), statistics[case][-1])
-            tmp[0] = statistics[case][0]
-            tmp[1] = statistics[case][1]
-            tmp[2] = statistics[case][2]
-            tmp[3] = statistics[case][3]
-            domain_statistics[domain] = np.array(tmp, dtype=np.float32)
-        
+
         tmp = np.full((sentence_length, ), statistics_union[case][-1])
         tmp[0] = statistics_union[case][0]
         tmp[1] = statistics_union[case][1]
@@ -56,12 +49,23 @@ class BiLSTMBase(Chain):
         tmp[3] = statistics_union[case][3]
         tmp = np.diag(tmp)
         domain_statistics['union.I'] = np.matrix(tmp, dtype=np.float32).I
-        self.domain_statistics = domain_statistics
 
+        for domain, statistics in statistics_dict.items():
+            tmp = np.full((sentence_length, ), statistics[case][-1])
+            tmp[0] = statistics[case][0]
+            tmp[1] = statistics[case][1]
+            tmp[2] = statistics[case][2]
+            tmp[3] = statistics[case][3]
+            tmp = np.diag(tmp)
+            domain_statistics[domain] = np.matrix(tmp, dtype=np.float32)*domain_statistics['union.I']
+            domain_statistics[domain] = chainer.dataset.to_device(device, domain_statistics[domain])
+        self.domain_statistics = domain_statistics
 
     def __call__(self, xs, ys, zs):
         pred_ys = self.traverse(xs, zs)
-        
+        for pred_y in pred_ys:
+            tmp = self.domain_statistics['union.I'][:pred_y.shape[0], :pred_y.shape[0]]
+
         ipdb.set_trace()
         loss = .0
         for pred_y, y in zip(pred_ys, ys):
@@ -84,5 +88,6 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
-
+        ys = [F.matmul(self.domain_statistics[z], pred_ys[0]) for y, z in zip(ys, zs)]
+        ys = [self.l2(y) for y in ys]
         return ys
