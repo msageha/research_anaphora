@@ -117,11 +117,11 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
-    parser.add_argument('--df_path', default='../original1/dataframe_long')
+    parser.add_argument('--df_path', default='../original/dataframe_long')
     args = parser.parse_args()
 
     today = str(datetime.datetime.today())[:-16]
-    dataset_dict = load_dataset(args.is_short)
+    dataset_dict = load_dataset(args.df_path)
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
