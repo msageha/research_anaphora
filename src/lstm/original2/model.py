@@ -85,7 +85,6 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
-        ipdb.set_trace()
         ys = [F.matmul(self.domain_statistics[z][:y.shape[0], :y.shape[0]], y) for y, z in zip(ys, zs)]
         ys = [self.l2(y) for y in ys]
         return ys
