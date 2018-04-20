@@ -17,7 +17,8 @@ def convert_seq(batch, device=None, with_label=True):
             return [chainer.dataset.to_device(device, x) for x in batch]
     if with_label:
         return {'xs': to_device_batch([x for x, _, _ in batch]),
-                'ys': to_device_batch([y for _, y, _ in batch])}
+                'ys': to_device_batch([y for _, y, _ in batch]),
+                'zs': [z for _, _, z in batch]}
     else:
         return to_device_batch([x for x in batch])
 
