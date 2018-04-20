@@ -54,13 +54,13 @@ class BiLSTMBase(Chain):
         tmp[1] = statistics_union[case][1]
         tmp[2] = statistics_union[case][2]
         tmp[3] = statistics_union[case][3]
-        tmp = np.matrix(tmp, dtype=np.float32)*np.eye(sentence_length, sentence_length)
+        tmp = np.diag(tmp, dtype=np.float32))
         domain_statistics['union.I'] = tmp.I
         self.domain_statistics = domain_statistics
 
 
     def __call__(self, xs, ys, zs):
-        pred_ys = self.traverse(xs)
+        pred_ys = self.traverse(xs, zs)
         
         ipdb.set_trace()
         loss = .0
