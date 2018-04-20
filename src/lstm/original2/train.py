@@ -117,6 +117,7 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
+    parser.add_argument('--short', action='store_true')
     parser.add_argument('--df_path', default='../original/dataframe_long')
     args = parser.parse_args()
 
