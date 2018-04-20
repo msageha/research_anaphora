@@ -115,8 +115,6 @@ def main(train_test_ratio=0.8):
         all_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         all_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
     for case in ['ga', 'o', 'ni']:
-        if case != 'ga':
-            continue
         for model in load_model_path(args.model_dir, case, args.part_flag):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(all_test_x, all_test_ga)
