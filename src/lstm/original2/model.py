@@ -83,7 +83,6 @@ class BiLSTMBase(Chain):
         xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
-        ys = self.l1(y) for y in ys]
-        ys = [self.domain_statistics['union.T'][:y.shape[0]] for y in ys]
+        ys = [ self.l1(y) for y in ys]
 
-        return 
+        return ys
