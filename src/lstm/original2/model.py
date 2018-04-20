@@ -29,7 +29,7 @@ class BiLSTMBase(Chain):
             self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=input_size, dropout=dropout)
             self.l1 = L.Linear(input_size*2, n_labels)
             self.l2 = L.Linear(n_labels, n_labels)
-        sentence_length = 300
+        sentence_length = 600
         
         statistics_union = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
         statistics_OC = {'ga':[32.595, 9.1177, 6.2506, 71.522, 30.2101], 'o':[71.522, 0.13032, 0.082054, 71.522, 19.9631], 'ni':[84.511, 4, 1.0957, 0.56473, 3.7697, 10.0585]}
