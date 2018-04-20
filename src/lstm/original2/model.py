@@ -28,6 +28,8 @@ class BiLSTMBase(Chain):
         with self.init_scope():
             self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=input_size, dropout=dropout)
             self.l1 = L.Linear(input_size*2, n_labels)
+            self.l2 = L.Linear(n_labels, n_labels)
+        sentence_length = 300
         
         statistics_union = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
         statistics_OC = {'ga':[32.595, 9.1177, 6.2506, 71.522, 30.2101], 'o':[71.522, 0.13032, 0.082054, 71.522, 19.9631], 'ni':[84.511, 4, 1.0957, 0.56473, 3.7697, 10.0585]}
@@ -40,20 +42,20 @@ class BiLSTMBase(Chain):
         statistics_dict = {'OC':statistics_OC, 'OY':statistics_OY, 'OW':statistics_OW, 'PB':statistics_PB, 'PM':statistics_PM, 'PN':statistics_PN}
         domain_statistics = {}
         for domain, statistics in statistics_dict.items():
-            tmp = np.full((300, ), statistics[case][-1])
+            tmp = np.full((sentence_length, ), statistics[case][-1])
             tmp[0] = statistics[case][0]
             tmp[1] = statistics[case][1]
             tmp[2] = statistics[case][2]
             tmp[3] = statistics[case][3]
-            domain_statistics[domain] = tmp
+            domain_statistics[domain] = np.array(tmp, dtype=np.float32)
         
-        tmp = np.full((300, ), statistics_union[case][-1])
+        tmp = np.full((sentence_length, ), statistics_union[case][-1])
         tmp[0] = statistics_union[case][0]
         tmp[1] = statistics_union[case][1]
         tmp[2] = statistics_union[case][2]
         tmp[3] = statistics_union[case][3]
-        
-        domain_statistics['union.T'] = np.matrix(tmp).I
+        tmp = np.matrix(tmp, dtype=np.float32)*np.eye(sentence_length, sentence_length)
+        domain_statistics['union.I'] = tmp.I
         self.domain_statistics = domain_statistics
 
 
@@ -77,9 +79,11 @@ class BiLSTMBase(Chain):
         reporter.report({'accuracy': accuracy}, self)
         return loss
 
-    def traverse(self, xs):
+    def traverse(self, xs, zs):
         xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        ys = self.l1(y) for y in ys]
+        ys = [self.domain_statistics['union.T'][:y.shape[0]] for y in ys]
 
-        return [self.l1(y) for y in ys]
+        return 
