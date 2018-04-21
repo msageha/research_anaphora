@@ -8,6 +8,7 @@ import chainer.links as L
 import chainer.functions as F
 
 import ipdb
+import pickle
 
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
@@ -85,6 +86,8 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
+        with open('dump.pickle', 'wb') as f:
+            pickle.dump(ys, f)
         ys = [F.matmul(self.domain_statistics[z][:y.shape[0], :y.shape[0]], y) for y, z in zip(ys, zs)]
         ys = [self.l2(y) for y in ys]
         return ys
