@@ -15,9 +15,7 @@ from model import BiLSTMBase
 from train import load_dataset
 import os
 
-import ipdb
-
-domain_dict = {'OC':'Yahoo!知恵袋'}#, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_model_path(path, case, part_flag=False):
     for epoch in range(20, 0, -1):
@@ -67,7 +65,6 @@ def predict(model_path, test_data, domain, case, args):
     for xs, ys, zs in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs], [zs])
-        ipdb.set_trace()
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         pred_ys = int(pred_ys[0])
