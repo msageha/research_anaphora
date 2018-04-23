@@ -104,6 +104,7 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--out', '-o', default='predict', help='Directory to output the result')
     parser.add_argument('--model_dir', '-m', type=str, default='')
     parser.add_argument('--part_flag', action='store_true')
+    parser.add_argument('--is_short', action='store_true')
     parser.add_argument('--df_path', default='../original1/dataframe_long')
     args = parser.parse_args()
 
