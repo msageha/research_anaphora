@@ -114,7 +114,7 @@ def main(train_test_ratio=0.8):
     parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=30)
-    parser.add_argument('--epoch', '-e', type=int, default=20)
+    parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
     parser.add_argument('--is_short', action='store_true')
@@ -168,6 +168,8 @@ def main(train_test_ratio=0.8):
         union_test_ni = []
         union_train_z = []
         union_test_z = []
+        if out_domain == 'OC' or out_domain == 'OW':
+            continue
         for domain in domain_dict:
             if out_domain == domain:
                 continue
