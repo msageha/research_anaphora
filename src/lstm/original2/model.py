@@ -32,7 +32,7 @@ class BiLSTMBase(Chain):
             self.l2 = L.Linear(n_labels, n_labels)
         sentence_length = 2000
         
-        statistics_union = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
+        statistics_union_positive = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
         statistics_OC = {'ga':[32.595, 9.1177, 6.2506, 71.522, 30.2101], 'o':[71.522, 0.13032, 0.082054, 71.522, 19.9631], 'ni':[84.511, 4, 1.0957, 0.56473, 3.7697, 10.0585]}
         statistics_OY = {'ga':[34.117, 14.779, 1.9571, 4.176, 31.0858], 'o':[75.724, 0.17991, 0.0054517, 1.4665, 19.9145], 'ni':[89.822, 0.28894, 0.13629, 1.4665, 8.28562]}
         statistics_OW = {'ga':[45.003, 0.16492, 0.017259, 4.2207, 28.279], 'o':[66.956, 0, 0, 1.1736, 28.824], 'ni':[92.274, 0.0019176, 0, 1.1736, 6.5506]}
@@ -40,27 +40,52 @@ class BiLSTMBase(Chain):
         statistics_PM = {'ga':[40.045, 1.1111, 0.87591, 3.0789, 33.5531], 'o':[73.766, 0.019198, 0.0071993, 0.86871, 23.1283], 'ni':[89.439, 0.028797, 0.0071993, 0.86871, 9.65662]}
         statistics_PN = {'ga':[38.869, 0.4835, 0.37145, 3.1389, 37.981], 'o':[71.986, 0.0092095, 0.0030698, 1.056, 24.8631], 'ni':[90.031, 0.010744, 0.023024, 1.056, 8.87954]}
 
-        statistics_dict = {'OC':statistics_OC, 'OY':statistics_OY, 'OW':statistics_OW, 'PB':statistics_PB, 'PM':statistics_PM, 'PN':statistics_PN}
-        domain_statistics = {}
+        statistics_dict_positive = {'OC':statistics_OC, 'OY':statistics_OY, 'OW':statistics_OW, 'PB':statistics_PB, 'PM':statistics_PM, 'PN':statistics_PN}
 
-        tmp = np.full((sentence_length, ), statistics_union[case][-1])
-        tmp[0] = statistics_union[case][0]
-        tmp[1] = statistics_union[case][1]
-        tmp[2] = statistics_union[case][2]
-        tmp[3] = statistics_union[case][3]
+        domain_statistics_positive = {}
+
+        tmp = np.full((sentence_length, ), statistics_union_positive[case][-1])
+        for i in range(0, 4):
+            tmp[i] = statistics_union_positive[case][i]
         tmp = np.diag(tmp)
-        domain_statistics['union.I'] = np.matrix(tmp, dtype=np.float32).I
+        domain_statistics_positive['union.I'] = np.matrix(tmp, dtype=np.float32).I
 
-        for domain, statistics in statistics_dict.items():
+        for domain in ['OC', 'OY', 'OW', 'PB', 'PN', 'PM']:
+            statistics = statistics_dict_positive[domain]
             tmp = np.full((sentence_length, ), statistics[case][-1])
-            tmp[0] = statistics[case][0]
-            tmp[1] = statistics[case][1]
-            tmp[2] = statistics[case][2]
-            tmp[3] = statistics[case][3]
+            for i in range(0, 4):
+                tmp[i] = statistics[case][i]
             tmp = np.diag(tmp)
-            domain_statistics[domain] = np.matrix(tmp, dtype=np.float32)*domain_statistics['union.I']
-            domain_statistics[domain] = chainer.dataset.to_device(device, domain_statistics[domain])
-        self.domain_statistics = domain_statistics
+            domain_statistics_positive[domain] = np.matrix(tmp, dtype=np.float32)*domain_statistics_positive['union.I']
+            domain_statistics_positive[domain] = chainer.dataset.to_device(device, domain_statistics_positive[domain])
+
+        statistics_dict_negative = {'OC':statistics_OC, 'OY':statistics_OY, 'OW':statistics_OW, 'PB':statistics_PB, 'PM':statistics_PM, 'PN':statistics_PN}
+        for key in statistics_dict_negative:
+            for case in ['ga', 'o', 'ni']:
+                statistics_dict_negative[key][case] = [100-statistics_dict_negative[key][case][i] for i in range(0, 5)]
+        statistics_union_negative = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
+        for case in ['ga', 'o', 'ni']
+            statistics_union_negative[case] = [100-statistics_union_negative[case][i] for i in range(0, 5)]
+        
+        domain_statistics_negative = {}
+        
+        tmp = np.full((sentence_length, ), statistics_union_negative[case][-1])
+        for i in range(0, 4):
+            tmp[i] = statistics_union_negative[case][i]
+        tmp = np.diag(tmp)
+        domain_statistics_negative['union.I'] = np.matrix(tmp, dtype=np.float32).I
+
+        for domain in ['OC', 'OY', 'OW', 'PB', 'PN', 'PM']:
+            statistics = statistics_dict_negative[domain]
+            tmp = np.full((sentence_length, ), statistics[case][-1])
+            for i in range(0, 4):
+                tmp[i] = statistics[case][i]
+            tmp = np.diag(tmp)
+            domain_statistics_negative[domain] = np.matrix(tmp, dtype=np.float32)*domain_statistics_negative['union.I']
+            domain_statistics_positive[domain] = chainer.dataset.to_device(device, domain_statistics_positive[domain])
+
+        self.domain_statistics_positive = domain_statistics_positive
+        self.domain_statistics_negative = domain_statistics_negative
 
     def __call__(self, xs, ys, zs):
         pred_ys = self.traverse(xs, zs)
@@ -86,6 +111,7 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
+        ipdb.set_trace()
         ys = [F.matmul(self.domain_statistics[z][:y.shape[0], :y.shape[0]], y) for y, z in zip(ys, zs)]
         # ys = [self.l2(y) for y in ys]
         return ys
