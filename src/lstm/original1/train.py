@@ -91,10 +91,12 @@ def training(train_data, test_data, domain, case, dump_path, args):
     train_iter = chainer.iterators.SerialIterator(train_data, args.batchsize)
     test_iter = chainer.iterators.SerialIterator(test_data, args.batchsize, repeat=False, shuffle=False)
 
-    updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu, converter=convert_seq)
+    # updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu, converter=convert_seq)
+    updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu)
     trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=output_path)
 
-    evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
+    # evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
+    evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu)
     trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
