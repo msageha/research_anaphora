@@ -242,4 +242,4 @@ if __name__ == '__main__':
     epoch
     optimizer(adam)
     '''
-    out_domain()
+    main()
