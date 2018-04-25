@@ -18,7 +18,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋'} #, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset(df_path):
     dataset_dict = {}
@@ -168,8 +168,6 @@ def main(train_test_ratio=0.8):
         union_test_ni = []
         union_train_z = []
         union_test_z = []
-        if out_domain == 'OC' or out_domain == 'OW':
-            continue
         for domain in domain_dict:
             if out_domain == domain:
                 continue
