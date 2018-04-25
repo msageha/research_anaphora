@@ -64,7 +64,7 @@ class BiLSTMBase(Chain):
             for case in ['ga', 'o', 'ni']:
                 statistics_dict_negative[key][case] = [100-statistics_dict_negative[key][case][i] for i in range(0, 5)]
         statistics_union_negative = {'ga':[39.555, 2.3408, 0.97449, 9.3984, 33.922], 'o':[71.605,  0.030492, 0.010713, 7.3097, 24.3518], 'ni':[80.339, 0.12609, 0.0684, 1.5258, 8.9406]}
-        for case in ['ga', 'o', 'ni']
+        for case in ['ga', 'o', 'ni']:
             statistics_union_negative[case] = [100-statistics_union_negative[case][i] for i in range(0, 5)]
         
         domain_statistics_negative = {}
