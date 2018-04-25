@@ -151,10 +151,10 @@ def main(train_test_ratio=0.8):
     training(train_data, test_data, 'union', 'ga', today, args)
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
-    training(train_data, test_data, 'union', 'o', today, args)
+    # training(train_data, test_data, 'union', 'o', today, args)
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
-    training(train_data, test_data, 'union', 'ni', today, args)
+    # training(train_data, test_data, 'union', 'ni', today, args)
 
     print('start data load out_domain')
     for out_domain in domain_dict:
@@ -191,10 +191,10 @@ def main(train_test_ratio=0.8):
         training(train_data, test_data, 'out-{0}'.format(out_domain), 'ga', today, args)
         train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
         test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', today, args)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', today, args)
         train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
         test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', today, args)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', today, args)
 
 if __name__ == '__main__':
     '''
