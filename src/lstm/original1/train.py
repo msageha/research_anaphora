@@ -18,7 +18,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋'}#, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset(is_short):
     dataset_dict = {}
@@ -234,6 +234,68 @@ def out_domain(train_test_ratio=0.8):
         test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
         training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', today, args)
 
+def arrange_training(arrange_size=14672):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n_layers', '-n', type=int, default=1)
+    parser.add_argument('--dropout', '-d', type=float, default=0.3)
+    parser.add_argument('--batchsize', '-b', type=int, default=30)
+    parser.add_argument('--epoch', '-e', type=int, default=10)
+    parser.add_argument('--gpu', '-g', type=int, default=0)
+    parser.add_argument('--out', '-o', default='normal', help='Directory to output the result')
+    parser.add_argument('--is_short', action='store_true')
+    args = parser.parse_args()
+
+    today = str(datetime.datetime.today())[:-16]
+    dataset_dict = load_dataset(args.is_short)
+    
+    for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
+        train_x = dataset_dict['{0}_x'.format(domain)][:arrange_size]
+        test_x = dataset_dict['{0}_x'.format(domain)][size:]
+        train_y = dataset_dict['{0}_y_ga'.format(domain)][:arrange_size]
+        test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ga', today, args)
+        train_y = dataset_dict['{0}_y_o'.format(domain)][:arrange_size]
+        test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'o', today, args)
+        train_y = dataset_dict['{0}_y_ni'.format(domain)][:arrange_size]
+        test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ni', today, args)
+    print('start data load domain-union')
+    union_train_x = []
+    union_test_x = []
+    union_train_ga = []
+    union_test_ga = []
+    union_train_o = []
+    union_test_o = []
+    union_train_ni = []
+    union_test_ni = []
+    for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
+        union_train_x += dataset_dict['{0}_x'.format(domain)][:arrange_size]
+        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:arrange_size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
+        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:arrange_size]
+        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:arrange_size]
+        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
+    training(train_data, test_data, 'union', 'ga', today, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+    training(train_data, test_data, 'union', 'o', today, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+    training(train_data, test_data, 'union', 'ni', today, args)
+
 if __name__ == '__main__':
     '''
     パラメータ
@@ -244,4 +306,4 @@ if __name__ == '__main__':
     epoch
     optimizer(adam)
     '''
-    main()
+    arrange_training()
