@@ -234,7 +234,7 @@ def out_domain(train_test_ratio=0.8):
         test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
         training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', today, args)
 
-def arrange_training(arrange_size=14672):
+def arrange_training(arrange_size=14672, train_test_ratio=0.8):
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.3)
