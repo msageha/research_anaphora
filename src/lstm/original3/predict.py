@@ -62,9 +62,9 @@ def predict(model_path, test_data, domain, case, args):
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
-    for xs, ys, zs in test_data:
+    for xs, ys in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
-        pred_ys = model.traverse([xs], [zs])
+        pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         pred_ys = int(pred_ys[0])
@@ -114,29 +114,26 @@ def main(train_test_ratio=0.8):
     union_test_ga = []
     union_test_o = []
     union_test_ni = []
-    union_test_z = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
         union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-        union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
 
     for case in ['ga', 'o', 'ni']:
         for model in load_model_path(args.model_dir, case, args.part_flag):
             if case == 'ga':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
             elif case == 'o':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
             elif case == 'ni':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
             predict(model, test_data, 'union', case, args)
             
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*train_test_ratio)
                 test_x = dataset_dict['{0}_x'.format(domain)][size:]
-                test_z = dataset_dict['{0}_z'.format(domain)][size:]
 
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
@@ -145,7 +142,7 @@ def main(train_test_ratio=0.8):
                 elif case == 'ni':
                     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
                 
-                test_data = tuple_dataset.TupleDataset(test_x, test_y, test_z)
+                test_data = tuple_dataset.TupleDataset(test_x, test_y)
                 predict(model, test_data, domain, case, args)
 
 
