@@ -17,8 +17,8 @@ def convert_seq(batch, device=None, with_label=True):
         else:
             return [chainer.dataset.to_device(device, x) for x in batch]
     if with_label:
-        return {'xs': to_device_batch([x for x, _, _ in batch]),
-                'ys': to_device_batch([y for _, y, _ in batch])}
+        return {'xs': to_device_batch([x for x, _ in batch]),
+                'ys': to_device_batch([y for _, y in batch])}
     else:
         return to_device_batch([x for x in batch])
 
@@ -31,7 +31,7 @@ class BiLSTMBase(Chain):
             self.l2 = L.Linear(n_labels, n_labels)
 
     def __call__(self, xs, ys):
-        pred_ys = self.traverse(xs, zs)
+        pred_ys = self.traverse(xs)
 
         loss = .0
         for pred_y, y in zip(pred_ys, ys):
@@ -49,7 +49,7 @@ class BiLSTMBase(Chain):
         reporter.report({'accuracy': accuracy}, self)
         return loss
 
-    def traverse(self, xs, zs):
+    def traverse(self, xs):
         xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
