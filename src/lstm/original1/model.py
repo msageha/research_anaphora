@@ -16,6 +16,7 @@ def convert_seq(batch, device=None, with_label=True):
         elif device < 0:
             return [chainer.dataset.to_device(device, x) for x in batch]
         else:
+            ipdb.set_trace()
             xp = cuda.cupy.get_array_module(*batch)
             concat = xp.concatenate(batch, axis=0)
             sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
