@@ -17,7 +17,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ'}#, 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def load_dataset(df_path):
     dataset_dict = {}
@@ -27,22 +27,34 @@ def load_dataset(df_path):
             df_list = pickle.load(f)
         x_dataset = []
         y_ga_dataset = []
+        y_ga_dep_tag_dataset = []
         y_o_dataset = []
+        y_o_dep_tag_dataset = []
         y_ni_dataset = []
+        y_ni_dep_tag_dataset = []
         for df in df_list:
             y_ga = np.array(df['ga_case'], dtype=np.int32)
             y_o = np.array(df['o_case'], dtype=np.int32)
             y_ni = np.array(df['ni_case'], dtype=np.int32)
+            y_ga_dep_tag = np.array(df['ga_dep_tag'])
+            y_o_dep_tag = np.array(df['o_dep_tag'])
+            y_ni_dep_tag = np.array(df['ni_dep_tag'])
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
             x_dataset.append(x)
             y_ga_dataset.append(y_ga)
+            y_ga_dep_tag_dataset.append(y_ga_dep_tag)
             y_o_dataset.append(y_o)
+            y_o_dep_tag_dataset.append(y_o_dep_tag)
             y_ni_dataset.append(y_ni)
+            y_ni_dep_tag_dataset.append(y_ni_dep_tag)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
         dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
+        dataset_dict['{0}_y_ga_dep_tag'.format(domain)] = y_ga_dep_tag_dataset
+        dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
+        dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
     return dataset_dict
 
 def training(train_data, test_data, domain, case, dump_path, args):
@@ -85,12 +97,12 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
-    trainer.extend(extensions.dump_graph(out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
+    trainer.extend(extensions.dump_graph(root_name='root', out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
     trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
     trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='./graph/domain-{0}_case-{1}.png'.format(domain, case)))
-    # trainer.extend(extensions.ProgressBar(update_interval=10))
+    trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.run()
 
 def in_domain(dataset_dict, args, dump_path):
@@ -235,6 +247,8 @@ def main():
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    parser.add_argument('--df_path', default='../dataframe')
+
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
     in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
