@@ -97,7 +97,7 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
-    trainer.extend(extensions.dump_graph(root_name='main/loss', out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
+    # trainer.extend(extensions.dump_graph(root_name='main/loss', out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
     trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
