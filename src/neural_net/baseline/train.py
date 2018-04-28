@@ -19,7 +19,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ'}#, 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋'}#, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def set_random_seed(seed):
     # set Python random seed
@@ -80,11 +80,11 @@ def training(train_data, test_data, domain, case, dump_path, args):
         os.mkdir('{0}/{1}'.format(dump_path, 'tmpmodel'))
         os.mkdir('{0}/{1}'.format(dump_path, 'graph'))
 
-    print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
         args.__dict__['train_size'] = len(train_data)
         args.__dict__['test_size'] = len(test_data)
         json.dump(args.__dict__, f, indent=2)
+    print(json.dumps(args.__dict__, indent=2))
 
     feature_size = train_data[0][0].shape[1]
 
@@ -117,25 +117,25 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trainer.run()
 
 def in_domain(dataset_dict, args, dump_path):
-    # for domain in domain_dict:
-    #     size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-    #     train_x = dataset_dict['{0}_x'.format(domain)][:size]
-    #     test_x = dataset_dict['{0}_x'.format(domain)][size:]
-    #     train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'ga', dump_path, args)
-    #     train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'o', dump_path, args)
-    #     train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'ni', dump_path, args)
+    for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        train_x = dataset_dict['{0}_x'.format(domain)][:size]
+        test_x = dataset_dict['{0}_x'.format(domain)][size:]
+        train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ga', dump_path, args)
+        train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'o', dump_path, args)
+        train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ni', dump_path, args)
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
