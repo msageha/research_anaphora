@@ -233,7 +233,7 @@ def main():
     parser.add_argument('--batchsize', '-b', type=int, default=32)
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--df_path', default='')
+    parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
