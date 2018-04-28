@@ -3,6 +3,7 @@ import pickle
 import math
 import json
 import os
+import random
 
 import matplotlib
 matplotlib.use('Agg')
@@ -10,6 +11,7 @@ matplotlib.use('Agg')
 import numpy as np
 import pandas as pd
 import chainer
+from chainer import cuda
 from chainer.datasets import tuple_dataset
 from chainer import serializers
 from chainer.training import extensions
@@ -18,6 +20,14 @@ from model import BiLSTMBase
 from model import convert_seq
 
 domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ'}#, 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+
+def set_random_seed(seed):
+    # set Python random seed
+    random.seed(seed)
+    # set NumPy random seed
+    np.random.seed(seed)
+    # set Chainer(CuPy) random seed
+    cuda.cupy.random.seed(seed)
 
 def load_dataset(df_path):
     dataset_dict = {}
@@ -59,6 +69,7 @@ def load_dataset(df_path):
 
 def training(train_data, test_data, domain, case, dump_path, args):
     print('training start domain-{0}, case-{1}'.format(domain, case))
+    set_random_seed(args.seed)
 
     if not os.path.exists('{0}'.format(dump_path)):
         os.mkdir('{0}'.format(dump_path))
@@ -106,25 +117,25 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trainer.run()
 
 def in_domain(dataset_dict, args, dump_path):
-    for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-        train_x = dataset_dict['{0}_x'.format(domain)][:size]
-        test_x = dataset_dict['{0}_x'.format(domain)][size:]
-        train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ga', dump_path, args)
-        train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'o', dump_path, args)
-        train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
-        test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-        train_data = tuple_dataset.TupleDataset(train_x, train_y)
-        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-        training(train_data, test_data, domain, 'ni', dump_path, args)
+    # for domain in domain_dict:
+    #     size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+    #     train_x = dataset_dict['{0}_x'.format(domain)][:size]
+    #     test_x = dataset_dict['{0}_x'.format(domain)][size:]
+    #     train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'ga', dump_path, args)
+    #     train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'o', dump_path, args)
+    #     train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
+    #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
+    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+    #     training(train_data, test_data, domain, 'ni', dump_path, args)
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
@@ -135,6 +146,7 @@ def in_domain(dataset_dict, args, dump_path):
     union_train_ni = []
     union_test_ni = []
     for domain in domain_dict:
+        print(domain)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
@@ -247,6 +259,7 @@ def main():
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    parser.add_argument('--seed', default=1)
 
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
