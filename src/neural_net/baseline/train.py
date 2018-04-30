@@ -29,18 +29,18 @@ def set_random_seed(seed):
     # set Chainer(CuPy) random seed
     cuda.cupy.random.seed(seed)
 
-def load_dataset(dataset_path):
+def load_dataset(dataset_path='./dataset'):
     dataset_dict = {}
     for domain in domain_dict:
         print('start data load domain-{0}'.format(domain))
         dataset = np.load('{0}/{1}.npz'.format(dataset_path, domain))
-        x_dataset = dataset['x']
-        y_ga_dataset = dataset['y_ga']
-        y_ga_dep_tag_dataset = dataset['y_ga_dep_tag']
-        y_o_dataset = dataset['y_o']
-        y_o_dep_tag_dataset = dataset['y_o_dep_tag']
-        y_ni_dataset = dataset['y_ni']
-        y_ni_dep_tag_dataset = dataset['y_ni_dep_tag']
+        x_dataset = list(dataset['x'])
+        y_ga_dataset = list(dataset['y_ga'])
+        y_ga_dep_tag_dataset = list(dataset['y_ga_dep_tag'])
+        y_o_dataset = list(dataset['y_o'])
+        y_o_dep_tag_dataset = list(dataset['y_o_dep_tag'])
+        y_ni_dataset = list(dataset['y_ni'])
+        y_ni_dep_tag_dataset = list(dataset['y_ni_dep_tag'])
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -241,12 +241,11 @@ def main():
     parser.add_argument('--batchsize', '-b', type=int, default=32)
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--dataset_path', default='./dataset')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
     args = parser.parse_args()
 
-    dataset_dict = load_dataset(args.dataset_path)
+    dataset_dict = load_dataset()
     in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     arrange(dataset_dict, args, 'arranged/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
