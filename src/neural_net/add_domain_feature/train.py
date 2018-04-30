@@ -12,6 +12,7 @@ matplotlib.use('Agg')
 
 import numpy as np
 import chainer
+from chainer import cuda
 from chainer.datasets import tuple_dataset
 from chainer import serializers
 from chainer.training import extensions
@@ -21,7 +22,7 @@ sys.path.append('../baseline')
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋')])#, ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def set_random_seed(seed):
     # set Python random seed
