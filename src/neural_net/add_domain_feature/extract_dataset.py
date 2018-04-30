@@ -27,7 +27,6 @@ def make_dataset(df_path):
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
-            x_dataset.append(x)
             y_ga_dataset.append(y_ga)
             y_o_dataset.append(y_o)
             y_ni_dataset.append(y_ni)
@@ -37,6 +36,7 @@ def make_dataset(df_path):
             domain_vec = np.zeros((x.shape[0], 6))
             domain_vec[:, domain_index] += 1
             x = np.hstack((x, domain_vec))
+            x_dataset.append(x)
         np.savez('dataset/{0}.npz'.format(domain), x=x_dataset, y_ga=y_ga_dataset, y_o=y_o_dataset, y_ni=y_ni_dataset, 
             y_ga_dep_tag=y_ga_dep_tag_dataset, y_o_dep_tag=y_o_dep_tag_dataset, y_ni_dep_tag=y_ni_dep_tag_dataset)
         domain_index += 1
