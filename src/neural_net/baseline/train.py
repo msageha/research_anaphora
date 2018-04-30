@@ -19,7 +19,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋'}#, 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
 
 def set_random_seed(seed):
     # set Python random seed
@@ -108,11 +108,11 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
 
     trainer.extend(evaluator, trigger=(1, 'epoch'))
-    # trainer.extend(extensions.dump_graph(root_name='main/loss', out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
+    trainer.extend(extensions.dump_graph(root_name='main/loss', out_name="./graph/domain-{0}_case-{1}.dot".format(domain, case)))
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']), trigger=(1, 'epoch'))
     trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
-    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='./graph/domain-{0}_case-{1}.png'.format(domain, case)))
+    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], file_name='./graph/domain-{0}_case-{1}.png'.format(domain, case)))
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.run()
 
