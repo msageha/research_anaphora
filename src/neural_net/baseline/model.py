@@ -15,7 +15,6 @@ def convert_seq(batch, device=None, with_label=True):
             return [chainer.dataset.to_device(device, x) for x in batch]
         else:
             xp = cuda.cupy.get_array_module(*batch)
-            xp = Variable(xp)
             concat = xp.concatenate(batch, axis=0)
             sections = np.cumsum([x.shape[0] for x in batch[:-1]], dtype='i')
             concat_dev = chainer.dataset.to_device(device, concat)
