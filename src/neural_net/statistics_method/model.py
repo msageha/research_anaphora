@@ -7,8 +7,6 @@ from chainer import reporter
 import chainer.links as L
 import chainer.functions as F
 
-import ipdb
-
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
         if device is None:
@@ -116,6 +114,7 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm(xs=xs, hx=hx, cx=cx)
         ys = [ self.l1(y) for y in ys]
-        ipdb.set_trace()
-        ys = [F.matmul(self.domain_statistics_positive[z][:y.shape[0], :y.shape[0]], y) for y, z in zip(ys, zs)]
+        ys_neg = [F.matmul(self.domain_statistics_negative[z][:y.shape[0], :y.shape[0]], y[:, 0].reshape(-1, 1)) for y, z in zip(ys, zs)]
+        ys_pos = [F.matmul(self.domain_statistics_positive[z][:y.shape[0], :y.shape[0]], y[:, 1].reshape(-1, 1)) for y, z in zip(ys, zs)]
+        ys = [F.concat((y_neg, y_pos)) for y_neg, y_pos in zip(ys_neg, ys_pos)]
         return ys
