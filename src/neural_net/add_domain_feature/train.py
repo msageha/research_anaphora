@@ -20,10 +20,16 @@ import sys
 sys.path.append('../baseline')
 from model import BiLSTMBase
 from model import convert_seq
-from train import set_random_seed
-from train import training
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋')])#, ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+
+def set_random_seed(seed):
+    # set Python random seed
+    random.seed(seed)
+    # set NumPy random seed
+    np.random.seed(seed)
+    # set Chainer(CuPy) random seed
+    cuda.cupy.random.seed(seed)
 
 def load_dataset(df_path):
     dataset_dict = {}
@@ -60,6 +66,55 @@ def load_dataset(df_path):
 
         domain_index += 1
     return dataset_dict
+
+def training(train_data, test_data, domain, case, dump_path, args):
+    print('training start domain-{0}, case-{1}'.format(domain, case))
+    set_random_seed(args.seed)
+
+    if not os.path.exists('{0}'.format(dump_path)):
+        os.mkdir('{0}'.format(dump_path))
+    if not os.path.exists('{0}/{1}'.format(dump_path, 'args')):
+        os.mkdir('{0}/{1}'.format(dump_path, 'args'))
+        os.mkdir('{0}/{1}'.format(dump_path, 'log'))
+        os.mkdir('{0}/{1}'.format(dump_path, 'model'))
+        os.mkdir('{0}/{1}'.format(dump_path, 'tmpmodel'))
+        os.mkdir('{0}/{1}'.format(dump_path, 'graph'))
+
+    with open('{0}/args/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
+        args.__dict__['train_size'] = len(train_data)
+        args.__dict__['test_size'] = len(test_data)
+        json.dump(args.__dict__, f, indent=2)
+    print(json.dumps(args.__dict__, indent=2))
+
+    feature_size = train_data[0][0].shape[1]
+
+    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
+
+    if args.gpu >= 0:
+        chainer.cuda.get_device(args.gpu).use()
+        model.to_gpu()
+
+    #optimizer
+    optimizer = chainer.optimizers.Adam()
+    optimizer.setup(model)
+
+    train_iter = chainer.iterators.SerialIterator(train_data, args.batchsize)
+    test_iter = chainer.iterators.SerialIterator(test_data, args.batchsize, repeat=False, shuffle=False)
+
+    updater = chainer.training.StandardUpdater(train_iter, optimizer, device=args.gpu, converter=convert_seq)
+    trainer = chainer.training.Trainer(updater, stop_trigger=(args.epoch, 'epoch'), out=dump_path)
+
+    evaluator = chainer.training.extensions.Evaluator(test_iter, model, device=args.gpu, converter=convert_seq)
+    trigger = chainer.training.triggers.MaxValueTrigger(key='validation/main/accuracy', trigger=(1, 'epoch'))
+
+    trainer.extend(evaluator, trigger=(1, 'epoch'))
+    trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
+    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
+    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], file_name='./graph/accuracy_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
+    trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], file_name='./graph/loss_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
+    trainer.extend(extensions.ProgressBar(update_interval=10))
+    trainer.run()
 
 def union(dataset_dict, args, dump_path):
     print('start data load domain-union')
