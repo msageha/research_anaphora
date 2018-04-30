@@ -181,12 +181,11 @@ def main():
     parser.add_argument('--batchsize', '-b', type=int, default=32)
     parser.add_argument('--epoch', '-e', type=int, default=15)
     parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
     args = parser.parse_args()
 
-    dataset_dict = load_dataset(args.df_path)
+    dataset_dict = load_dataset()
     union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
