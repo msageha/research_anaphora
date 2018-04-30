@@ -6,8 +6,8 @@ import os
 import random
 from collections import OrderedDict
 
-# import matplotlib
-# matplotlib.use('Agg')
+import matplotlib
+matplotlib.use('Agg')
 
 import numpy as np
 import chainer
