@@ -39,4 +39,4 @@ def make_dataset(df_path):
             y_ga_dep_tag=y_ga_dep_tag_dataset, y_o_dep_tag=y_o_dep_tag_dataset, y_ni_dep_tag=y_ni_dep_tag_dataset, z=z_dataset)
 
 if __name__=='__main__':
-    make_dataset('../dataset')
+    make_dataset('../dataframe')
