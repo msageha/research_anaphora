@@ -4,6 +4,7 @@ import math
 import json
 import os
 import random
+from collections import OrderedDict
 
 import matplotlib
 matplotlib.use('Agg')
@@ -19,7 +20,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = {'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'OW':'白書', 'PB':'書籍','PM':'雑誌','PN':'新聞'}
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def set_random_seed(seed):
     # set Python random seed
@@ -261,8 +262,8 @@ def main():
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
-
     args = parser.parse_args()
+
     dataset_dict = load_dataset(args.df_path)
     in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))

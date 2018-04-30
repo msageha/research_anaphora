@@ -63,11 +63,11 @@ def load_dataset(df_path):
             z_dataset.append(domain)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
-        dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
-        dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
-        dataset_dict['{0}_y_ga_dep_tag'.format(domain)] = y_ga_dep_tag_dataset
-        dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
-        dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
+        # dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
+        # dataset_dict['{0}_y_ni'.format(domain)] = y_ni_dataset
+        # dataset_dict['{0}_y_ga_dep_tag'.format(domain)] = y_ga_dep_tag_dataset
+        # dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
+        # dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
         dataset_dict['{0}_z'.format(domain)] = z_dataset
     return dataset_dict
 
@@ -138,21 +138,21 @@ def union(dataset_dict, args, dump_path):
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        # union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        # union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
     training(train_data, test_data, 'union', 'ga', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
-    training(train_data, test_data, 'union', 'o', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
-    training(train_data, test_data, 'union', 'ni', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
+    # training(train_data, test_data, 'union', 'o', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
+    # training(train_data, test_data, 'union', 'ni', dump_path, args)
 
 def out_domain(dataset_dict, args, dump_path):
     print('start data load out_domain')
@@ -175,10 +175,10 @@ def out_domain(dataset_dict, args, dump_path):
             outdomain_test_x += dataset_dict['{0}_x'.format(domain)][size:]
             outdomain_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
             outdomain_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-            outdomain_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-            outdomain_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-            outdomain_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-            outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+            # outdomain_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+            # outdomain_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+            # outdomain_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+            # outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
             outdomain_train_z += dataset_dict['{0}_z'.format(domain)][:size]
             outdomain_test_z += dataset_dict['{0}_z'.format(domain)][size:]
 
@@ -186,12 +186,12 @@ def out_domain(dataset_dict, args, dump_path):
         train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ga, outdomain_train_z)
         test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ga, outdomain_test_z)
         training(train_data, test_data, 'out-{0}'.format(out_domain), 'ga', dump_path, args)
-        train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_o, outdomain_train_z)
-        test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_o, outdomain_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', dump_path, args)
-        train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ni, outdomain_train_z)
-        test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ni, outdomain_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', dump_path, args)
+        # train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_o, outdomain_train_z)
+        # test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_o, outdomain_test_z)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', dump_path, args)
+        # train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ni, outdomain_train_z)
+        # test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ni, outdomain_test_z)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()

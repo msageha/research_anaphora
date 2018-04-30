@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import numpy as np
+import pandas as pd
 import chainer
 from chainer import cuda
 from chainer.datasets import tuple_dataset
