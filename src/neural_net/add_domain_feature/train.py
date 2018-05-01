@@ -33,17 +33,39 @@ def set_random_seed(seed):
     cuda.cupy.random.seed(seed)
 
 def load_dataset(dataset_path='./dataset'):
+    domain_index = 0
     dataset_dict = {}
     for domain in domain_dict:
         print('start data load domain-{0}'.format(domain))
-        dataset = np.load('{0}/{1}.npz'.format(dataset_path, domain))
-        x_dataset = list(dataset['x'])
-        y_ga_dataset = list(dataset['y_ga'])
-        y_ga_dep_tag_dataset = list(dataset['y_ga_dep_tag'])
-        y_o_dataset = list(dataset['y_o'])
-        y_o_dep_tag_dataset = list(dataset['y_o_dep_tag'])
-        y_ni_dataset = list(dataset['y_ni'])
-        y_ni_dep_tag_dataset = list(dataset['y_ni_dep_tag'])
+        with open('{0}/dataframe_list_{1}.pickle'.format(df_path, domain), 'rb') as f:
+            df_list = pickle.load(f)
+        x_dataset = []
+        y_ga_dataset = []
+        y_ga_dep_tag_dataset = []
+        y_o_dataset = []
+        y_o_dep_tag_dataset = []
+        y_ni_dataset = []
+        y_ni_dep_tag_dataset = []
+        for df in df_list:
+            y_ga = np.array(df['ga_case'], dtype=np.int32)
+            y_o = np.array(df['o_case'], dtype=np.int32)
+            y_ni = np.array(df['ni_case'], dtype=np.int32)
+            y_ga_dep_tag = np.array(df['ga_dep_tag'])
+            y_o_dep_tag = np.array(df['o_dep_tag'])
+            y_ni_dep_tag = np.array(df['ni_dep_tag'])
+            df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
+            x = np.array(df, dtype=np.float32)
+            y_ga_dataset.append(y_ga)
+            y_o_dataset.append(y_o)
+            y_ni_dataset.append(y_ni)
+            y_ga_dep_tag_dataset.append(y_ga_dep_tag)
+            y_o_dep_tag_dataset.append(y_o_dep_tag)
+            y_ni_dep_tag_dataset.append(y_ni_dep_tag)
+            domain_vec = np.zeros((x.shape[0], 6))
+            domain_vec[:, domain_index] += 1
+            x = np.hstack((x, domain_vec))
+            x = np.array(x, dtype=np.float32)
+            x_dataset.append(x)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -51,6 +73,7 @@ def load_dataset(dataset_path='./dataset'):
         dataset_dict['{0}_y_ga_dep_tag'.format(domain)] = y_ga_dep_tag_dataset
         dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
         dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
+        domain_index += 1
     return dataset_dict
 
 def training(train_data, test_data, domain, case, dump_path, args):
