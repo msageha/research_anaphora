@@ -148,7 +148,6 @@ def in_domain(dataset_dict, args, dump_path):
     union_train_ni = []
     union_test_ni = []
     for domain in domain_dict:
-        print(domain)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
@@ -255,7 +254,7 @@ def arrange(dataset_dict, args, dump_path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_layers', '-n', type=int, default=1)
-    parser.add_argument('--dropout', '-d', type=float, default=0.2)
+    parser.add_argument('--dropout', '-d', type=float, default=0.3)
     parser.add_argument('--batchsize', '-b', type=int, default=32)
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
