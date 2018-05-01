@@ -32,7 +32,7 @@ def set_random_seed(seed):
     # set Chainer(CuPy) random seed
     cuda.cupy.random.seed(seed)
 
-def load_dataset(dataset_path='./dataset'):
+def load_dataset(df_path):
     domain_index = 0
     dataset_dict = {}
     for domain in domain_dict:
@@ -164,9 +164,10 @@ def main():
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
+    parser.add_argument('--df_path', default='../dataframe')
     args = parser.parse_args()
 
-    dataset_dict = load_dataset()
+    dataset_dict = load_dataset(args.df_path)
     union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
 if __name__ == '__main__':
