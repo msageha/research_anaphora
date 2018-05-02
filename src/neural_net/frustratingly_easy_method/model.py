@@ -50,7 +50,6 @@ class BiLSTMBase(Chain):
             _loss = F.softmax_cross_entropy(pred_y, y)
             loss += _loss/len(ys)
         reporter.report({'loss': loss}, self)
-        ipdb.set_trace()
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
