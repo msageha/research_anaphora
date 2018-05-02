@@ -95,7 +95,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         json.dump(args.__dict__, f, indent=2)
     print(json.dumps(args.__dict__, indent=2))
 
-    feature_size = train_dataset_dict['OC_x'][0][0].shape[1]
+    feature_size = train_dataset_dict['OC_x'][0][0].shape[0]
 
     model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout, case=case, device=args.gpu)
 
