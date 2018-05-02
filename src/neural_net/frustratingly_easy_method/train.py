@@ -152,6 +152,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
 
         print('{0}\t{1}\t{2}\t{3}\t{4}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
 
+
 def union(dataset_dict, args, dump_path):
     print('start data load domain-union')
     train_dataset_dict = {}
