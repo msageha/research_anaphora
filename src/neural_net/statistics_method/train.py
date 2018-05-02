@@ -143,12 +143,12 @@ def union(dataset_dict, args, dump_path):
         union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
-    training(train_data, test_data, 'union', 'ga', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
-    training(train_data, test_data, 'union', 'o', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
+    # training(train_data, test_data, 'union', 'ga', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
+    # training(train_data, test_data, 'union', 'o', dump_path, args)
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
     training(train_data, test_data, 'union', 'ni', dump_path, args)
@@ -197,7 +197,7 @@ def main():
     parser.add_argument('--n_layers', '-n', type=int, default=1)
     parser.add_argument('--dropout', '-d', type=float, default=0.2)
     parser.add_argument('--batchsize', '-b', type=int, default=32)
-    parser.add_argument('--epoch', '-e', type=int, default=15)
+    parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--gpu', '-g', type=int, default=0)
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
