@@ -122,7 +122,8 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
                 training_data.append((batch_x, batch_y, batch_z))
         train_total_loss = 0
         train_total_accuracy = 0
-        for xs, ys, zs in random.shuffle(training_data):
+        random.shuffle(training_data)
+        for xs, ys, zs in training_data:
             xs = Variable(xs)
             ys = Variable(ys)
             zs = Variable(zs)
@@ -142,7 +143,8 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
                 test_data.append((batch_x, batch_y, batch_z))
         test_total_loss = 0
         test_total_accuracy = 0
-        for xs, ys, zs in random.shuffle(test_data):
+        random.shuffle(test_data)
+        for xs, ys, zs in test_data:
             xs = Variable(xs)
             ys = Variable(ys)
             zs = Variable(zs)
