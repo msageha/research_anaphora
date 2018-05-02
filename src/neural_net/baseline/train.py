@@ -119,25 +119,25 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trainer.run()
 
 def in_domain(dataset_dict, args, dump_path):
-    # for domain in domain_dict:
-    #     size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-    #     train_x = dataset_dict['{0}_x'.format(domain)][:size]
-    #     test_x = dataset_dict['{0}_x'.format(domain)][size:]
-    #     train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'ga', dump_path, args)
-    #     train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'o', dump_path, args)
-    #     train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
-    #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-    #     train_data = tuple_dataset.TupleDataset(train_x, train_y)
-    #     test_data  = tuple_dataset.TupleDataset(test_x, test_y)
-    #     training(train_data, test_data, domain, 'ni', dump_path, args)
+    for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        train_x = dataset_dict['{0}_x'.format(domain)][:size]
+        test_x = dataset_dict['{0}_x'.format(domain)][size:]
+        train_y = dataset_dict['{0}_y_ga'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ga', dump_path, args)
+        train_y = dataset_dict['{0}_y_o'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'o', dump_path, args)
+        train_y = dataset_dict['{0}_y_ni'.format(domain)][:size]
+        test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+        train_data = tuple_dataset.TupleDataset(train_x, train_y)
+        test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+        training(train_data, test_data, domain, 'ni', dump_path, args)
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
