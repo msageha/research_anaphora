@@ -22,7 +22,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋')])#, ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def set_random_seed(seed):
     # set Python random seed
@@ -163,7 +163,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             model.to_gpu()
         max_accuracy = max(max_accuracy, test_total_accuracy)
 
-        print('{0}\t{1}\t{2}\t{3}\t{4}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
+        print('{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
 
 
 def union(dataset_dict, args, dump_path):
