@@ -130,11 +130,11 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             ys = [cuda.to_gpu(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             model.zerograds()
+            optimizer.zero_grads()
             loss.backward()
             optimizer.update()
             train_total_loss += loss.data
             train_total_accuracy += accuracy
-        ipdb.set_trace()
         train_total_loss /= len(training_data)
         train_total_accuracy /= len(training_data)
         test_data = []
