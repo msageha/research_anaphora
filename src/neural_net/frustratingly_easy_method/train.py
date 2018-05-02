@@ -124,6 +124,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         train_total_accuracy = 0
         random.shuffle(training_data)
         for xs, ys, zs in training_data:
+            xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             loss.backward()
