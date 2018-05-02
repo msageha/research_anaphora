@@ -58,6 +58,7 @@ class BiLSTMBase(Chain):
             if y == pred_y:
                 accuracy += 1/len(ys)
         reporter.report({'accuracy': accuracy}, self)
+        ipdb.set_trace()
         return loss, accuracy
 
     def traverse(self, xs, zs):
