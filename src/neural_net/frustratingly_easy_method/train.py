@@ -7,6 +7,7 @@ import os
 import random
 from collections import OrderedDict
 import sys
+import ipdb
 
 import matplotlib
 matplotlib.use('Agg')
@@ -133,6 +134,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             optimizer.update()
             train_total_loss += loss.data
             train_total_accuracy += accuracy
+        ipdb.set_trace()
         train_total_loss /= len(training_data)
         train_total_accuracy /= len(training_data)
         test_data = []
