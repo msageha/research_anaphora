@@ -22,7 +22,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def set_random_seed(seed):
     # set Python random seed
@@ -127,11 +127,14 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
             ys = [cuda.to_gpu(y) for y in ys]
+            ys = [Variable(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             loss.backward()
             optimizer.update()
-            train_total_loss += loss.data / len(training_data)
-            train_total_accuracy += accuracy / len(training_data)
+            train_total_loss += loss.data
+            train_total_accuracy += accuracy
+        train_total_loss /= len(training_data)
+        train_total_accuracy /= len(training_data)
         test_data = []
         for domain in domain_dict:
             N = len(test_dataset_dict['{0}_x'.format(domain)])
@@ -148,9 +151,12 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
             ys = [cuda.to_gpu(y) for y in ys]
+            ys = [Variable(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
-            test_total_loss += loss.data / len(test_data)
-            test_total_accuracy += accuracy / len(test_data)
+            test_total_loss += loss.data
+            test_total_accuracy += accuracy
+        test_total_loss /= len(test_data)
+        test_total_accuracy /= len(test_data)
         if test_total_accuracy > max_accuracy:
             model.to_cpu()
             chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
