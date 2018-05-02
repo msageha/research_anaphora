@@ -30,7 +30,7 @@ def convert_seq(batch, device=None, with_label=True):
         return to_device_batch([x for x in batch])
 
 class BiLSTMBase(Chain):
-    def __init__(self, input_size, output_size, n_labels, n_layers=1, dropout=0.5, case='', device=0):
+    def __init__(self, input_size, output_size, n_labels, n_layers=1, dropout=0.3, case='', device=0):
         super(BiLSTMBase, self).__init__()
         with self.init_scope():
             self.shared_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
@@ -40,7 +40,7 @@ class BiLSTMBase(Chain):
             self.pb_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.pm_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.pn_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
-            self.l1 = L.Linear(input_size*2, n_labels)
+            self.l1 = L.Linear(input_size*4, n_labels)
 
     def __call__(self, xs, ys, zs):
         pred_ys = self.traverse(xs, zs)
@@ -80,7 +80,6 @@ class BiLSTMBase(Chain):
         for z in zs:
             if z != zs[0]:
                 print('ERROR!!!!!', flush=True)
-        ipdb.set_trace()
         ys = [F.concat((y1, y2)) for y1, y2 in zip(ys1, ys2)]
         ys = [self.l1(y) for y in ys]
         return ys
