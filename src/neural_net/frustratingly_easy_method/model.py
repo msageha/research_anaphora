@@ -49,7 +49,6 @@ class BiLSTMBase(Chain):
         for pred_y, y in zip(pred_ys, ys):
             _loss = F.softmax_cross_entropy(pred_y, y)
             loss += _loss/len(ys)
-        ipdb.set_trace()
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
@@ -80,4 +79,5 @@ class BiLSTMBase(Chain):
                 print('ERROR!!!!!', flush=True)
         ys = [F.concat((y1, y2)) for y1, y2 in zip(ys1, ys2)]
         ys = [self.l1(y) for y in ys]
+        ipdb.set_trace()
         return ys
