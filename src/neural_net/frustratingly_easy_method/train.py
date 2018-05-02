@@ -1,6 +1,6 @@
 import argparse
 import pickle
-import datetime
+import time
 import math
 import json
 import os
@@ -109,8 +109,9 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
     optimizer.setup(model)
 
     print('epoch\tmain/loss\tmain/accuracy\tvalidation/main/loss\tvalidation/main/accuracy\telapsed_time')
-    st = datetime.datetime.now()
+    st = time.time()
     max_accuracy = 0
+    logs = []
     for epoch in range(1, args.epoch+1):
         training_data = []
         for domain in domain_dict:
@@ -162,9 +163,17 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
             model.to_gpu()
         max_accuracy = max(max_accuracy, test_total_accuracy)
-
-        print('{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
-
+        logs.append({
+            "main/loss": train_total_loss,
+            "main/accuracy": train_total_accuracy,
+            "validation/main/loss": test_total_loss,
+            "validation/main/accuracy": test_total_accuracy,
+            "epoch": epoch,
+            "elapsed_time": time.time() - st
+        })
+        print('{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, time.time() - st))
+    with open('{0}/log/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
+        json.dump(logs, f, indent=4)
 
 def union(dataset_dict, args, dump_path):
     print('start data load domain-union')
