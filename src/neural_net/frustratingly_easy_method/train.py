@@ -124,6 +124,9 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         train_total_accuracy = 0
         random.shuffle(training_data)
         for xs, ys, zs in training_data:
+            xs = convert_seq(xs, device=0, with_label=False)
+            ys = convert_seq(ys, device=0, with_label=False)
+            zs = convert_seq(zs, device=0, with_label=False)
             xs = Variable(xs)
             ys = Variable(ys)
             zs = Variable(zs)
