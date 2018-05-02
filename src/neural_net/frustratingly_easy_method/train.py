@@ -118,7 +118,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             for i in range(0, N, args.batchsize):
                 batch_x = train_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
                 batch_y = train_dataset_dict['{0}_y_{1}'.format(domain, case)][perm[i:i+args.batchsize]]
-                batch_z = train_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
+                batch_z = train_dataset_dict['{0}_z'.format(domain)][perm[i:i+args.batchsize]]
                 training_data.append((batch_x, batch_y, batch_z))
         train_total_loss = 0
         train_total_accuracy = 0
@@ -138,7 +138,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             for i in range(0, N, args.batchsize):
                 batch_x = test_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
                 batch_y = test_dataset_dict['{0}_y_{1}'.format(domain, case)][perm[i:i+args.batchsize]]
-                batch_z = test_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
+                batch_z = test_dataset_dict['{0}_z'.format(domain)][perm[i:i+args.batchsize]]
                 test_data.append((batch_x, batch_y, batch_z))
         test_total_loss = 0
         test_total_accuracy = 0
@@ -150,6 +150,9 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             test_total_loss += loss.data / len(test_data)
             test_total_accuracy += accuracy / len(test_data)
+        model.to_cpu()
+        chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
+        model.to_gpu()
 
         print('{0}\t{1}\t{2}\t{3}\t{4}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
 
