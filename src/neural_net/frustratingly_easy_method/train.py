@@ -109,8 +109,8 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
 
     print('epoch\tmain/loss\tmain/accuracy\tvalidation/main/loss\tvalidation/main/accuracy\telapsed_time')
     st = datetime.datetime.now()
+    max_accuracy = 0
     for epoch in range(1, args.epoch+1):
-        perm_dict = {}
         training_data = []
         for domain in domain_dict:
             N = len(train_dataset_dict['{0}_x'.format(domain)])
@@ -126,6 +126,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         for xs, ys, zs in training_data:
             xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
+            ys = [cuda.to_gpu(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             loss.backward()
             optimizer.update()
@@ -144,15 +145,17 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         test_total_accuracy = 0
         random.shuffle(test_data)
         for xs, ys, zs in test_data:
-            xs = Variable(xs)
-            ys = Variable(ys)
-            zs = Variable(zs)
+            xs = [cuda.to_gpu(x) for x in xs]
+            xs = [Variable(x) for x in xs]
+            ys = [cuda.to_gpu(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             test_total_loss += loss.data / len(test_data)
             test_total_accuracy += accuracy / len(test_data)
-        model.to_cpu()
-        chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
-        model.to_gpu()
+        if test_total_accuracy > max_accuracy:
+            model.to_cpu()
+            chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
+            model.to_gpu()
+        max_accuracy = max(max_accuracy, test_total_accuracy)
 
         print('{0}\t{1}\t{2}\t{3}\t{4}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, datetime.datetime.now() - st))
 

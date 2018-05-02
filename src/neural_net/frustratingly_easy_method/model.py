@@ -34,9 +34,12 @@ class BiLSTMBase(Chain):
         super(BiLSTMBase, self).__init__()
         with self.init_scope():
             self.shared_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
-            self.domain_nstep_bilstm_dict = {}
-            for domain in ['OC', 'OY', 'OW', 'PB', 'PM', 'PN']:
-                self.domain_nstep_bilstm_dict[domain] = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.oc_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.oy_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.ow_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.pb_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.pm_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.pn_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.l1 = L.Linear(input_size*2, n_labels)
 
     def __call__(self, xs, ys, zs):
@@ -62,11 +65,22 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys1 = self.shared_nstep_bilstm(xs=xs, hx=hx, cx=cx)
         hx, cx = None, None
-        hx, cx, ys2 = self.domain_nstep_bilstm_dict[zs[0]](xs=xs, hx=hx, cx=cx)
+        if zs[0] == 'OC':
+            hx, cx, ys2 = self.oc_nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        elif zs[0] == 'OY':
+            hx, cx, ys2 = self.oy_nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        elif zs[0] == 'OW':
+            hx, cx, ys2 = self.ow_nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        elif zs[0] == 'PB':
+            hx, cx, ys2 = self.pb_nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        elif zs[0] == 'PM':
+            hx, cx, ys2 = self.pm_nstep_bilstm(xs=xs, hx=hx, cx=cx)
+        elif zs[0] == 'PN':
+            hx, cx, ys2 = self.pn_nstep_bilstm(xs=xs, hx=hx, cx=cx)
         for z in zs:
             if z != zs[0]:
                 print('ERROR!!!!!', flush=True)
         ipdb.set_trace()
+        ys = [F.concat((y1, y2)) for y1, y2 in zip(ys1, ys2)]
         ys = [self.l1(y) for y in ys]
-        ys = [F.concat((y_neg, y_pos)) for y_neg, y_pos in zip(ys_neg, ys_pos)]
         return ys
