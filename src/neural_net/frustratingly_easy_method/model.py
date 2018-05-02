@@ -79,5 +79,4 @@ class BiLSTMBase(Chain):
                 print('ERROR!!!!!', flush=True)
         ys = [F.concat((y1, y2)) for y1, y2 in zip(ys1, ys2)]
         ys = [self.l1(y) for y in ys]
-        ipdb.set_trace()
         return ys
