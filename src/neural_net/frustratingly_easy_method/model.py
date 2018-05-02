@@ -53,7 +53,7 @@ class BiLSTMBase(Chain):
         accuracy = .0
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
-        ys = [y.argmax(axis=0) for y in ys]
+        ys = [y.data.argmax(axis=0) for y in ys]
         for pred_y, y in zip(pred_ys, ys):
             if y == pred_y:
                 accuracy += 1/len(ys)
