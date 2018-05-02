@@ -63,7 +63,7 @@ class BiLSTMBase(Chain):
         hx, cx = None, None
         hx, cx, ys1 = self.shared_nstep_bilstm(xs=xs, hx=hx, cx=cx)
         hx, cx = None, None
-        hx, cx, ys2 = self.domain_nstep_bilstm_dict[zs[0]])(xs=xs, hx=hx, cx=cx)
+        hx, cx, ys2 = self.domain_nstep_bilstm_dict[zs[0]](xs=xs, hx=hx, cx=cx)
         for z in zs:
             if z != zs[0]:
                 print('ERROR!!!!!', flush=True)
