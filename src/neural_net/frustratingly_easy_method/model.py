@@ -59,7 +59,6 @@ class BiLSTMBase(Chain):
         return loss, accuracy
 
     def traverse(self, xs, zs):
-        xs = [Variable(x) for x in xs]
         hx, cx = None, None
         hx, cx, ys1 = self.shared_nstep_bilstm(xs=xs, hx=hx, cx=cx)
         hx, cx = None, None
