@@ -128,7 +128,6 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
             ys = [cuda.to_gpu(y) for y in ys]
-            ys = [Variable(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             loss.backward()
             optimizer.update()
@@ -153,7 +152,6 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             xs = [cuda.to_gpu(x) for x in xs]
             xs = [Variable(x) for x in xs]
             ys = [cuda.to_gpu(y) for y in ys]
-            ys = [Variable(y) for y in ys]
             loss, accuracy = model(xs=xs, ys=ys, zs=zs)
             test_total_loss += loss.data
             test_total_accuracy += accuracy
