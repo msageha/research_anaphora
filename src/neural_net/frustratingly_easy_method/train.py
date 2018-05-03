@@ -164,12 +164,12 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
             model.to_gpu()
         max_accuracy = max(max_accuracy, test_total_accuracy)
         logs.append({
-            "main/loss": train_total_loss,
-            "main/accuracy": train_total_accuracy,
-            "validation/main/loss": test_total_loss,
-            "validation/main/accuracy": test_total_accuracy,
+            "main/loss": float(train_total_loss),
+            "main/accuracy": float(train_total_accuracy),
+            "validation/main/loss": float(test_total_loss),
+            "validation/main/accuracy": float(test_total_accuracy),
             "epoch": epoch,
-            "elapsed_time": time.time() - st
+            "elapsed_time": float(time.time() - st)
         })
         print('{0}\t{1}\t{2}\t{3}\t{4}\t{5}'.format(epoch, train_total_loss, train_total_accuracy, test_total_loss, test_total_accuracy, time.time() - st))
     with open('{0}/log/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
@@ -191,7 +191,7 @@ def union(dataset_dict, args, dump_path):
         test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][size:])
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:size])
         test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][size:])
-    training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
+    # training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
 
