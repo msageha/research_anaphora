@@ -56,9 +56,9 @@ def main():
     parser.add_argument('--df_path', default='../dataframe')
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
-    for dropout in [0.1*i for i in range(4)]:
+    for dropout in [0.1*i for i in range(1, 4)]:
         args.dropout = dropout
-        for batchsize in [2**i for i in range(5, 9)]:
+        for batchsize in [2**i for i in range(5, 8)]:
             args.batchsize = batchsize
             union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
