@@ -160,7 +160,7 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
         test_total_accuracy /= len(test_data)
         if test_total_accuracy > max_accuracy:
             model.to_cpu()
-            chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, domain, case, epoch), model)
+            chainer.serializers.save_npz("{0}/model/domain-{1}_case-{2}_epoch-{3}.npz".format(dump_path, 'union', case, epoch), model)
             model.to_gpu()
         max_accuracy = max(max_accuracy, test_total_accuracy)
         logs.append({
