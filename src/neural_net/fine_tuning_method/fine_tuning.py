@@ -38,7 +38,6 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
         args.__dict__[key] = tmp[key]
     args.__dict__['train_size'] = len(train_data)
     args.__dict__['test_size'] = len(test_data)
-    args.__dict__['epoch'] = 15
     print('fine_tuning start domain-{0}, case-{1}'.format(domain, case))
 
     # output_path = 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize)
