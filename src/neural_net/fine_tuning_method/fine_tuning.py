@@ -34,8 +34,8 @@ def load_union_model_path(path, case):
 def fine_tuning(model_path, train_data, test_data, domain, case, args):
     with open('{0}/args/domain-union_case-{1}.json'.format(args.dir, case)) as f:
         tmp = json.load(f)
-        for key in tmp.keys():
-            args[key] = tmp[key]
+    for key in tmp.keys():
+        args[key] = tmp[key]
     print('fine_tuning start domain-{0}, case-{1}'.format(domain, case))
 
     # output_path = 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize)
