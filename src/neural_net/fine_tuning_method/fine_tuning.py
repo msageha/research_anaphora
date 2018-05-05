@@ -58,7 +58,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
         json.dump(args.__dict__, f, indent=2)
 
     feature_size = train_data[0][0].shape[1]
-    model = BiLSTMBase(input_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout) #saveした時と同じ構成にすること．
+    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout) #saveした時と同じ構成にすること．
     serializers.load_npz(model_path, model)
 
     if args.gpu >= 0:
