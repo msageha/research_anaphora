@@ -100,7 +100,7 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    print('start data load domain-all')
+    print('start data load domain union')
     union_test_x = []
     union_test_ga = []
     union_test_o = []
