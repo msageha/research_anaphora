@@ -38,6 +38,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
         args.__dict__[key] = tmp[key]
     args.__dict__['train_size'] = len(train_data)
     args.__dict__['test_size'] = len(test_data)
+    args.__dict__['epoch'] = 15
     print('fine_tuning start domain-{0}, case-{1}'.format(domain, case))
 
     # output_path = 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize)
@@ -54,7 +55,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
         os.mkdir('{0}/{1}'.format(output_path, 'model'))
         os.mkdir('{0}/{1}'.format(output_path, 'tmpmodel'))
         os.mkdir('{0}/{1}'.format(output_path, 'graph'))
-
+    
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
         json.dump(args.__dict__, f, indent=2)
