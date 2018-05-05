@@ -26,26 +26,31 @@ def load_model_path(path, case):
                 yield model_path
                 break
 
-def return_item_type(num):
+def return_item_type(num, dep_tag):
     if num == 0: return '照応なし'
     elif num == 1: return '発信者'
     elif num == 2: return '受信者'
     elif num == 3: return '項不定'
-    else: return '文内'
+    else:
+        if 'dep' == list(dep_tag)[num]:
+            return '文内(dep)'
+        elif 'zero' == list(dep_tag)[num]:
+            return '文内(zero)'
+        return '文内'
 
 def predict(model_path, test_data, domain, case, args):
     with open('{0}/args/domain-{1}_case-{2}.json'.format(args.df_path, domain, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
-            args[key] = tmp[key]
+            args.__dict__[key] = tmp[key]
     
     feature_size = test_data[0][0].shape[1]
 
     model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-    correct_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
-    case_num = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
-    accuracy = {'all':0., '照応なし':0., '文内':0., '発信者':0., '受信者':0., '項不定':0.}
+    correct_num = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    case_num = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    accuracy = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
 
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
@@ -62,7 +67,7 @@ def predict(model_path, test_data, domain, case, args):
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         pred_ys = int(pred_ys[0])
         ys = ys.argmax()
-        item_type = return_item_type(ys)
+        item_type = return_item_type(ys, ys_dep_tag)
         case_num['all'] += 1
         case_num[item_type] += 1
         if pred_ys == ys:
@@ -75,7 +80,7 @@ def predict(model_path, test_data, domain, case, args):
         else:
             accuracy[key] = 999
 
-    output_path = args.df_path + '/' + 'predict'
+    output_path = args.dir + '/' + 'predict'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
