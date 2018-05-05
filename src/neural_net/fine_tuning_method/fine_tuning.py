@@ -32,7 +32,7 @@ def load_union_model_path(path, case):
             return model_path
 
 def fine_tuning(model_path, train_data, test_data, domain, case, args):
-    with open('{0}/args/domain-union_case-{1}.json'.format(args.df_path, case)) as f:
+    with open('{0}/args/domain-union_case-{1}.json'.format(args.dir, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
             args[key] = tmp[key]
@@ -115,6 +115,7 @@ def main():
             train_data = tuple_dataset.TupleDataset(train_x, train_y)
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             fine_tuning(model_path, train_data, test_data, domain, case, args)
+
 
 if __name__ == '__main__':
     main()
