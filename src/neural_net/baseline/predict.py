@@ -128,7 +128,7 @@ def main():
             predict(model, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-                test_x = dataset_dict['{0}_x'.format(domain)][size:]]
+                test_x = dataset_dict['{0}_x'.format(domain)][size:]
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
                     test_y_dep_tag = dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
