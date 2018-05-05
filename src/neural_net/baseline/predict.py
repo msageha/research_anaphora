@@ -39,7 +39,7 @@ def return_item_type(num, dep_tag):
         return '文内'
 
 def predict(model_path, test_data, domain, case, args):
-    with open('{0}/args/domain-{1}_case-{2}.json'.format(args.df_path, domain, case)) as f:
+    with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, domain, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
             args.__dict__[key] = tmp[key]
