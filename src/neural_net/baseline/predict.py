@@ -32,9 +32,9 @@ def return_item_type(num, dep_tag):
     elif num == 2: return '受信者'
     elif num == 3: return '項不定'
     else:
-        if 'dep' == list(dep_tag)[num]:
+        if 'dep' in list(dep_tag):
             return '文内(dep)'
-        elif 'zero' == list(dep_tag)[num]:
+        elif 'zero' in list(dep_tag):
             return '文内(zero)'
         return '文内'
 
