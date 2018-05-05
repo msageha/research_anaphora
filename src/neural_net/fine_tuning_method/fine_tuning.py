@@ -23,6 +23,8 @@ from model import convert_seq
 from train import load_dataset
 from train import set_random_seed
 
+import ipdb
+
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_union_model_path(path, case):
@@ -114,6 +116,7 @@ def main():
             test_y = dataset_dict['{0}_y_{1}'.format(domain, case)][size:]
             train_data = tuple_dataset.TupleDataset(train_x, train_y)
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+            ipdb.set_trace()
             fine_tuning(model_path, train_data, test_data, domain, case, args)
 
 
