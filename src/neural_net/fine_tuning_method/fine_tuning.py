@@ -118,6 +118,36 @@ def main():
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             fine_tuning(model_path, train_data, test_data, domain, case, args)
 
+def params_search():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--alpha', '-a', type=float, default=1e-3)
+    parser.add_argument('--beta1', type=float, default=0.9)
+    parser.add_argument('--weightdecay', '-w', type=float, default=1e-4)
+    parser.add_argument('--gpu', '-g', type=int, default=0)
+    parser.add_argument('--dir', type=str, default='')
+    parser.add_argument('--df_path', default='../dataframe')
+    parser.add_argument('--disable_update_lstm', action='store_true')
+    parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    args = parser.parse_args()
+    dataset_dict = load_dataset(args.df_path)
+
+    case = 'ga'
+    model_path = load_union_model_path(args.dir, case)
+    for alpha in [0.01, 0.005, 0.001, 0.0005]:
+        for beta1 in [0.8, 0.85, 0.9, 0.95]:
+            for weightdecay in [0.001, 0.0005, 0.0001, 0.00005]:
+                args.alpha = alpha
+                args.beta1 = beta1
+                args.weightdecay = weightdecay
+                for domain in domain_dict:
+                    size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+                    train_x = dataset_dict['{0}_x'.format(domain)][:size]
+                    test_x = dataset_dict['{0}_x'.format(domain)][size:]
+                    train_y = dataset_dict['{0}_y_{1}'.format(domain, case)][:size]
+                    test_y = dataset_dict['{0}_y_{1}'.format(domain, case)][size:]
+                    train_data = tuple_dataset.TupleDataset(train_x, train_y)
+                    test_data  = tuple_dataset.TupleDataset(test_x, test_y)
+                    fine_tuning(model_path, train_data, test_data, domain, case, args)
 
 if __name__ == '__main__':
-    main()
+    params_search()
