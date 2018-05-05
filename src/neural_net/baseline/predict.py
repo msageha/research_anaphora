@@ -48,9 +48,9 @@ def predict(model_path, test_data, domain, case, args):
 
     model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
-    correct_num = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
-    case_num = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
-    accuracy = {'all':0., '照応なし':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    correct_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    case_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    accuracy = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
 
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
@@ -73,6 +73,8 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             correct_num['all'] += 1
             correct_num[item_type] += 1
+    correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
+    case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
 
     for key in accuracy:
         if case_num[key]:
@@ -87,9 +89,9 @@ def predict(model_path, test_data, domain, case, args):
     print('model_path:{0}_domain:{1}_accuracy:{2:.2f}'.format(model_path, domain, accuracy['all']))
     if not os.path.exists(dump_path):
         with open(dump_path, 'w') as f:
-            f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\ttest_data_size\n')
+            f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\taccuracy(文内(dep))\taccuracy(文内(zep))\ttest_data_size\n')
     with open(dump_path, 'a') as f:
-        f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], len(test_data)))
+        f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8:.2f}\t{9:.2f}\t{10}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], accuracy['文内(dep)'], accuracy['文内(zero)'], len(test_data)))
 
 def main():
     parser = argparse.ArgumentParser()
