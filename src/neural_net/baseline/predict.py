@@ -125,7 +125,7 @@ def main():
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
             elif case == 'ni':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag)
-            predict(model, test_data, 'union', case, args)
+            predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
                 test_x = dataset_dict['{0}_x'.format(domain)][size:]
@@ -139,7 +139,7 @@ def main():
                     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
                     test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
                 test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag)
-                predict(model, test_data, domain, case, args)
+                predict(model_path, test_data, domain, case, args)
 
 if __name__ == '__main__':
     main()
