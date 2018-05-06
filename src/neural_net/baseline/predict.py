@@ -2,7 +2,7 @@ import argparse
 import pickle
 import math
 import json
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 import chainer
 import chainer.functions as F
@@ -39,6 +39,7 @@ def return_item_type(num, dep_tag):
         return '文内'
 
 def predict(model_path, test_data, domain, case, args):
+    confusion_matrix = defaultdict(dict)
     if 'outdomain' in args.dir:
         tmp = 'out-{}'.format(domain)
     else:
@@ -55,6 +56,8 @@ def predict(model_path, test_data, domain, case, args):
     correct_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
     case_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
     accuracy = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
+    for key in correct_num.keys():
+        confusion_matrix[key] = 0
 
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
@@ -77,6 +80,11 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             correct_num['all'] += 1
             correct_num[item_type] += 1
+
+        item_type = return_item_type(ys, [])
+        pred_item_type = return_item_type(pred_ys, [])
+        confusion_matrix[item_type][pred_item_type] += 1
+
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
 
@@ -96,6 +104,18 @@ def predict(model_path, test_data, domain, case, args):
             f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\taccuracy(文内(dep))\taccuracy(文内(zep))\ttest_data_size\n')
     with open(dump_path, 'a') as f:
         f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8:.2f}\t{9:.2f}\t{10}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], accuracy['文内(dep)'], accuracy['文内(zero)'], len(test_data)))
+
+    output_path = args.dir + '/' + 'confusion_matrix'
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dump_path = '{0}/domain-{1}_case-{2}.tsv'.format(output_path, domain, case)
+    with open(dump_path, 'w') as f:
+        f.write('model_path\t'+model_path+'\n')
+        f.write(' \t \t予測結果\n')
+        f.write(' \t \t照応なし\t発信者\t受信者\t項不定\t文内\tsum(全体)\n実際の分類結果')
+        for case in ['照応なし', '発信者', '受信者', '項不定', '文内']:
+            f.write(' \t照応なし\t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n'.format(confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
+        f.write('\n')
 
 def main():
     parser = argparse.ArgumentParser()
