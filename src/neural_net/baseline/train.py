@@ -264,7 +264,7 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    # in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     arrange(dataset_dict, args, 'arranged/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
