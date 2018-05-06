@@ -75,12 +75,14 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             correct_num['all'] += 1
             correct_num[item_type] += 1
+
+        item_type = return_item_type(ys, [])
+        pred_item_type = return_item_type(pred_ys, [])
+        confusion_matrix[item_type][pred_item_type] += 1
+
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
-    
-    item_type = return_item_type(ys, [])
-    pred_item_type = return_item_type(pred_ys, [])
-    confusion_matrix[item_type][pred_item_type] += 1
+
 
     for key in accuracy:
         if case_num[key]:
