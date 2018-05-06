@@ -39,10 +39,8 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
     args.__dict__['train_size'] = len(train_data)
     args.__dict__['test_size'] = len(test_data)
     print('fine_tuning start domain-{0}, case-{1}'.format(domain, case))
+    set_random_seed(args.seed)
 
-    # output_path = 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize)
-    # if not os.path.exists('./{0}'.format(output_path)):
-    #     os.mkdir('./{0}'.format(output_path))
     output_path = 'fine_tuning'
     dump_path = 'alpha-{0}_beta1-{1}_weightdecay-{2}'.format(args.alpha, args.beta1, args.weightdecay)
     if not os.path.exists('./{0}/{1}'.format(output_path, dump_path)):
@@ -128,6 +126,7 @@ def params_search():
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--disable_update_lstm', action='store_true')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    parser.add_argument('--seed', default=1)
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
 
