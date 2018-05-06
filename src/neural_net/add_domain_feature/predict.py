@@ -59,8 +59,9 @@ def predict(model_path, test_data, domain, case, args):
     correct_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
     case_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
     accuracy = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
-    for key in correct_num.keys():
-        confusion_matrix[key] = 0
+    for key1 in correct_num.keys():
+        for key2 in correct_num.keys():
+            confusion_matrix[key1][key2] = 0
 
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
