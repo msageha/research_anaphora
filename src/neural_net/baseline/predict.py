@@ -86,7 +86,7 @@ def predict(model_path, test_data, domain, case, args):
         else:
             accuracy[key] = 999
 
-    output_path = args.dir + '/' + 'predict'
+    output_path = args.dir + '/' + 'predict_with_optmizer'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
