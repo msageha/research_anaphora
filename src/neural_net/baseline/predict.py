@@ -60,9 +60,9 @@ def predict(model_path, test_data, domain, case, args):
         cuda.get_device(args.gpu).use()
         model.to_gpu()
 
-    # #optimizer
-    # optimizer = chainer.optimizers.Adam()
-    # optimizer.setup(model)
+    #optimizer
+    optimizer = chainer.optimizers.Adam()
+    optimizer.setup(model)
 
     for xs, ys, ys_dep_tag in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
