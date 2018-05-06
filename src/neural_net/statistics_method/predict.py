@@ -41,7 +41,7 @@ def return_item_type(num, dep_tag):
 def predict(model_path, test_data, domain, case, args):
     confusion_matrix = defaultdict(dict)
     if 'outdomain' in args.dir:
-        tmp = 'out-{}'.format(domain)
+        tmp = 'out-OC'
     else:
         tmp = 'union'
     with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, tmp, case)) as f:
