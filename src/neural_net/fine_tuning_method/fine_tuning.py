@@ -150,4 +150,4 @@ def params_search():
                     fine_tuning(model_path, train_data, test_data, domain, case, args)
 
 if __name__ == '__main__':
-    params_search()
+    main()
