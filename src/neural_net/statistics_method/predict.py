@@ -43,7 +43,7 @@ def predict(model_path, test_data, domain, case, args):
     if 'outdomain' in args.dir:
         tmp = 'out-{}'.format(domain)
     else:
-        tmp = domain
+        tmp = 'union'
     with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, tmp, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
