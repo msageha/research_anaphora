@@ -66,7 +66,7 @@ def predict(model_path, test_data, domain, case, args):
 
     for xs, ys, ys_dep_tag, zs in test_data:
         xs = cuda.to_gpu(xs)
-        xs = [Variable(xs)]
+        xs = Variable(xs)
         pred_ys = model.traverse([xs], [zs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
