@@ -134,7 +134,7 @@ def params_search():
     case = 'ga'
     model_path = load_union_model_path(args.dir, case)
     args.__dict__['model_path'] = model_path
-    for alpha in [0.01, 0.005, 0.001, 0.0005]:
+    for alpha in [0.001, 0.0005]:
         for beta1 in [0.8, 0.85, 0.9, 0.95]:
             for weightdecay in [0.001, 0.0005, 0.0001, 0.00005]:
                 args.alpha = alpha
