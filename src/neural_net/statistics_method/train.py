@@ -149,9 +149,9 @@ def union(dataset_dict, args, dump_path):
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
     training(train_data, test_data, 'union', 'o', dump_path, args)
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
-    # training(train_data, test_data, 'union', 'ni', dump_path, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
+    training(train_data, test_data, 'union', 'ni', dump_path, args)
 
 def out_domain(dataset_dict, args, dump_path):
     print('start data load out_domain')
