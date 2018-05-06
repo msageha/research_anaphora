@@ -15,7 +15,7 @@ import os
 
 from model import BiLSTMBase
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
     domain = 'union'
@@ -112,7 +112,7 @@ def predict(model_path, test_data, domain, case, args):
         f.write(' \t \t予測結果\n')
         f.write(' \t \t照応なし\t発信者\t受信者\t項不定\t文内\tsum(全体)\n実際の分類結果')
         for case in ['照応なし', '発信者', '受信者', '項不定', '文内']:
-            f.write(' \t照応なし\t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n'.format(confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
+            f.write(' \t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(case, confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
         f.write('\n')
 
 def main():
