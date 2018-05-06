@@ -110,7 +110,7 @@ def predict(model_path, test_data, domain, case, args):
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_case-{2}.tsv'.format(output_path, domain, case)
-    with open(dump_path, 'w') as f:
+    with open(dump_path, 'a') as f:
         f.write('model_path\t'+model_path+'\n')
         f.write(' \t \t予測結果\n')
         f.write(' \t \t照応なし\t発信者\t受信者\t項不定\t文内\tsum(全体)\n実際の分類結果')
