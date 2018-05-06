@@ -191,7 +191,7 @@ def union(dataset_dict, args, dump_path):
         test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][size:])
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:size])
         test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][size:])
-    # training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
+    training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
 
