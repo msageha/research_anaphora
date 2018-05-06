@@ -20,14 +20,14 @@ from model import BiLSTMBase
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
-    for domain in list(domain_dict) + ['union']:
-        for epoch in range(20, 0, -1):
-            model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
-            if 'outdomain' in path:
-                model_path = '{0}/model/domain-out-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
-            if os.path.exists(model_path):
-                yield model_path
-                break
+    domain = 'union'
+    for epoch in range(20, 0, -1):
+        model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
+        if 'outdomain' in path:
+            model_path = '{0}/model/domain-out-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
+        if os.path.exists(model_path):
+            yield model_path
+            break
 
 def return_item_type(num, dep_tag):
     if num == 0: return '照応なし'
