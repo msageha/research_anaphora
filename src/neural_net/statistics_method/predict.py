@@ -51,7 +51,7 @@ def predict(model_path, test_data, domain, case, args):
     
     feature_size = test_data[0][0].shape[1]
 
-    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout)
+    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, case=case, n_layers=args.n_layers, dropout=args.dropout)
     serializers.load_npz(model_path, model)
     correct_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
     case_num = {'all':0., '照応なし':0., '文内':0., '文内(dep)':0., '文内(zero)':0., '発信者':0., '受信者':0., '項不定':0.}
