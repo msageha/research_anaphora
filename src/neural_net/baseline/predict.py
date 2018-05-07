@@ -17,7 +17,7 @@ import os
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
-    for domain in list(domain_dict) + ['union']:
+    for domain in list(domain_dict):# + ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
             if 'outdomain' in path:
@@ -144,7 +144,7 @@ def main():
         union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
         union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-    for case in ['ga', 'o', 'ni']:
+    for case in ['o', 'ni']: #'ga', 
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag)
