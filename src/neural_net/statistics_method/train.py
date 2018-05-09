@@ -170,7 +170,7 @@ def union_train(dataset_dict, args, dump_path):
         # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-        train_dataset_dict['{0}_y_ga'] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+        train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
         # train_dataset_dict['{0}_y_o'] = dataset_dict['{0}_y_o'.format(domain)][:size]
         # train_dataset_dict['{0}_y_ni'] = dataset_dict['{0}_y_ni'.format(domain)][:size]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
@@ -212,7 +212,7 @@ def out_domain_train(dataset_dict, args, dump_path):
             # outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
             outdomain_train_z += dataset_dict['{0}_z'.format(domain)][:size]
             outdomain_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-            outdomain_train_dataset_dict['{0}_y_ga'] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+            outdomain_train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
             # outdomain_train_dataset_dict['{0}_y_o'] = dataset_dict['{0}_y_o'.format(domain)][:size]
             # outdomain_train_dataset_dict['{0}_y_ni'] = dataset_dict['{0}_y_ni'.format(domain)][:size]
         type_statistics_dict = calculate_type_statistics(outdomain_train_dataset_dict, 'ga', out_domain)
