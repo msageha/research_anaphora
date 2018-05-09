@@ -43,7 +43,9 @@ class BiLSTMBase(Chain):
         tmp = np.diag(tmp)
         union_I = np.matrix(tmp, dtype=np.float32).I
 
-        for domain in ['OC', 'OY', 'OW', 'PB', 'PM', 'PN']:
+        for domain in type_statistics_dict.keys():
+            if domain == 'union':
+                continue
             statistics = type_statistics_dict[domain]
             tmp = np.full((sentence_length, ), statistics[-1])
             for i in range(0, 4):
@@ -63,7 +65,9 @@ class BiLSTMBase(Chain):
         tmp = np.diag(tmp)
         union_neg_I = np.matrix(tmp, dtype=np.float32).I
 
-        for domain in ['OC', 'OY', 'OW', 'PB', 'PM', 'PN']:
+        for domain in type_statistics_dict.keys():
+            if domain == 'union':
+                continue
             statistics = type_statistics_dict[domain]
             tmp = np.full((sentence_length, ), statistics[-1])
             for i in range(0, 4):
