@@ -147,10 +147,10 @@ def union(dataset_dict, args, dump_path):
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        # union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        # union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
     training(train_data, test_data, 'union', 'ga', dump_path, args)
