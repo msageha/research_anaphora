@@ -154,12 +154,12 @@ def union(dataset_dict, args, dump_path):
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
     training(train_data, test_data, 'union', 'ga', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
-    training(train_data, test_data, 'union', 'o', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
-    training(train_data, test_data, 'union', 'ni', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+    # training(train_data, test_data, 'union', 'o', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+    # training(train_data, test_data, 'union', 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()
