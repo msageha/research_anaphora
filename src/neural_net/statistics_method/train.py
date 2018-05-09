@@ -65,7 +65,6 @@ def load_dataset(df_path):
             y_ni_dep_tag_dataset.append(y_ni_dep_tag)
             z_dataset.append(domain)
             word_dataset.append(word)
-
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -75,40 +74,29 @@ def load_dataset(df_path):
         dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
         dataset_dict['{0}_z'.format(domain)] = z_dataset
         dataset_dict['{0}_word'.format(domain)] = word_dataset
+    return dataset_dict
 
-    domain_length_sum = 0
-    for domain in domain_dict:
-        type_statistics_dict['union'] = {'ga':[0., 0., 0., 0., 0.,], 'o':[0., 0., 0., 0., 0.,], 'ni':[0., 0., 0., 0., 0.,]}
-        for case in ['ga', 'o', 'ni']:
-            for i in range(5):
-                type_statistics_dict['union'][case][i] += type_statistics_dict[domain][case][i]
-                type_statistics_dict[domain][case][i] /= dataset_dict['{0}_length'.format(domain)]
-        domain_length_sum += dataset_dict['{0}_length'.format(domain)]
-    for case in ['ga', 'o', 'ni']:
-        for i in range(5):
-            type_statistics_dict['union'][case][i] /= domain_length_sum
-
-    return dataset_dict, type_statistics_dict
-
-def calculate_type_statistics(dataset_dict, case, outdomain=''):
-    type_statistics_dict = {}
+def calculate_type_statistics(dataset_dict, case, out_domain=''):
+    type_statistics_dict = {'union':[0., 0., 0., 0., 0.,]}
+    union_y_length = 0
     for domain in domain_dict:
         if domain == out_domain:
             continue
         type_statistics = [0., 0., 0., 0., 0.,]
         y = dataset_dict['{0}_y_{1}'.format(domain, case)]
         for _y in y:
-            
+            index = _y.argmax() if _y.argmax() < 4 else 4
+            type_statistics[index] += 1
+        type_statistics_dict[domain] = type_statistics
+        for i in range(5):
+            type_statistics_dict['union'][i] += type_statistics_dict[domain][i]
+            type_statistics_dict[domain][i] = type_statistics_dict[domain][i]/len(y)*100
+        union_y_length += len(y)
+    for i in range(5):
+        type_statistics_dict['union'][i] = type_statistics_dict['union'][i]/union_y_length*100
+    return type_statistics_dict
 
-            index = y_ga.argmax() if y_ga.argmax() < 4 else 4
-            type_statistics['ga'][index] += 1
-            index = y_o.argmax() if y_o.argmax() < 4 else 4
-            type_statistics['o'][index] += 1
-            index = y_ni.argmax() if y_ni.argmax() < 4 else 4
-            type_statistics['ni'][index] += 1
-
-
-def training(train_data, test_data, domain, case, dump_path, args):
+def training(train_data, test_data, type_statistics_dict, domain, case, dump_path, args):
     print('training start domain-{0}, case-{1}'.format(domain, case))
     set_random_seed(args.seed)
 
@@ -129,7 +117,7 @@ def training(train_data, test_data, domain, case, dump_path, args):
 
     feature_size = train_data[0][0].shape[1]
 
-    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout, case=case, device=args.gpu)
+    model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout, device=args.gpu, type_statistics_dict=type_statistics_dict)
 
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
@@ -169,6 +157,7 @@ def union_train(dataset_dict, args, dump_path):
     union_test_ni = []
     union_train_z = []
     union_test_z = []
+    train_dataset_dict = {}
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
@@ -181,9 +170,13 @@ def union_train(dataset_dict, args, dump_path):
         # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
+        train_dataset_dict['{0}_y_ga'] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+        # train_dataset_dict['{0}_y_o'] = dataset_dict['{0}_y_o'.format(domain)][:size]
+        # train_dataset_dict['{0}_y_ni'] = dataset_dict['{0}_y_ni'.format(domain)][:size]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
-    training(train_data, test_data, 'union', 'ga', dump_path, args)
+    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
+    training(train_data, test_data, type_statistics_dict, 'union', 'ga', dump_path, args)
     # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
     # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
     # training(train_data, test_data, 'union', 'o', dump_path, args)
@@ -204,6 +197,7 @@ def out_domain_train(dataset_dict, args, dump_path):
         # outdomain_test_ni = []
         outdomain_train_z = []
         outdomain_test_z = []
+        outdomain_train_dataset_dict = {}
         for domain in domain_dict:
             if out_domain == domain:
                 continue
@@ -218,11 +212,14 @@ def out_domain_train(dataset_dict, args, dump_path):
             # outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
             outdomain_train_z += dataset_dict['{0}_z'.format(domain)][:size]
             outdomain_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-
+            outdomain_train_dataset_dict['{0}_y_ga'] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+            # outdomain_train_dataset_dict['{0}_y_o'] = dataset_dict['{0}_y_o'.format(domain)][:size]
+            # outdomain_train_dataset_dict['{0}_y_ni'] = dataset_dict['{0}_y_ni'.format(domain)][:size]
+        type_statistics_dict = calculate_type_statistics(outdomain_train_dataset_dict, 'ga', out_domain)
         print('out domain {0}\tdata_size {1}'.format(out_domain, len(outdomain_train_x)))
         train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ga, outdomain_train_z)
         test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ga, outdomain_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'ga', dump_path, args)
+        training(train_data, test_data, type_statistics_dict, 'out-{0}'.format(out_domain), 'ga', dump_path, args)
         # train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_o, outdomain_train_z)
         # test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_o, outdomain_test_z)
         # training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', dump_path, args)
