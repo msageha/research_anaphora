@@ -46,6 +46,8 @@ def predict(model_path, test_data, domain, case, args):
     with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, domain, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
+            if key == 'dir':
+                continue
             args.__dict__[key] = tmp[key]
 
     feature_size = test_data[0][0].shape[1]
@@ -91,7 +93,7 @@ def predict(model_path, test_data, domain, case, args):
         else:
             accuracy[key] = 999
 
-    output_path = args.dir + '/' + 'predict'
+    output_path = 'fine_tuning' + '/' + 'predict'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
@@ -102,7 +104,7 @@ def predict(model_path, test_data, domain, case, args):
     with open(dump_path, 'a') as f:
         f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8:.2f}\t{9:.2f}\t{10}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], accuracy['文内(dep)'], accuracy['文内(zero)'], len(test_data)))
 
-    output_path = args.dir + '/' + 'confusion_matrix'
+    output_path = 'fine_tuning' + '/' + 'confusion_matrix'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_case-{2}.tsv'.format(output_path, domain, case)

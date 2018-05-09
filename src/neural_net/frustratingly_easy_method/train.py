@@ -47,6 +47,7 @@ def load_dataset(df_path):
         y_ni_dataset = []
         y_ni_dep_tag_dataset = []
         z_dataset = []
+        word_dataset = []
         for df in df_list:
             y_ga = np.array(df['ga_case'], dtype=np.int32)
             y_o = np.array(df['o_case'], dtype=np.int32)
@@ -54,7 +55,10 @@ def load_dataset(df_path):
             y_ga_dep_tag = np.array(df['ga_dep_tag'])
             y_o_dep_tag = np.array(df['o_dep_tag'])
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
-            df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
+            word = np.array(df['word'])
+            for i in range(17):
+                df = df.drop('feature:{}'.format(i), axis=1)
+            df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
             x_dataset.append(x)
             y_ga_dataset.append(y_ga)
@@ -64,6 +68,7 @@ def load_dataset(df_path):
             y_ni_dataset.append(y_ni)
             y_ni_dep_tag_dataset.append(y_ni_dep_tag)
             z_dataset.append(domain)
+            word_dataset.append(word)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -72,6 +77,7 @@ def load_dataset(df_path):
         dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
         dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
         dataset_dict['{0}_z'.format(domain)] = z_dataset
+        dataset_dict['{0}_word'.format(domain)] = word_dataset
     return dataset_dict
 
 def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, args):
@@ -185,15 +191,15 @@ def union(dataset_dict, args, dump_path):
         test_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][size:])
         train_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][:size])
         test_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][size:])
-        train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:size])
-        test_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][size:])
-        train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:size])
-        test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][size:])
+        # train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:size])
+        # test_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][size:])
+        # train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:size])
+        # test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][size:])
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:size])
         test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][size:])
     training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
-    training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
-    training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
+    # training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
+    # training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()

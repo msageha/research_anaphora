@@ -43,6 +43,7 @@ def load_dataset(df_path):
         y_ni_dataset = []
         y_ni_dep_tag_dataset = []
         z_dataset = []
+        word_dataset = []
         for df in df_list:
             y_ga = np.array(df['ga_case'], dtype=np.int32)
             y_o = np.array(df['o_case'], dtype=np.int32)
@@ -50,7 +51,10 @@ def load_dataset(df_path):
             y_ga_dep_tag = np.array(df['ga_dep_tag'])
             y_o_dep_tag = np.array(df['o_dep_tag'])
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
-            df = df.drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
+            word = np.array(df['word'])
+            for i in range(17):
+                df = df.drop('feature:{}'.format(i), axis=1)
+            df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
             x = np.array(df, dtype=np.float32)
             x_dataset.append(x)
             y_ga_dataset.append(y_ga)
@@ -60,6 +64,8 @@ def load_dataset(df_path):
             y_ni_dataset.append(y_ni)
             y_ni_dep_tag_dataset.append(y_ni_dep_tag)
             z_dataset.append(domain)
+            word_dataset.append(word)
+
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -68,7 +74,39 @@ def load_dataset(df_path):
         dataset_dict['{0}_y_o_dep_tag'.format(domain)] = y_o_dep_tag_dataset
         dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
         dataset_dict['{0}_z'.format(domain)] = z_dataset
-    return dataset_dict
+        dataset_dict['{0}_word'.format(domain)] = word_dataset
+
+    domain_length_sum = 0
+    for domain in domain_dict:
+        type_statistics_dict['union'] = {'ga':[0., 0., 0., 0., 0.,], 'o':[0., 0., 0., 0., 0.,], 'ni':[0., 0., 0., 0., 0.,]}
+        for case in ['ga', 'o', 'ni']:
+            for i in range(5):
+                type_statistics_dict['union'][case][i] += type_statistics_dict[domain][case][i]
+                type_statistics_dict[domain][case][i] /= dataset_dict['{0}_length'.format(domain)]
+        domain_length_sum += dataset_dict['{0}_length'.format(domain)]
+    for case in ['ga', 'o', 'ni']:
+        for i in range(5):
+            type_statistics_dict['union'][case][i] /= domain_length_sum
+
+    return dataset_dict, type_statistics_dict
+
+def calculate_type_statistics(dataset_dict, case, outdomain=''):
+    type_statistics_dict = {}
+    for domain in domain_dict:
+        if domain == out_domain:
+            continue
+        type_statistics = [0., 0., 0., 0., 0.,]
+        y = dataset_dict['{0}_y_{1}'.format(domain, case)]
+        for _y in y:
+            
+
+            index = y_ga.argmax() if y_ga.argmax() < 4 else 4
+            type_statistics['ga'][index] += 1
+            index = y_o.argmax() if y_o.argmax() < 4 else 4
+            type_statistics['o'][index] += 1
+            index = y_ni.argmax() if y_ni.argmax() < 4 else 4
+            type_statistics['ni'][index] += 1
+
 
 def training(train_data, test_data, domain, case, dump_path, args):
     print('training start domain-{0}, case-{1}'.format(domain, case))
@@ -119,7 +157,7 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.run()
 
-def union(dataset_dict, args, dump_path):
+def union_train(dataset_dict, args, dump_path):
     print('start data load domain-union')
     union_train_x = []
     union_test_x = []
@@ -137,33 +175,33 @@ def union(dataset_dict, args, dump_path):
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        # union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        # union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_train_z += dataset_dict['{0}_z'.format(domain)][:size]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
     training(train_data, test_data, 'union', 'ga', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
-    training(train_data, test_data, 'union', 'o', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
-    training(train_data, test_data, 'union', 'ni', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
+    # training(train_data, test_data, 'union', 'o', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni, union_train_z)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_z)
+    # training(train_data, test_data, 'union', 'ni', dump_path, args)
 
-def out_domain(dataset_dict, args, dump_path):
+def out_domain_train(dataset_dict, args, dump_path):
     print('start data load out_domain')
     for out_domain in domain_dict:
         outdomain_train_x = []
         outdomain_test_x = []
         outdomain_train_ga = []
         outdomain_test_ga = []
-        outdomain_train_o = []
-        outdomain_test_o = []
-        outdomain_train_ni = []
-        outdomain_test_ni = []
+        # outdomain_train_o = []
+        # outdomain_test_o = []
+        # outdomain_train_ni = []
+        # outdomain_test_ni = []
         outdomain_train_z = []
         outdomain_test_z = []
         for domain in domain_dict:
@@ -174,10 +212,10 @@ def out_domain(dataset_dict, args, dump_path):
             outdomain_test_x += dataset_dict['{0}_x'.format(domain)][size:]
             outdomain_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
             outdomain_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-            outdomain_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-            outdomain_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-            outdomain_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-            outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+            # outdomain_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
+            # outdomain_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+            # outdomain_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
+            # outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
             outdomain_train_z += dataset_dict['{0}_z'.format(domain)][:size]
             outdomain_test_z += dataset_dict['{0}_z'.format(domain)][size:]
 
@@ -185,12 +223,12 @@ def out_domain(dataset_dict, args, dump_path):
         train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ga, outdomain_train_z)
         test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ga, outdomain_test_z)
         training(train_data, test_data, 'out-{0}'.format(out_domain), 'ga', dump_path, args)
-        train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_o, outdomain_train_z)
-        test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_o, outdomain_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', dump_path, args)
-        train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ni, outdomain_train_z)
-        test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ni, outdomain_test_z)
-        training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', dump_path, args)
+        # train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_o, outdomain_train_z)
+        # test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_o, outdomain_test_z)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'o', dump_path, args)
+        # train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ni, outdomain_train_z)
+        # test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ni, outdomain_test_z)
+        # training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -205,8 +243,8 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
-    out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    union_train(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    out_domain_train(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
 
 if __name__ == '__main__':
