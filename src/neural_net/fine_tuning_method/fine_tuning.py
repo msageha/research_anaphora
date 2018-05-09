@@ -53,6 +53,7 @@ def fine_tuning(model_path, train_data, test_data, domain, case, args):
         os.mkdir('{0}/{1}'.format(output_path, 'tmpmodel'))
         os.mkdir('{0}/{1}'.format(output_path, 'graph'))
     
+    args.__dict__['dir'] = output_path
     print(json.dumps(args.__dict__, indent=2))
     with open('{0}/args/domain-{1}_case-{2}.json'.format(output_path, domain, case), 'w') as f:
         json.dump(args.__dict__, f, indent=2)
@@ -104,7 +105,7 @@ def main():
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
 
-    for case in ['ga', 'o', 'ni']:
+    for case in ['ga']:
         model_path = load_union_model_path(args.dir, case)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
