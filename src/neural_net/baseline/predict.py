@@ -13,6 +13,7 @@ from chainer import cuda
 from model import BiLSTMBase
 from train import load_dataset
 import os
+import ipdb
 
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
@@ -96,7 +97,7 @@ def predict(model_path, test_data, domain, case, args):
         else:
             accuracy[key] = 999
 
-    output_path = args.dir + '/' + 'predict_with_optmizer'
+    output_path = args.dir + '/' + 'predict'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
@@ -118,6 +119,14 @@ def predict(model_path, test_data, domain, case, args):
         for case in ['照応なし', '発信者', '受信者', '項不定', '文内']:
             f.write(' \t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(case, confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
         f.write('\n')
+    
+    output_path = args.dir + '/' + 'mistake_sentence'
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dump_path = '{0}/domain-{1}_case-{2}.txt'.format(output_path, domain, case)
+    with open(dump_path, 'a') as f:
+        f.write('\nmodel_path\t'+model_path+'\n')
+
 
 def main():
     parser = argparse.ArgumentParser()
