@@ -17,7 +17,7 @@ import os
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
-    for domain in list(domain_dict):# + ['union']:
+    for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
             if 'outdomain' in path:
@@ -68,7 +68,7 @@ def predict(model_path, test_data, domain, case, args):
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
-    for xs, ys, ys_dep_tag in test_data:
+    for xs, ys, ys_dep_tag, word in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
@@ -81,6 +81,7 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             correct_num['all'] += 1
             correct_num[item_type] += 1
+        ipdb.set_trace()
 
         item_type = return_item_type(ys, [])
         pred_item_type = return_item_type(pred_ys, [])
@@ -135,6 +136,7 @@ def main():
     union_test_ga_dep_tag = []
     union_test_o_dep_tag = []
     union_test_ni_dep_tag = []
+    union_test_word = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
@@ -144,14 +146,15 @@ def main():
         union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
         union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-    for case in ['o', 'ni']: #'ga', 
+        union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
+    for case in ['ga', ] #['o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag)
-            elif case == 'o':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
-            elif case == 'ni':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word)
+            # elif case == 'o':
+            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
+            # elif case == 'ni':
+            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag)
             predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
@@ -159,13 +162,14 @@ def main():
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
                     test_y_dep_tag = dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-                elif case == 'o':
-                    test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-                    test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-                elif case == 'ni':
-                    test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-                    test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag)
+                # elif case == 'o':
+                #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+                #     test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
+                # elif case == 'ni':
+                #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+                #     test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
+                test_word = dataset_dict['{0}_word'.format(domain)][size:]
+                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_word)
                 predict(model_path, test_data, domain, case, args)
 
 if __name__ == '__main__':
