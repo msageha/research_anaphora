@@ -15,7 +15,7 @@ from train import load_dataset
 import os
 import ipdb
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
     for domain in list(domain_dict) + ['union']:
@@ -69,6 +69,8 @@ def predict(model_path, test_data, domain, case, args):
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
+    mistake_list = []
+
     for xs, ys, ys_dep_tag, word in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])
@@ -82,11 +84,17 @@ def predict(model_path, test_data, domain, case, args):
         if pred_ys == ys:
             correct_num['all'] += 1
             correct_num[item_type] += 1
-        ipdb.set_trace()
 
         item_type = return_item_type(ys, [])
         pred_item_type = return_item_type(pred_ys, [])
         confusion_matrix[item_type][pred_item_type] += 1
+
+        if pred_ys != ys:
+            if item_type == '文内':
+                item_type = ys-4
+            if pred_item_type == '文内':
+                pred_item_type = pred_ys-4
+            mistake_list.append([item_type, pred_item_type, ''.join(word[4:])])
 
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
@@ -123,10 +131,15 @@ def predict(model_path, test_data, domain, case, args):
     output_path = args.dir + '/' + 'mistake_sentence'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
-    dump_path = '{0}/domain-{1}_case-{2}.txt'.format(output_path, domain, case)
+    output_path = '{0}/domain-{1}_case-{2}'.format(output_path, domain, case)
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dump_path = '{0}/model_path-{1}.txt'.format(output_path, model_path)
     with open(dump_path, 'a') as f:
-        f.write('\nmodel_path\t'+model_path+'\n')
-
+        f.write('model_path\t'+model_path+'\n')
+        for mistake in mistake_list:
+            f.write('\t'.join(mistake))
+            f.write('\n')
 
 def main():
     parser = argparse.ArgumentParser()
