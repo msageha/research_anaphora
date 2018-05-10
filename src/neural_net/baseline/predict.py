@@ -137,7 +137,9 @@ def predict(model_path, test_data, domain, case, args):
     dump_path = '{0}/model-{1}.txt'.format(output_path, model_path.split('/')[-1])
     with open(dump_path, 'a') as f:
         f.write('model_path\t'+model_path+'\n')
+        f.write('正解位置\t予測位置\t文\n')
         for mistake in mistake_list:
+            mistake = [str(i) for i in mistake]
             f.write('\t'.join(mistake))
             f.write('\n')
 
