@@ -209,7 +209,7 @@ def out_domain(dataset_dict, args, dump_path):
 
 def arrange(dataset_dict, args, dump_path):
     arrange_size= min([len(dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
-    arrange_size *= args.train_test_ratio
+    arrange_size = int(arrange_size * args.train_test_ratio)
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:arrange_size]
