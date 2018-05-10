@@ -125,7 +125,7 @@ def predict(model_path, test_data, domain, case, args):
         f.write(' \t \t予測結果\n')
         f.write(' \t \t照応なし\t発信者\t受信者\t項不定\t文内\tsum(全体)\n実際の分類結果')
         for case_type in ['照応なし', '発信者', '受信者', '項不定', '文内']:
-            f.write(' \t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(case_type, confusion_matrix[case_type]['照応なし'], confusion_matrix[case_type]['発信者'], confusion_matrix[case_type]['受信者'], confusion_matrix[case_type]['項不定'], confusion_matrix[case_type]['文内'], case_type_num[case_type]))
+            f.write(' \t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(case_type, confusion_matrix[case_type]['照応なし'], confusion_matrix[case_type]['発信者'], confusion_matrix[case_type]['受信者'], confusion_matrix[case_type]['項不定'], confusion_matrix[case_type]['文内'], case_num[case_type]))
         f.write('\n')
     
     output_path = args.dir + '/' + 'mistake_sentence'
