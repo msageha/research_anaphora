@@ -209,6 +209,7 @@ def out_domain(dataset_dict, args, dump_path):
 
 def arrange(dataset_dict, args, dump_path):
     arrange_size= min([len(dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
+    arrange_size *= args.train_test_ratio
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:arrange_size]
@@ -270,8 +271,8 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
-    out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    # in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    # out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     arrange(dataset_dict, args, 'arranged/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
 if __name__ == '__main__':
