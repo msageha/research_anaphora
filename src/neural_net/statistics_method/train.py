@@ -53,7 +53,7 @@ def load_dataset(df_path):
             y_o_dep_tag = np.array(df['o_dep_tag'])
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
-            is_verb = np.array(df['is_verb']).argamx()
+            is_verb = np.array(df['is_verb']).argmax()
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
             df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
