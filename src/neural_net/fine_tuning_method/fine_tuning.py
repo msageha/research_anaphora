@@ -98,7 +98,7 @@ def main():
     parser.add_argument('--beta1', type=float, default=0.9)
     parser.add_argument('--weightdecay', '-w', type=float, default=1e-4)
     parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--dir', type=str, default='')
+    parser.add_argument('--union_dir', type=str, default='')
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--disable_update_lstm', action='store_true')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
