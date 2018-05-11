@@ -212,9 +212,10 @@ def out_domain(dataset_dict, args, dump_path):
         # training(train_data, test_data, 'out-{0}'.format(out_domain), 'ni', dump_path, args)
 
 def arrange(dataset_dict, args, dump_path):
-    arrange_size= min([len(dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
-    arrange_size = int(arrange_size * args.train_test_ratio)
+    # arrange_size= min([len(dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
+    # arrange_size = int(arrange_size * args.train_test_ratio)
     for domain in domain_dict:
+        arrange_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.6)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_x = dataset_dict['{0}_x'.format(domain)][:arrange_size]
         test_x = dataset_dict['{0}_x'.format(domain)][size:]
