@@ -101,6 +101,7 @@ def main():
     parser.add_argument('--dir', type=str, default='')
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--disable_update_lstm', action='store_true')
+    parser.add_argument('--train_test_ratio', type=float, default=0.8)
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
 
