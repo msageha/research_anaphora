@@ -64,7 +64,9 @@ def predict(model_path, test_data, domain, case, args):
     optimizer = chainer.optimizers.Adam()
     optimizer.setup(model)
 
-    for xs, ys, ys_dep_tag, zs in test_data:
+    mistake_list = []
+
+    for xs, ys, ys_dep_tag, zs, word, is_verb in test_data:
         xs = cuda.to_gpu(xs)
         xs = Variable(xs)
         pred_ys = model.traverse([xs], [zs])
@@ -83,6 +85,14 @@ def predict(model_path, test_data, domain, case, args):
         pred_item_type = return_item_type(pred_ys, [])
         confusion_matrix[item_type][pred_item_type] += 1
 
+        if pred_ys != ys:
+            if item_type == '文内':
+                item_type = ys-4
+            if pred_item_type == '文内':
+                pred_item_type = pred_ys-4
+            sentence = ''.join(word[4:is_verb]) + '"' + word[is_verb:is_verb+1] + '"' + ''.join(word[is_verb+1:])
+            mistake_list.append([item_type, pred_item_type, is_verb-4, sentence])
+
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
 
@@ -92,7 +102,7 @@ def predict(model_path, test_data, domain, case, args):
         else:
             accuracy[key] = 999
 
-    output_path = args.dir + '/' + 'predict_with_optmizer'
+    output_path = args.dir + '/' + 'predict'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
@@ -115,6 +125,21 @@ def predict(model_path, test_data, domain, case, args):
             f.write(' \t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n'.format(case, confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
         f.write('\n')
 
+    output_path = args.dir + '/' + 'mistake_sentence'
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    output_path = '{0}/domain-{1}_case-{2}'.format(output_path, domain, case)
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dump_path = '{0}/model-{1}.txt'.format(output_path, model_path.split('/')[-1])
+    with open(dump_path, 'a') as f:
+        f.write('model_path\t'+model_path+'\n')
+        f.write('正解位置\t予測位置\t述語位置\t文\n')
+        for mistake in mistake_list:
+            mistake = [str(i) for i in mistake]
+            f.write('\t'.join(mistake))
+            f.write('\n')
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', '-g', type=int, default=0)
@@ -133,24 +158,28 @@ def main():
     union_test_o_dep_tag = []
     union_test_ni_dep_tag = []
     union_test_z = []
+    union_test_word = []
+    union_test_is_verb = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
         union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-        union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-        union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
+        # union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
+        # union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-    for case in ['ga', 'o', 'ni']:
+        union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
+        union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
+    for case in ['ga']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z)
-            elif case == 'o':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_z)
-            elif case == 'ni':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z, union_test_word, union_test_is_verb)
+            # elif case == 'o':
+            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_z)
+            # elif case == 'ni':
+            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_z)
             predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
@@ -159,13 +188,15 @@ def main():
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
                     test_y_dep_tag = dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-                elif case == 'o':
-                    test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-                    test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-                elif case == 'ni':
-                    test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-                    test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_z)
+                # elif case == 'o':
+                #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+                #     test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
+                # elif case == 'ni':
+                #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+                #     test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
+                test_word = dataset_dict['{0}_word'.format(domain)][size:]
+                test_is_verb = dataset_dict['{0}_is_verb'.format(domain)][size:]
+                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_z, test_word, test_is_verb)
                 predict(model_path, test_data, domain, case, args)
 
 if __name__ == '__main__':

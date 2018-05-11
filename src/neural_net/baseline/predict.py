@@ -71,7 +71,7 @@ def predict(model_path, test_data, domain, case, args):
 
     mistake_list = []
 
-    for xs, ys, ys_dep_tag, word in test_data:
+    for xs, ys, ys_dep_tag, word, is_verb in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
@@ -94,7 +94,8 @@ def predict(model_path, test_data, domain, case, args):
                 item_type = ys-4
             if pred_item_type == '文内':
                 pred_item_type = pred_ys-4
-            mistake_list.append([item_type, pred_item_type, ''.join(word[4:])])
+            sentence = ''.join(word[4:is_verb]) + '"' + word[is_verb:is_verb+1] + '"' + ''.join(word[is_verb+1:])
+            mistake_list.append([item_type, pred_item_type, is_verb-4, sentence])
 
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
@@ -137,7 +138,7 @@ def predict(model_path, test_data, domain, case, args):
     dump_path = '{0}/model-{1}.txt'.format(output_path, model_path.split('/')[-1])
     with open(dump_path, 'a') as f:
         f.write('model_path\t'+model_path+'\n')
-        f.write('正解位置\t予測位置\t文\n')
+        f.write('正解位置\t予測位置\t述語位置\t文\n')
         for mistake in mistake_list:
             mistake = [str(i) for i in mistake]
             f.write('\t'.join(mistake))
@@ -161,6 +162,7 @@ def main():
     union_test_o_dep_tag = []
     union_test_ni_dep_tag = []
     union_test_word = []
+    union_test_is_verb = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
@@ -171,10 +173,11 @@ def main():
         union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
+        union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
     for case in ['ga', ]: #['o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word, union_test_is_verb)
             # elif case == 'o':
             #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
             # elif case == 'ni':
@@ -193,7 +196,8 @@ def main():
                 #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
                 #     test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
                 test_word = dataset_dict['{0}_word'.format(domain)][size:]
-                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_word)
+                test_is_verb = dataset_dict['{0}_is_verb'.format(domain)][size:]
+                test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_word, test_is_verb)
                 predict(model_path, test_data, domain, case, args)
 
 if __name__ == '__main__':

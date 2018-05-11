@@ -48,6 +48,7 @@ def load_dataset(df_path):
         y_ni_dep_tag_dataset = []
         z_dataset = []
         word_dataset = []
+        is_verb_dataset = []
         for df in df_list:
             y_ga = np.array(df['ga_case'], dtype=np.int32)
             y_o = np.array(df['o_case'], dtype=np.int32)
@@ -56,6 +57,7 @@ def load_dataset(df_path):
             y_o_dep_tag = np.array(df['o_dep_tag'])
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
+            is_verb = np.array(df['is_verb']).argmax()
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
             df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
@@ -69,6 +71,7 @@ def load_dataset(df_path):
             y_ni_dep_tag_dataset.append(y_ni_dep_tag)
             z_dataset.append(domain)
             word_dataset.append(word)
+            is_verb_dataset.append(is_verb)
         dataset_dict['{0}_x'.format(domain)] = x_dataset
         dataset_dict['{0}_y_ga'.format(domain)] = y_ga_dataset
         dataset_dict['{0}_y_o'.format(domain)] = y_o_dataset
@@ -78,6 +81,7 @@ def load_dataset(df_path):
         dataset_dict['{0}_y_ni_dep_tag'.format(domain)] = y_ni_dep_tag_dataset
         dataset_dict['{0}_z'.format(domain)] = z_dataset
         dataset_dict['{0}_word'.format(domain)] = word_dataset
+        dataset_dict['{0}_is_verb'.format(domain)] = is_verb_dataset
     return dataset_dict
 
 def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, args):
