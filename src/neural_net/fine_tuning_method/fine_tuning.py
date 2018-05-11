@@ -106,7 +106,7 @@ def main():
     dataset_dict = load_dataset(args.df_path)
 
     for case in ['ga']:
-        model_path = load_union_model_path(args.dir, case)
+        model_path = load_union_model_path(args.union_dir, case)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
             train_x = dataset_dict['{0}_x'.format(domain)][:size]
