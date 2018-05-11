@@ -65,6 +65,8 @@ def predict(model_path, test_data, domain, case, args):
         cuda.get_device(args.gpu).use()
         model.to_gpu()
 
+    mistake_list = []
+
     for xs, ys, ys_dep_tag, word in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         pred_ys = model.traverse([xs])
@@ -82,6 +84,13 @@ def predict(model_path, test_data, domain, case, args):
         item_type = return_item_type(ys, [])
         pred_item_type = return_item_type(pred_ys, [])
         confusion_matrix[item_type][pred_item_type] += 1
+
+        if pred_ys != ys:
+            if item_type == '文内':
+                item_type = ys-4
+            if pred_item_type == '文内':
+                pred_item_type = pred_ys-4
+            mistake_list.append([item_type, pred_item_type, ''.join(word[4:])])
 
     correct_num['文内'] = correct_num['文内(dep)'] + correct_num['文内(zero)']
     case_num['文内'] = case_num['文内(dep)'] + case_num['文内(zero)']
@@ -116,6 +125,21 @@ def predict(model_path, test_data, domain, case, args):
             f.write(' \t照応なし\t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n'.format(confusion_matrix[case]['照応なし'], confusion_matrix[case]['発信者'], confusion_matrix[case]['受信者'], confusion_matrix[case]['項不定'], confusion_matrix[case]['文内'], case_num[case]))
         f.write('\n')
 
+    output_path = args.dir + '/' + 'mistake_sentence'
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    output_path = '{0}/domain-{1}_case-{2}'.format(output_path, domain, case)
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dump_path = '{0}/model-{1}.txt'.format(output_path, model_path.split('/')[-1])
+    with open(dump_path, 'a') as f:
+        f.write('model_path\t'+model_path+'\n')
+        f.write('正解位置\t予測位置\t文\n')
+        for mistake in mistake_list:
+            mistake = [str(i) for i in mistake]
+            f.write('\t'.join(mistake))
+            f.write('\n')
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', '-g', type=int, default=0)
@@ -134,6 +158,7 @@ def main():
     union_test_o_dep_tag = []
     union_test_ni_dep_tag = []
     union_test_word = []
+    union_test_is_verb = []
     for domain in domain_dict:
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
@@ -144,6 +169,8 @@ def main():
         union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
+        union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
+
     for case in ['ga',] # 'o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':

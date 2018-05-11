@@ -32,7 +32,7 @@ def load_union_model_path(path, case):
             return model_path
 
 def fine_tuning(model_path, train_data, test_data, domain, case, args):
-    with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, domain, case)) as f:
+    with open('{0}/args/domain-{1}_case-{2}.json'.format(args.union_dir, 'union', case)) as f:
         tmp = json.load(f)
     for key in tmp.keys():
         args.__dict__[key] = tmp[key]
@@ -123,7 +123,7 @@ def params_search():
     parser.add_argument('--beta1', type=float, default=0.9)
     parser.add_argument('--weightdecay', '-w', type=float, default=1e-4)
     parser.add_argument('--gpu', '-g', type=int, default=0)
-    parser.add_argument('--dir', type=str, default='')
+    parser.add_argument('--union_dir', type=str, default='')
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--disable_update_lstm', action='store_true')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
@@ -131,7 +131,7 @@ def params_search():
     dataset_dict = load_dataset(args.df_path)
 
     case = 'ga'
-    model_path = load_union_model_path(args.dir, case)
+    model_path = load_union_model_path(args.union_dir, case)
     args.__dict__['model_path'] = model_path
     for alpha in [0.001, 0.0005]:
         for beta1 in [0.85, 0.9, 0.95]:
