@@ -190,6 +190,10 @@ def union_train(dataset_dict, args, dump_path):
 
 def out_domain_train(dataset_dict, args, dump_path):
     print('start data load out_domain')
+    train_dataset_dict = {}
+    for domain in domain_dict:
+        train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
     for out_domain in domain_dict:
         outdomain_train_x = []
         outdomain_test_x = []
@@ -201,7 +205,7 @@ def out_domain_train(dataset_dict, args, dump_path):
         # outdomain_test_ni = []
         outdomain_train_z = []
         outdomain_test_z = []
-        outdomain_train_dataset_dict = {}
+        # outdomain_train_dataset_dict = {}
         for domain in domain_dict:
             if out_domain == domain:
                 continue
@@ -216,10 +220,10 @@ def out_domain_train(dataset_dict, args, dump_path):
             # outdomain_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
             outdomain_train_z += dataset_dict['{0}_z'.format(domain)][:size]
             outdomain_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-            outdomain_train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+            # outdomain_train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
             # outdomain_train_dataset_dict['{0}_y_o'] = dataset_dict['{0}_y_o'.format(domain)][:size]
             # outdomain_train_dataset_dict['{0}_y_ni'] = dataset_dict['{0}_y_ni'.format(domain)][:size]
-        type_statistics_dict = calculate_type_statistics(outdomain_train_dataset_dict, 'ga', out_domain)
+        # type_statistics_dict = calculate_type_statistics(outdomain_train_dataset_dict, 'ga', out_domain)
         print('out domain {0}\tdata_size {1}'.format(out_domain, len(outdomain_train_x)))
         train_data = tuple_dataset.TupleDataset(outdomain_train_x, outdomain_train_ga, outdomain_train_z)
         test_data  = tuple_dataset.TupleDataset(outdomain_test_x, outdomain_test_ga, outdomain_test_z)
