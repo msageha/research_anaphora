@@ -192,6 +192,7 @@ def out_domain_train(dataset_dict, args, dump_path):
     print('start data load out_domain')
     train_dataset_dict = {}
     for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
     type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
     for out_domain in domain_dict:
