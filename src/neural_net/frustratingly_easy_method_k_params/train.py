@@ -7,7 +7,6 @@ import os
 import random
 from collections import OrderedDict
 import sys
-import ipdb
 
 import matplotlib
 matplotlib.use('Agg')
