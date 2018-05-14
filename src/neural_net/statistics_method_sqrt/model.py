@@ -75,7 +75,7 @@ class BiLSTMBase(Chain):
                 tmp[i] = statistics[i]
             tmp = np.diag(tmp)
             domain_statistics_negative[domain] = np.matrix(tmp, dtype=np.float32)*union_neg_I
-            domain_statistics_positive[domain] = np.sqrt(domain_statistics_positive[domain])
+            domain_statistics_negative[domain] = np.sqrt(domain_statistics_negative[domain])
             domain_statistics_negative[domain] = chainer.dataset.to_device(device, domain_statistics_negative[domain])
 
         self.domain_statistics_positive = domain_statistics_positive
