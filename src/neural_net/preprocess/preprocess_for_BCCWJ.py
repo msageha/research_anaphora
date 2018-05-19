@@ -143,11 +143,23 @@ class FeatureToEmbedID:
         feature4_id = self.feature4[feature[4]]
         feature5_id = self.feature5[feature[5]]
         feature_vec0 = self.em_fe0(np.array([feature0_id], dtype=np.int32)).data[0]
+        if feature0_id == 0:
+            feature_vec0 = np.zeros(5)
         feature_vec1 = self.em_fe1(np.array([feature1_id], dtype=np.int32)).data[0]
+        if feature1_id == 0:
+            feature_vec1 = np.zeros(5)
         feature_vec2 = self.em_fe2(np.array([feature2_id], dtype=np.int32)).data[0]
+        if feature2_id == 0:
+            feature_vec2 = np.zeros(5)
         feature_vec3 = self.em_fe3(np.array([feature3_id], dtype=np.int32)).data[0]
+        if feature3_id == 0:
+            feature_vec3 = np.zeros(5)
         feature_vec4 = self.em_fe4(np.array([feature4_id], dtype=np.int32)).data[0]
+        if feature4_id == 0:
+            feature_vec4 = np.zeros(5)
         feature_vec5 = self.em_fe5(np.array([feature5_id], dtype=np.int32)).data[0]
+        if feature5_id == 0:
+            feature_vec5 = np.zeros(5)
 
         feature_vec = np.concatenate((feature_vec0, feature_vec1, feature_vec2, feature_vec3, feature_vec4, feature_vec5))
         df = pd.DataFrame([feature_vec])

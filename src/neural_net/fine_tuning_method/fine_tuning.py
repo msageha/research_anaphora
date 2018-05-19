@@ -105,7 +105,7 @@ def main():
     args = parser.parse_args()
     dataset_dict = load_dataset(args.df_path)
 
-    for case in ['ga']:
+    for case in ['o', 'ni']:
         model_path = load_union_model_path(args.union_dir, case)
         for domain in domain_dict:
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)

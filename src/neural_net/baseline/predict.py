@@ -174,14 +174,14 @@ def main():
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
         union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
-    for case in ['ga', ]: #['o', 'ni']:
+    for case in ['o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word, union_test_is_verb)
-            # elif case == 'o':
-            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
-            # elif case == 'ni':
-            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag)
+            elif case == 'o':
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag)
+            elif case == 'ni':
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag)
             predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
@@ -189,12 +189,12 @@ def main():
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]
                     test_y_dep_tag = dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-                # elif case == 'o':
-                #     test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
-                #     test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-                # elif case == 'ni':
-                #     test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
-                #     test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
+                elif case == 'o':
+                    test_y = dataset_dict['{0}_y_o'.format(domain)][size:]
+                    test_y_dep_tag = dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
+                elif case == 'ni':
+                    test_y = dataset_dict['{0}_y_ni'.format(domain)][size:]
+                    test_y_dep_tag = dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
                 test_word = dataset_dict['{0}_word'.format(domain)][size:]
                 test_is_verb = dataset_dict['{0}_is_verb'.format(domain)][size:]
                 test_data  = tuple_dataset.TupleDataset(test_x, test_y, test_y_dep_tag, test_word, test_is_verb)
