@@ -7,8 +7,6 @@ from chainer import reporter
 import chainer.links as L
 import chainer.functions as F
 
-import ipdb
-
 def convert_seq(batch, device=None, with_label=True):
     def to_device_batch(batch):
         if device is None:
