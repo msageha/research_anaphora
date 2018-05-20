@@ -177,9 +177,9 @@ def main():
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z, union_test_word, union_test_is_verb)
             elif case == 'o':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_z, union_test_word, union_test_is_verb)
             elif case == 'ni':
-                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_z)
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_z, union_test_word, union_test_is_verb)
             predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
