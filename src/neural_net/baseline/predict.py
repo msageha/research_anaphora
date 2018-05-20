@@ -18,7 +18,7 @@ import ipdb
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_model_path(path, case):
-    for domain in ['union']:
+    for domain in  ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
             if 'outdomain' in path:
@@ -44,7 +44,7 @@ def predict(model_path, test_data, domain, case, args):
     if 'outdomain' in args.dir:
         tmp = 'out-OC'
     else:
-        tmp = 'OC'
+        tmp = 'union'
     with open('{0}/args/domain-{1}_case-{2}.json'.format(args.dir, tmp, case)) as f:
         tmp = json.load(f)
         for key in tmp.keys():
