@@ -172,7 +172,7 @@ def main():
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
         union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
-    for case in ['ga'] #, 'o', 'ni']:
+    for case in ['ga', 'o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z, union_test_word, union_test_is_verb)

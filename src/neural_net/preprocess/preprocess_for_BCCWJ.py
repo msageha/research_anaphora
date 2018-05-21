@@ -343,17 +343,17 @@ def sentence_to_vector(sentence, verb_number, ga_case_id, o_case_id, ni_case_id)
     df = df.fillna(0)
     return df
 
-def reduction_dataframe(df_list):
-    reduction_df_list = []
-    for df in df_list:
-      df = df.fillna(0)
-      if df.iloc[0]['ga_case'] == 1 and df.iloc[0]['o_case'] == 1 and df.iloc[0]['ni_case'] == 1:
-        "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/10だけデータに入れる．"
-        if random.randint(0, 9) == 0:
-            reduction_df_list.append(df)
-      else:
-          reduction_df_list.append(df)
-    return reduction_df_list
+# def reduction_dataframe(df_list):
+#     reduction_df_list = []
+#     for df in df_list:
+#       df = df.fillna(0)
+#       if df.iloc[0]['ga_case'] == 1 and df.iloc[0]['o_case'] == 1 and df.iloc[0]['ni_case'] == 1:
+#         "ガ格，ヲ格，ニ格がいずれもないものは，対象としない.ただし，1/10だけデータに入れる．"
+#         if random.randint(0, 9) == 0:
+#             reduction_df_list.append(df)
+#       else:
+#           reduction_df_list.append(df)
+#     return reduction_df_list
 
 def main():
     for domain in domain_dict:

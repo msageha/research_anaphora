@@ -172,7 +172,7 @@ def main():
         union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
         union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
-    for case in ['ga']:
+    for case in ['ga', 'o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word, union_test_is_verb)
@@ -182,7 +182,7 @@ def main():
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_word, union_test_is_verb)
             predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
-                size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+                size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
                 test_x = dataset_dict['{0}_x'.format(domain)][size:]
                 if case == 'ga':
                     test_y = dataset_dict['{0}_y_ga'.format(domain)][size:]

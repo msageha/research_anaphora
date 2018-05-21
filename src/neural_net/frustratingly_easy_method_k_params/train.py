@@ -190,20 +190,20 @@ def union(dataset_dict, args, dump_path):
     test_dataset_dict = {}
     for domain in domain_dict:
         train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
-        test_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        dev_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
         train_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][:train_size])
-        test_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][test_size:])
+        test_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][train_size:dev_size])
         train_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][:train_size])
-        test_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][test_size:])
+        test_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][train_size:dev_size])
         train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:train_size])
-        test_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][test_size:])
+        test_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][train_size:dev_size])
         train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:train_size])
-        test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][test_size:])
+        test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][train_size:dev_size])
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:train_size])
-        test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][test_size:])
+        test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][train_size:dev_size])
     training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
-    # training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
-    # training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
+    training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
+    training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()

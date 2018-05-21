@@ -166,6 +166,7 @@ def main():
     union_test_is_verb = []
     train_dataset_dict = {}
     for domain in domain_dict:
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
@@ -177,11 +178,11 @@ def main():
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
         union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
-        train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
-        train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:size]
-        train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:size]
+        train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:train_size]
+        train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:train_size]
+        train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:train_size]
     
-    for case in ['ga']: # ['o', 'ni']:
+    for case in ['ga', 'o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z, union_test_word, union_test_is_verb)
