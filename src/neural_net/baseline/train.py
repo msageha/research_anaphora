@@ -158,15 +158,16 @@ def in_domain(dataset_dict, args, dump_path):
     union_train_ni = []
     union_test_ni = []
     for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-        union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
-        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
-        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
+        test_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        union_train_x += dataset_dict['{0}_x'.format(domain)][:train_size]
+        union_test_x += dataset_dict['{0}_x'.format(domain)][test_size:]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:train_size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][test_size:]
+        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:train_size]
+        union_test_o += dataset_dict['{0}_y_o'.format(domain)][test_size:]
+        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:train_size]
+        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][test_size:]
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
     training(train_data, test_data, 'union', 'ga', dump_path, args)
@@ -244,7 +245,7 @@ def arrange(dataset_dict, args, dump_path):
     union_train_ni = []
     union_test_ni = []
     for domain in domain_dict:
-        arrange_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.6)
+        arrange_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7*0.75)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:arrange_size]
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
