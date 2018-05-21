@@ -181,7 +181,7 @@ def main():
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:size]
     
-    for case in ['o', 'ni']:
+    for case in ['ga']: # ['o', 'ni']:
         for model_path in load_model_path(args.dir, case):
             if case == 'ga':
                 test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_z, union_test_word, union_test_is_verb)
