@@ -54,6 +54,8 @@ def load_dataset(df_path):
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
             is_verb = np.array(df['is_verb']).argmax()
+            if y_ga == 0 and y_o == 0 and y_ni == 0:
+                continue
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
             df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
