@@ -108,11 +108,12 @@ def main():
     for case in ['ga']: # ['o', 'ni']:
         model_path = load_union_model_path(args.union_dir, case)
         for domain in domain_dict:
-            size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-            train_x = dataset_dict['{0}_x'.format(domain)][:size]
-            test_x = dataset_dict['{0}_x'.format(domain)][size:]
-            train_y = dataset_dict['{0}_y_{1}'.format(domain, case)][:size]
-            test_y = dataset_dict['{0}_y_{1}'.format(domain, case)][size:]
+            train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
+            test_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+            train_x = dataset_dict['{0}_x'.format(domain)][:train_size]
+            test_x = dataset_dict['{0}_x'.format(domain)][test_size:]
+            train_y = dataset_dict['{0}_y_{1}'.format(domain, case)][:train_size]
+            test_y = dataset_dict['{0}_y_{1}'.format(domain, case)][test_size:]
             train_data = tuple_dataset.TupleDataset(train_x, train_y)
             test_data  = tuple_dataset.TupleDataset(test_x, test_y)
             fine_tuning(model_path, train_data, test_data, domain, case, args)

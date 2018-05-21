@@ -163,7 +163,8 @@ def union_train(dataset_dict, args, dump_path):
     union_test_z = []
     train_dataset_dict = {}
     for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
+        test_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
