@@ -57,8 +57,6 @@ def load_dataset(df_path):
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
             is_verb = np.array(df['is_verb']).argmax()
-            if y_ga[0] == 1 and y_o[0] == 1 and y_ni[0] == 1:
-                continue
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
             df = df.drop('word', axis=1).drop('ga_case', axis=1).drop('o_case', axis=1).drop('ni_case', axis=1).drop('ga_dep_tag', axis=1).drop('o_dep_tag', axis=1).drop('ni_dep_tag', axis=1)
@@ -148,24 +146,25 @@ def union(dataset_dict, args, dump_path):
     union_train_ni = []
     union_test_ni = []
     for domain in domain_dict:
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-        union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
-        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        # union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
-        # union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
-    # training(train_data, test_data, 'union', 'ga', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
-    training(train_data, test_data, 'union', 'o', dump_path, args)
-    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
-    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
-    training(train_data, test_data, 'union', 'ni', dump_path, args)
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
+        test_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        union_train_x += dataset_dict['{0}_x'.format(domain)][:train_size]
+        union_test_x += dataset_dict['{0}_x'.format(domain)][test_size:]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:train_size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][test_size:]
+        # union_train_o += dataset_dict['{0}_y_o'.format(domain)][:train_size]
+        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][test_size:]
+        # union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:train_size]
+        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][test_size:]
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
+    training(train_data, test_data, 'union', 'ga', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+    # training(train_data, test_data, 'union', 'o', dump_path, args)
+    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
+    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+    # training(train_data, test_data, 'union', 'ni', dump_path, args)
 
 def main():
     parser = argparse.ArgumentParser()
