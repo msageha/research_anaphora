@@ -177,7 +177,7 @@ def main():
         union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
         union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
         union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
-        # train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
+        train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:size]
     
