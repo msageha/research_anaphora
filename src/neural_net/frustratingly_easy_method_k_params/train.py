@@ -57,7 +57,7 @@ def load_dataset(df_path):
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
             is_verb = np.array(df['is_verb']).argmax()
-            if y_ga == 0 and y_o == 0 and y_ni == 0:
+            if y_ga.all() == 0 and y_o.all() == 0 and y_ni.all() == 0:
                 continue
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
@@ -194,15 +194,15 @@ def union(dataset_dict, args, dump_path):
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][:size])
         test_dataset_dict['{0}_x'.format(domain)] = np.array(dataset_dict['{0}_x'.format(domain)][size:])
-        # train_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][:size])
-        # test_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][size:])
+        train_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][:size])
+        test_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][size:])
         train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:size])
         test_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][size:])
         train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:size])
         test_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][size:])
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:size])
         test_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][size:])
-    # training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
+    training(train_dataset_dict, test_dataset_dict, 'union', 'ga', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'o', dump_path, args)
     training(train_dataset_dict, test_dataset_dict, 'union', 'ni', dump_path, args)
 

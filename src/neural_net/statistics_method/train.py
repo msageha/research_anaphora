@@ -54,7 +54,7 @@ def load_dataset(df_path):
             y_ni_dep_tag = np.array(df['ni_dep_tag'])
             word = np.array(df['word'])
             is_verb = np.array(df['is_verb']).argmax()
-            if y_ga == 0 and y_o == 0 and y_ni == 0:
+            if y_ga.all() == 0 and y_o.all() == 0 and y_ni.all() == 0:
                 continue
             for i in range(17):
                 df = df.drop('feature:{}'.format(i), axis=1)
@@ -168,8 +168,8 @@ def union_train(dataset_dict, args, dump_path):
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         union_train_x += dataset_dict['{0}_x'.format(domain)][:size]
         union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        # union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
-        # union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
         union_train_o += dataset_dict['{0}_y_o'.format(domain)][:size]
         union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
         union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:size]
@@ -179,10 +179,10 @@ def union_train(dataset_dict, args, dump_path):
         train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:size]
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:size]
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
-    # type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
-    # training(train_data, test_data, type_statistics_dict, 'union', 'ga', dump_path, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga, union_train_z)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_z)
+    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
+    training(train_data, test_data, type_statistics_dict, 'union', 'ga', dump_path, args)
     train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o, union_train_z)
     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_z)
     type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'o')
