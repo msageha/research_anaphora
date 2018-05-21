@@ -80,7 +80,7 @@ def load_dataset(df_path):
 
 def training(train_data, test_data, domain, case, dump_path, args):
     print('training start domain-{0}, case-{1}'.format(domain, case))
-    set_random_seed(args.seed)
+    # set_random_seed(args.seed)
 
     if not os.path.exists('{0}'.format(dump_path)):
         os.mkdir('{0}'.format(dump_path))
