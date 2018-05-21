@@ -356,7 +356,6 @@ def reduction_dataframe(df_list):
     return reduction_df_list
 
 def main():
-    set_random_seed(1)
     for domain in domain_dict:
         print(f'start {domain}')
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
