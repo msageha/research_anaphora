@@ -14,7 +14,7 @@ w2v_path = research_path + 'entity_vector/entity_vector.model.txt'
 directory = research_path + 'annotated/'
 domain_dict = {'PM':'雑誌','PN':'新聞', 'OW':'白書', 'OC':'Yahoo!知恵袋', 'OY':'Yahoo!ブログ', 'PB':'書籍'}
 
-tsubame = False
+tsubame = True
 if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
 else:
@@ -207,6 +207,8 @@ def sentence_find_verb(sentence):
             ga_case_id = get_ga_tag(line)
             o_case_id = get_o_tag(line)
             ni_case_id = get_ni_tag(line)
+            if ga_case_id == '' and o_case_id == '' and ni_case_id == '':
+                continue
             if is_num(ga_case_id):
                 if not check_id_in_sentence(sentence, ga_case_id):
                     ga_case_id = 'inter'
