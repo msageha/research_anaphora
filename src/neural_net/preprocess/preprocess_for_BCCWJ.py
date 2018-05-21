@@ -208,7 +208,7 @@ def sentence_find_verb(sentence):
         if line[0] != '*':
             word_number += 1
         pred_type = get_type(line)
-        if (pred_type == 'pred' and( '\t動詞' in line or '\t形容詞' in line) ) or pred_type=='noun':
+        if pred_type == 'pred' or pred_type=='noun':
             ga_case_id = get_ga_tag(line)
             o_case_id = get_o_tag(line)
             ni_case_id = get_ni_tag(line)
