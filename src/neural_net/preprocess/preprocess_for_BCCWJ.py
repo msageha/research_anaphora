@@ -19,6 +19,7 @@ if tsubame == True:
     w2v_path = research_path + 'entity_vector/entity_vector.model.pickle'
 else:
     import gensim
+
 #正規表現
 #正規表現
 def get_tag_id(text):
@@ -355,6 +356,7 @@ def reduction_dataframe(df_list):
     return reduction_df_list
 
 def main():
+    set_random_seed(1)
     for domain in domain_dict:
         print(f'start {domain}')
         r = Parallel(n_jobs=-1)([delayed(file_to_dataframe_list)(f'{directory}{domain}/{file}') for file in os.listdir(f'{directory}{domain}/')])
