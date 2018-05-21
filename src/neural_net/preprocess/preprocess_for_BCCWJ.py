@@ -53,6 +53,10 @@ def is_num(text):
     m = re.match('\A[0-9]+\Z', text)
     if m: return True
     else: return False
+def get_type(text):
+    m = re.search(r'type="(.+?)"', text)
+    if m: return m.group(1)
+    return ''
 
 class Word2Vec:
     def __init__(self, model_file_path):
@@ -203,12 +207,11 @@ def sentence_find_verb(sentence):
     for i, line in enumerate(sentence.split('\n')):
         if line[0] != '*':
             word_number += 1
-        if '\t動詞' in line or '\t形容詞' in line or 'サ変可能' in line:
+        pred_type = get_type(line)
+        if '\t動詞' in line or '\t形容詞' in line or pred_type='noun':
             ga_case_id = get_ga_tag(line)
             o_case_id = get_o_tag(line)
             ni_case_id = get_ni_tag(line)
-            if ga_case_id == '' and o_case_id == '' and ni_case_id == '':
-                continue
             if is_num(ga_case_id):
                 if not check_id_in_sentence(sentence, ga_case_id):
                     ga_case_id = 'inter'
