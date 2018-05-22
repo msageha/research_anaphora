@@ -164,7 +164,7 @@ def main():
     union_test_ni_dep_tag = []
     union_test_word = []
     union_test_is_verb = []
-    for domain in domain_dict:
+    # for domain in domain_dict:
         # size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         # union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
         # union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
