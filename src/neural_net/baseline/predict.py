@@ -17,16 +17,15 @@ import ipdb
 
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
-def load_model_path(path, case, domain):
-    # for domain in list(domain_dict) + ['union']:
+def load_model_path(path, case):
+    for domain in list(domain_dict) + ['union']:
         for epoch in range(20, 0, -1):
             model_path = '{0}/model/domain-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
             if 'outdomain' in path:
                 model_path = '{0}/model/domain-out-{1}_case-{2}_epoch-{3}.npz'.format(path, domain, case, epoch)
             if os.path.exists(model_path):
-                return model_path
-                # yield model_path
-                # break
+                yield model_path
+                break
 
 def return_item_type(num, dep_tag):
     if num == 0: return '照応なし'
@@ -164,28 +163,27 @@ def main():
     union_test_ni_dep_tag = []
     union_test_word = []
     union_test_is_verb = []
-    # for domain in domain_dict:
-        # size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-        # union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        # union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        # union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        # union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-        # union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-        # union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-        # union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-        # union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
-        # union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
+    for domain in domain_dict:
+        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
+        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
+        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
+        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
+        union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
+        union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
+        union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
+        union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
+        union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
     for case in ['ga', 'o', 'ni']:
-        # for model_path in load_model_path(args.dir, case):
-            # if case == 'ga':
-            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word, union_test_is_verb)
-            # elif case == 'o':
-            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_word, union_test_is_verb)
-            # elif case == 'ni':
-            #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_word, union_test_is_verb)
-            # predict(model_path, test_data, 'union', case, args)
+        for model_path in load_model_path(args.dir, case):
+            if case == 'ga':
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga, union_test_ga_dep_tag, union_test_word, union_test_is_verb)
+            elif case == 'o':
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o, union_test_o_dep_tag, union_test_word, union_test_is_verb)
+            elif case == 'ni':
+                test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_word, union_test_is_verb)
+            predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
-                model_path = load_model_path(args.dir, case, domain)
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
                 test_x = dataset_dict['{0}_x'.format(domain)][size:]
                 if case == 'ga':
