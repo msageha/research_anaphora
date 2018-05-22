@@ -185,7 +185,7 @@ def main():
             #     test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni, union_test_ni_dep_tag, union_test_word, union_test_is_verb)
             # predict(model_path, test_data, 'union', case, args)
             for domain in domain_dict:
-                model_path = load_model_path(args.dir, case, domain):
+                model_path = load_model_path(args.dir, case, domain)
                 size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
                 test_x = dataset_dict['{0}_x'.format(domain)][size:]
                 if case == 'ga':
