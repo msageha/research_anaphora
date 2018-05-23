@@ -39,7 +39,7 @@ from frustratingly_easy_method_k_params.model import convert_seq as Frust_conver
 from statistics_method.model import BiLSTMBase as Statistic_BiLSTMBase
 from statistics_method.model import convert_seq as Statistic_convert_seq
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_dataset(df_path):
     dataset_dict = {}
