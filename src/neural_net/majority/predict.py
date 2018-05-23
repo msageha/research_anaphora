@@ -137,7 +137,8 @@ def return_item_type(num, dep_tag):
         return '文内'
 
 def predict(frust_model_path, statistics_model_path, fine_model_path, test_data, type_statistics_dict, domain, case):
-    
+    confusion_matrix = defaultdict(dict)
+
     feature_size = test_data[0][0].shape[1]
 
     statistics_model = Statistic_BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=1, dropout=0.2, type_statistics_dict=type_statistics_dict)
@@ -156,11 +157,10 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
         for key2 in correct_num.keys():
             confusion_matrix[key1][key2] = 0
 
-    if args.gpu >= 0:
-        cuda.get_device(args.gpu).use()
-        statistics_model.to_gpu()
-        frust_model.to_gpu()
-        fine_model.to_gpu()
+    cuda.get_device(0).use()
+    statistics_model.to_gpu()
+    frust_model.to_gpu()
+    fine_model.to_gpu()
 
     #optimizer
     # optimizer = chainer.optimizers.Adam()
@@ -232,19 +232,19 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_caes-{2}.tsv'.format(output_path, domain, case)
-    print('model_path:{0}_domain:{1}_accuracy:{2:.2f}'.format(model_path, domain, accuracy['all']))
+    print('model_path:{0}_domain:{1}_accuracy:{2:.2f}'.format('majority', domain, accuracy['all']))
     if not os.path.exists(dump_path):
         with open(dump_path, 'a') as f:
             f.write('model_path\tdomain\taccuracy(全体)\taccuracy(照応なし)\taccuracy(発信者)\taccuracy(受信者)\taccuracy(項不定)\taccuracy(文内)\taccuracy(文内(dep))\taccuracy(文内(zep))\ttest_data_size\n')
     with open(dump_path, 'a') as f:
-        f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8:.2f}\t{9:.2f}\t{10}\n'.format(model_path, domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], accuracy['文内(dep)'], accuracy['文内(zero)'], len(test_data)))
+        f.write('{0}\t{1}\t{2:.2f}\t{3:.2f}\t{4:.2f}\t{5:.2f}\t{6:.2f}\t{7:.2f}\t{8:.2f}\t{9:.2f}\t{10}\n'.format('majority', domain, accuracy['all'], accuracy['照応なし'], accuracy['発信者'], accuracy['受信者'], accuracy['項不定'], accuracy['文内'], accuracy['文内(dep)'], accuracy['文内(zero)'], len(test_data)))
 
     output_path = './' + 'confusion_matrix'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     dump_path = '{0}/domain-{1}_case-{2}.tsv'.format(output_path, domain, case)
     with open(dump_path, 'w') as f:
-        f.write('model_path\t'+model_path+'\n')
+        f.write('model_path\t'+'majority'+'\n')
         f.write(' \t \t予測結果\n')
         f.write(' \t \t照応なし\t発信者\t受信者\t項不定\t文内\tsum(全体)\n実際の分類結果')
         for case_type in ['照応なし', '発信者', '受信者', '項不定', '文内']:
@@ -257,9 +257,9 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
     output_path = '{0}/domain-{1}_case-{2}'.format(output_path, domain, case)
     if not os.path.exists(output_path):
         os.mkdir(output_path)
-    dump_path = '{0}/model-{1}.txt'.format(output_path, model_path.split('/')[-1])
+    dump_path = '{0}/model-{1}.txt'.format(output_path, 'majority')
     with open(dump_path, 'a') as f:
-        f.write('model_path\t'+model_path+'\n')
+        f.write('model_path\t'+'majority'+'\n')
         f.write('正解位置\t予測位置\t述語位置\t文\n')
         for mistake in mistake_list:
             mistake = [str(i) for i in mistake]
@@ -272,16 +272,6 @@ def main():
     for domain in domain_dict:
         train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
         size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
-        union_test_x += dataset_dict['{0}_x'.format(domain)][size:]
-        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][size:]
-        union_test_o += dataset_dict['{0}_y_o'.format(domain)][size:]
-        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][size:]
-        union_test_ga_dep_tag += dataset_dict['{0}_y_ga_dep_tag'.format(domain)][size:]
-        union_test_o_dep_tag += dataset_dict['{0}_y_o_dep_tag'.format(domain)][size:]
-        union_test_ni_dep_tag += dataset_dict['{0}_y_ni_dep_tag'.format(domain)][size:]
-        union_test_z += dataset_dict['{0}_z'.format(domain)][size:]
-        union_test_word += dataset_dict['{0}_word'.format(domain)][size:]
-        union_test_is_verb += dataset_dict['{0}_is_verb'.format(domain)][size:]
         train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:train_size]
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:train_size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:train_size]
