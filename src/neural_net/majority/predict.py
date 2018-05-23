@@ -6,6 +6,7 @@ import os
 import datetime
 import random
 from collections import OrderedDict
+from collections import defaultdict
 
 import matplotlib
 matplotlib.use('Agg')
@@ -22,7 +23,7 @@ from baseline.model import BiLSTMBase as Baseline_BiLSTMBase
 from baseline.model import convert_seq as Baseline_convert_seq
 from frustratingly_easy_method_k_params.model import BiLSTMBase as Frust_BiLSTMBase
 from frustratingly_easy_method_k_params.model import convert_seq as Frust_convert_seq
-from statistics_method.model import BiLSTMBase as Statistic_BiLSTM
+from statistics_method.model import BiLSTMBase as Statistic_BiLSTMBase
 from statistics_method.model import convert_seq as Statistic_convert_seq
 
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
@@ -268,7 +269,7 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
 
 def main():
     dataset_dict = load_dataset('../dataframe')
-
+    train_dataset_dict = {}
     for domain in domain_dict:
         train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
         train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:train_size]
