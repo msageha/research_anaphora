@@ -17,6 +17,13 @@ from chainer.datasets import tuple_dataset
 from chainer import serializers
 from chainer.training import extensions
 
+
+import chainer
+import chainer.functions as F
+from chainer.datasets import tuple_dataset
+from chainer import serializers
+from chainer import cuda
+
 import sys
 sys.path.append('../')
 from baseline.model import BiLSTMBase as Fine_BiLSTMBase
