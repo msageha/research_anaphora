@@ -19,8 +19,8 @@ from chainer.training import extensions
 
 import sys
 sys.path.append('../')
-from baseline.model import BiLSTMBase as Baseline_BiLSTMBase
-from baseline.model import convert_seq as Baseline_convert_seq
+from baseline.model import BiLSTMBase as Fine_BiLSTMBase
+from baseline.model import convert_seq as Fine_convert_seq
 from frustratingly_easy_method_k_params.model import BiLSTMBase as Frust_BiLSTMBase
 from frustratingly_easy_method_k_params.model import convert_seq as Frust_convert_seq
 from statistics_method.model import BiLSTMBase as Statistic_BiLSTMBase
