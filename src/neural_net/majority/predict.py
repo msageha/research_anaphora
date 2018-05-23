@@ -271,7 +271,6 @@ def main():
 
     for domain in domain_dict:
         train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
-        size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*args.train_test_ratio)
         train_dataset_dict['{0}_y_ga'.format(domain)] = dataset_dict['{0}_y_ga'.format(domain)][:train_size]
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:train_size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:train_size]
