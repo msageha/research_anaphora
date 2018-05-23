@@ -22,6 +22,12 @@ import chainer
 import chainer.functions as F
 from chainer.datasets import tuple_dataset
 from chainer import serializers
+from chainer import cuda, Variable
+
+import chainer
+import chainer.functions as F
+from chainer.datasets import tuple_dataset
+from chainer import serializers
 from chainer import cuda
 
 import sys
@@ -181,11 +187,13 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
     mistake_list = []
 
     for xs, ys, ys_dep_tag, zs, word, is_verb in test_data:
-        xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
-        statistics_pred_ys = statistics_model.traverse([xs], [zs])
-        frust_pred_ys = frust_model.traverse([xs], [zs])
-        fine_pred_ys = fine_model.traverse([xs])
+        xs1 = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
+        statistics_pred_ys = statistics_model.traverse([xs1], [zs])
+        fine_pred_ys = fine_model.traverse([xs1])
 
+        xs2 = cuda.to_gpu(xs)
+        xs2 = Variable(xs2)
+        frust_pred_ys = frust_model.traverse([xs2], [zs])
         statistics_pred_ys = [F.softmax(pred_y) for pred_y in statistics_pred_ys]
         frust_pred_ys = [F.softmax(pred_y) for pred_y in frust_pred_ys]
         fine_pred_ys = [F.softmax(pred_y) for pred_y in fine_pred_ys]
