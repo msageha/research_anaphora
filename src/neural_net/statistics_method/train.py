@@ -143,11 +143,14 @@ def training(train_data, test_data, type_statistics_dict, domain, case, dump_pat
     trainer.extend(evaluator, trigger=(1, 'epoch'))
     trainer.extend(extensions.LogReport(log_name='log/domain-{0}_case-{1}.log'.format(domain, case)), trigger=(1, 'epoch'))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'main/accuracy', 'validation/main/loss', 'validation/main/accuracy', 'elapsed_time']))
-    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='model/domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
-    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], file_name='./graph/accuracy_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
-    trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], file_name='./graph/loss_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
+    trainer.extend(extensions.snapshot_object(model, savefun=serializers.save_npz ,filename='domain-{0}_case-{1}_epoch-{{.updater.epoch}}.npz'.format(domain, case)), trigger=trigger)
+    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], file_name='accuracy_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
+    trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], file_name='loss_domain-{0}_case-{1}.png'.format(domain, case), x_key='epoch'))
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.run()
+
+    os.system('mv {0}/*.npz {0}/model/'.format(dump_path))
+    os.system('mv {0}/*.png {0}/graph/'.format(dump_path))
 
 def union_train(dataset_dict, args, dump_path):
     print('start data load domain-union')
