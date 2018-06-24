@@ -128,6 +128,9 @@ def training(train_data, test_data, domain, case, dump_path, args):
     trainer.extend(extensions.ProgressBar(update_interval=10))
     trainer.run()
 
+    os.system('mv {0}/*.npz {0}/model/'.format(dump_path))
+    os.system('mv {0}/*.png {0}/graph/'.format(dump_path))
+
 def in_domain(dataset_dict, args, dump_path):
     for domain in domain_dict:
         train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
