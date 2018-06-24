@@ -149,35 +149,35 @@ def in_domain(dataset_dict, args, dump_path):
         train_data = tuple_dataset.TupleDataset(train_x, train_y)
         test_data  = tuple_dataset.TupleDataset(test_x, test_y)
         training(train_data, test_data, domain, 'ni', dump_path, args)
-    # print('start data load domain-union')
-    # union_train_x = []
-    # union_test_x = []
-    # union_train_ga = []
-    # union_test_ga = []
-    # union_train_o = []
-    # union_test_o = []
-    # union_train_ni = []
-    # union_test_ni = []
-    # for domain in domain_dict:
-    #     train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
-    #     dev_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
-    #     union_train_x += dataset_dict['{0}_x'.format(domain)][:train_size]
-    #     union_test_x += dataset_dict['{0}_x'.format(domain)][train_size:dev_size]
-    #     union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:train_size]
-    #     union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][train_size:dev_size]
-    #     union_train_o += dataset_dict['{0}_y_o'.format(domain)][:train_size]
-    #     union_test_o += dataset_dict['{0}_y_o'.format(domain)][train_size:dev_size]
-    #     union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:train_size]
-    #     union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][train_size:dev_size]
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
-    # training(train_data, test_data, 'union', 'ga', dump_path, args)
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
-    # training(train_data, test_data, 'union', 'o', dump_path, args)
-    # train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
-    # test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
-    # training(train_data, test_data, 'union', 'ni', dump_path, args)
+    print('start data load domain-union')
+    union_train_x = []
+    union_test_x = []
+    union_train_ga = []
+    union_test_ga = []
+    union_train_o = []
+    union_test_o = []
+    union_train_ni = []
+    union_test_ni = []
+    for domain in domain_dict:
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
+        dev_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
+        union_train_x += dataset_dict['{0}_x'.format(domain)][:train_size]
+        union_test_x += dataset_dict['{0}_x'.format(domain)][train_size:dev_size]
+        union_train_ga += dataset_dict['{0}_y_ga'.format(domain)][:train_size]
+        union_test_ga += dataset_dict['{0}_y_ga'.format(domain)][train_size:dev_size]
+        union_train_o += dataset_dict['{0}_y_o'.format(domain)][:train_size]
+        union_test_o += dataset_dict['{0}_y_o'.format(domain)][train_size:dev_size]
+        union_train_ni += dataset_dict['{0}_y_ni'.format(domain)][:train_size]
+        union_test_ni += dataset_dict['{0}_y_ni'.format(domain)][train_size:dev_size]
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ga)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ga)
+    training(train_data, test_data, 'union', 'ga', dump_path, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_o)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_o)
+    training(train_data, test_data, 'union', 'o', dump_path, args)
+    train_data = tuple_dataset.TupleDataset(union_train_x, union_train_ni)
+    test_data  = tuple_dataset.TupleDataset(union_test_x, union_test_ni)
+    training(train_data, test_data, 'union', 'ni', dump_path, args)
 
 def out_domain(dataset_dict, args, dump_path):
     print('start data load out_domain')
@@ -259,8 +259,8 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    # in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
-    # out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
     arrange(dataset_dict, args, 'short/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
 if __name__ == '__main__':
