@@ -39,6 +39,8 @@ from frustratingly_easy_method_k_params.model import convert_seq as Frust_conver
 from statistics_method.model import BiLSTMBase as Statistic_BiLSTMBase
 from statistics_method.model import convert_seq as Statistic_convert_seq
 
+import ipdb
+
 domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def load_dataset(df_path):
@@ -176,28 +178,22 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
     frust_model.to_gpu()
     fine_model.to_gpu()
 
-    #optimizer
-    # optimizer = chainer.optimizers.Adam()
-    # optimizer.setup(statistics_model)
-    # optimizer = chainer.optimizers.Adam()
-    # optimizer.setup(frust_model)
-    # optimizer = chainer.optimizers.Adam()
-    # optimizer.setup(fine_model)
-
     mistake_list = []
 
     for xs, ys, ys_dep_tag, zs, word, is_verb in test_data:
         xs1 = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
-        statistics_pred_ys = statistics_model.traverse([xs1], [zs])
-        fine_pred_ys = fine_model.traverse([xs1])
-
         xs2 = cuda.to_gpu(xs)
         xs2 = Variable(xs2)
-        frust_pred_ys = frust_model.traverse([xs2], [zs])
+        with chainer.using_config('train', False):
+            statistics_pred_ys = statistics_model.traverse([xs1], [zs])
+            fine_pred_ys = fine_model.traverse([xs1])
+            frust_pred_ys = frust_model.traverse([xs2], [zs])
+
         statistics_pred_ys = [F.softmax(pred_y) for pred_y in statistics_pred_ys]
         frust_pred_ys = [F.softmax(pred_y) for pred_y in frust_pred_ys]
         fine_pred_ys = [F.softmax(pred_y) for pred_y in fine_pred_ys]
 
+        ipdb.set_trace()
         statistics_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in statistics_pred_ys]
         frust_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in frust_pred_ys]
         fine_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in fine_pred_ys]
