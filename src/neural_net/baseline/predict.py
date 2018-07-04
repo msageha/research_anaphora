@@ -75,7 +75,6 @@ def predict(model_path, test_data, domain, case, args):
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
         with chainer.using_config('train', False):
             pred_ys = model.traverse([xs])
-        ipdb.set_trace()
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         pred_ys = int(pred_ys[0])
