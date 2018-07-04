@@ -71,7 +71,8 @@ def predict(model_path, test_data, domain, case, args):
 
     for xs, ys, ys_dep_tag, word, is_verb in test_data:
         xs = cuda.cupy.array(xs, dtype=cuda.cupy.float32)
-        pred_ys = model.traverse([xs])
+        with chainer.using_config('train', False):
+            pred_ys = model.traverse([xs])
         pred_ys = [F.softmax(pred_y) for pred_y in pred_ys]
         pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in pred_ys]
         pred_ys = int(pred_ys[0])
