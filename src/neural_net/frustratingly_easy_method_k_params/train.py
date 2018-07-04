@@ -184,6 +184,9 @@ def training(train_dataset_dict, test_dataset_dict, domain, case, dump_path, arg
     with open('{0}/log/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
         json.dump(logs, f, indent=4)
 
+    os.system('mv {0}/*.npz {0}/model/'.format(dump_path))
+    # os.system('mv {0}/*.png {0}/graph/'.format(dump_path))
+
 def union(dataset_dict, args, dump_path):
     print('start data load domain-union')
     train_dataset_dict = {}
