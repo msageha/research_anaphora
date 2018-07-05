@@ -193,7 +193,6 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
         frust_pred_ys = [F.softmax(pred_y) for pred_y in frust_pred_ys]
         fine_pred_ys = [F.softmax(pred_y) for pred_y in fine_pred_ys]
 
-        ipdb.set_trace()
         statistics_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in statistics_pred_ys]
         frust_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in frust_pred_ys]
         fine_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in fine_pred_ys]
