@@ -194,22 +194,28 @@ def predict(frust_model_path, statistics_model_path, fine_model_path, test_data,
         fine_pred_ys = [F.softmax(pred_y) for pred_y in fine_pred_ys]
 
         ipdb.set_trace()
-        statistics_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in statistics_pred_ys]
-        frust_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in frust_pred_ys]
-        fine_pred_ys = [pred_y.data.argmax(axis=0)[1] for pred_y in fine_pred_ys]
+        statistics_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in statistics_pred_ys]
+        frust_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in frust_pred_ys]
+        fine_pred_ys_argmax = [pred_y.data.argmax(axis=0)[1] for pred_y in fine_pred_ys]
 
-        statistics_pred_ys = int(statistics_pred_ys[0])
-        frust_pred_ys = int(frust_pred_ys[0])
-        fine_pred_ys = int(fine_pred_ys[0])
+        statistics_pred_ys_argmax = int(statistics_pred_ys_argmax[0])
+        frust_pred_ys_argmax = int(frust_pred_ys_argmax[0])
+        fine_pred_ys_argmax = int(fine_pred_ys_argmax[0])
 
-        if statistics_pred_ys == frust_pred_ys:
-            pred_ys = statistics_pred_ys
-        elif frust_pred_ys == fine_pred_ys:
-            pred_ys = frust_pred_ys
-        elif fine_pred_ys == statistics_pred_ys:
-            pred_ys = fine_pred_ys
+        if statistics_pred_ys_argmax == frust_pred_ys_argmax:
+            pred_ys = statistics_pred_ys_argmax
+        elif frust_pred_ys_argmax == fine_pred_ys_argmax:
+            pred_ys = frust_pred_ys_argmax
+        elif fine_pred_ys_argmax == statistics_pred_ys_argmax:
+            pred_ys = fine_pred_ys_argmax
         else:
-            pred_ys = random.choice([statistics_pred_ys, frust_pred_ys, fine_pred_ys])
+            max_pred = max(statistics_pred_ys[0][statistics_pred_ys_argmax][1].data, frust_pred_ys[0][frust_pred_ys_argmax][1].data, fine_pred_ys[0][fine_pred_ys_argmax][1].data)
+            if max_pred == statistics_pred_ys[0][statistics_pred_ys_argmax][1].data:
+                pred_ys = statistics_pred_ys_argmax
+            elif max_pred == frust_pred_ys[0][frust_pred_ys_argmax][1].data:
+                pred_ys = frust_pred_ys_argmax
+            elif max_pred == fine_pred_ys[0][fine_pred_ys_argmax][1].data:
+                pred_ys = fine_pred_ys_argmax
 
         ys = ys.argmax()
         item_type = return_item_type(ys, ys_dep_tag)
