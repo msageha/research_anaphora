@@ -292,7 +292,7 @@ def main():
         frust_model_path = load_frust_model_path('../frustratingly_easy_method_k_params/normal/dropout-0.2_batchsize-32', case)
         statistics_model_path = load_statistics_model_path('../statistics_method/normal/dropout-0.2_batchsize-32', case)
         for domain in domain_dict:
-            fine_model_path = load_fine_model_path('../fine_tuning_method/fine_tuning/alpha-0.001_beta1-0.9_weightdecay-0.0001_disable_update_lstm', case, domain)
+            fine_model_path = load_fine_model_path('../fine_tuning_method/fine_tuning/alpha-0.001_beta1-0.9_weightdecay-0.0001', case, domain)
 
             size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.8)
             test_x = dataset_dict['{0}_x'.format(domain)][size:]
