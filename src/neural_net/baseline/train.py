@@ -263,8 +263,8 @@ def main():
 
     dataset_dict = load_dataset(args.df_path)
     # in_domain(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
-    # out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
-    arrange(dataset_dict, args, 'short/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    out_domain(dataset_dict, args, 'outdomain/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    # arrange(dataset_dict, args, 'short/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
 if __name__ == '__main__':
     '''
