@@ -373,7 +373,7 @@ def main():
             train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:train_size])
             dev_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][train_size:dev_size])
 
-            fine_tuning(model_path, train_dataset_dict, dev_dataset_dict, type_statistics_dict, domain, case, 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), args)
+            fine_tuning(model_path, train_dataset_dict, dev_dataset_dict, type_statistics_dict, domain, case, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), args)
 
 
 if __name__ == '__main__':
