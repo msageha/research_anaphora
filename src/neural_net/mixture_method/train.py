@@ -345,16 +345,17 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    # union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
     train_dataset_dict = {}
     for domain in domain_dict:
+        train_size = math.ceil(len(dataset_dict['{0}_x'.format(domain)])*0.7)
         train_dataset_dict['{0}_y_ga'.format(domain)] = np.array(dataset_dict['{0}_y_ga'.format(domain)][:train_size])
         train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:train_size])
         train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:train_size])
 
-    for case in ['ga', 'o', 'ni']:
-        model_path = load_union_model_path(args.union_dir, case)
+    for case in ['ga']: #, 'o', 'ni']:
+        model_path = load_union_model_path('normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), case)
         type_statistics_dict = calculate_type_statistics(train_dataset_dict, case)
         for domain in domain_dict:
             train_dataset_dict = {}
@@ -372,7 +373,8 @@ def main():
             train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:train_size])
             dev_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][train_size:dev_size])
 
-            fine_tuning(model_path, train_dataset_dict, dev_dataset_dict, type_statistics_dict, domain, case, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), args)
+            fine_tuning(model_path, train_dataset_dict, dev_dataset_dict, type_statistics_dict, domain, case, 'fine_tuning/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), args)
+
 
 if __name__ == '__main__':
     '''
