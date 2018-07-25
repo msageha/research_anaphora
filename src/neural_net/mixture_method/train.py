@@ -253,7 +253,7 @@ def fine_tuning(model_path, train_dataset_dict, test_dataset_dict, type_statisti
         json.dump(args.__dict__, f, indent=2)
     print(json.dumps(args.__dict__, indent=2))
 
-    feature_size = train_dataset_dict['OC_x'][0][0].shape[0]
+    feature_size = train_dataset_dict['{0}_x'.format(domain)][0][0].shape[0]
 
     model = BiLSTMBase(input_size=feature_size, output_size=feature_size, n_labels=2, n_layers=args.n_layers, dropout=args.dropout, case=case, device=args.gpu, type_statistics_dict=type_statistics_dict)
     serializers.load_npz(model_path, model)
