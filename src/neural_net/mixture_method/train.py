@@ -244,8 +244,8 @@ def fine_tuning(model_path, train_dataset_dict, test_dataset_dict, type_statisti
     if not os.path.exists('{0}/{1}'.format(dump_path, 'fine_tuning')):
         os.mkdir('{0}/{1}'.format(dump_path, 'fine_tuning'))
 
-    train_data_size = sum([len(train_dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
-    test_data_size = sum([len(test_dataset_dict['{0}_x'.format(domain)]) for domain in domain_dict])
+    train_data_size = len(train_dataset_dict['{0}_x'.format(domain)])
+    test_data_size = len(test_dataset_dict['{0}_x'.format(domain)])
 
     with open('{0}/args/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
         args.__dict__['fine_tuning_train_size'] = train_data_size
