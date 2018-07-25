@@ -295,14 +295,15 @@ def fine_tuning(model_path, train_dataset_dict, test_dataset_dict, type_statisti
         train_total_loss /= len(training_data)
         train_total_accuracy /= len(training_data)
         test_data = []
-        for domain in domain_dict:
-            N = len(test_dataset_dict['{0}_x'.format(domain)])
-            perm = np.random.permutation(N)
-            for i in range(0, N, args.batchsize):
-                batch_x = test_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
-                batch_y = test_dataset_dict['{0}_y_{1}'.format(domain, case)][perm[i:i+args.batchsize]]
-                batch_z = test_dataset_dict['{0}_z'.format(domain)][perm[i:i+args.batchsize]]
-                test_data.append((batch_x, batch_y, batch_z))
+
+        N = len(test_dataset_dict['{0}_x'.format(domain)])
+        perm = np.random.permutation(N)
+        for i in range(0, N, args.batchsize):
+            batch_x = test_dataset_dict['{0}_x'.format(domain)][perm[i:i+args.batchsize]]
+            batch_y = test_dataset_dict['{0}_y_{1}'.format(domain, case)][perm[i:i+args.batchsize]]
+            batch_z = test_dataset_dict['{0}_z'.format(domain)][perm[i:i+args.batchsize]]
+            test_data.append((batch_x, batch_y, batch_z))
+
         test_total_loss = 0
         test_total_accuracy = 0
         random.shuffle(test_data)
