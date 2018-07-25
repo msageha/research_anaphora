@@ -22,7 +22,7 @@ from chainer.training import extensions
 from model import BiLSTMBase
 from model import convert_seq
 
-domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'),])# ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
+domain_dict = OrderedDict([('OC', 'Yahoo!知恵袋'), ('OY', 'Yahoo!ブログ'), ('OW', '白書'), ('PB', '書籍'), ('PM', '雑誌'), ('PN', '新聞')])
 
 def set_random_seed(seed):
     # set Python random seed
@@ -342,6 +342,7 @@ def main():
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     parser.add_argument('--seed', default=1)
+    parser.add_argument('--case', type=str, default='')
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
@@ -354,7 +355,7 @@ def main():
         train_dataset_dict['{0}_y_o'.format(domain)] = np.array(dataset_dict['{0}_y_o'.format(domain)][:train_size])
         train_dataset_dict['{0}_y_ni'.format(domain)] = np.array(dataset_dict['{0}_y_ni'.format(domain)][:train_size])
 
-    for case in ['ga']: #, 'o', 'ni']:
+    for case in [args.case]:
         model_path = load_union_model_path('normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize), case)
         type_statistics_dict = calculate_type_statistics(train_dataset_dict, case)
         for domain in domain_dict:
