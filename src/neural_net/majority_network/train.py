@@ -259,9 +259,6 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
     with open('{0}/log/domain-{1}_case-{2}.json'.format(dump_path, domain, case), 'w') as f:
         json.dump(logs, f, indent=4)
 
-    os.system('mv {0}/*.npz {0}/model/'.format(dump_path))
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--epoch', '-e', type=int, default=10)
