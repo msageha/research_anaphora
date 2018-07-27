@@ -194,7 +194,7 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
     max_accuracy = 0
     logs = []
 
-    for epoch in range(1, args.epoch+1):
+    for epoch in range(1, 10+1):
         train_total_loss = 0
         train_total_accuracy = 0
         N = len(train_data)
@@ -216,7 +216,6 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
                 frust_pred_ys = frust_model.traverse(xs2, zs)
             xs = [F.concat((fine_pred_y.data, frust_pred_y.data, statistics_pred_y.data)) for fine_pred_y, frust_pred_y, statistics_pred_y in zip(fine_pred_ys, frust_pred_ys, statistics_pred_ys)]
             loss, accuracy = model(xs=xs, ys=ys)
-            model.zerograds()
             loss.backward()
             optimizer.update()
             train_total_loss += loss.data
@@ -268,6 +267,7 @@ def main():
     parser.add_argument('--epoch', '-e', type=int, default=10)
     parser.add_argument('--batchsize', type=int, default=32)
     parser.add_argument('--gpu', '-g', type=int, default=0)
+    parser.add_argument('--dropout', type=float, default=0.2)
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
     args = parser.parse_args()
