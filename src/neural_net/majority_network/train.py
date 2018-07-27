@@ -270,6 +270,7 @@ def main():
     parser.add_argument('--dropout', type=float, default=0.2)
     parser.add_argument('--df_path', default='../dataframe')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    parser.add_argument('--seed', type=int, default=0)
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
