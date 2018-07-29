@@ -181,9 +181,9 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
     fine_model.to_gpu()
     model.to_gpu()
 
-    statistics_model.disable_update()
-    frust_model.disable_update()
-    fine_model.disable_update()
+    # statistics_model.disable_update()
+    # frust_model.disable_update()
+    # fine_model.disable_update()
 
     #optimizer
     optimizer = chainer.optimizers.Adam()
@@ -214,6 +214,9 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
                 statistics_pred_ys = statistics_model.traverse(xs1, zs)
                 fine_pred_ys = fine_model.traverse(xs1)
                 frust_pred_ys = frust_model.traverse(xs2, zs)
+            statistics_pred_ys = [F.softmax(statistics_pred_y) for statistics_pred_y in statistics_pred_ys]
+            fine_pred_ys = [F.softmax(fne_pred_y) for fine_pred_y in fine_pred_ys]
+            frust_pred_ys = [F.softmax(frust_pred_y) for frust_pred_y in frust_pred_ys]
             xs = [F.concat((fine_pred_y.data, frust_pred_y.data, statistics_pred_y.data)) for fine_pred_y, frust_pred_y, statistics_pred_y in zip(fine_pred_ys, frust_pred_ys, statistics_pred_ys)]
             loss, accuracy = model(xs=xs, ys=ys)
             loss.backward()
@@ -234,6 +237,9 @@ def training(frust_model_path, statistics_model_path, fine_model_path, train_dat
                 statistics_pred_ys = statistics_model.traverse([xs1], [zs])
                 fine_pred_ys = fine_model.traverse([xs1])
                 frust_pred_ys = frust_model.traverse([xs2], [zs])
+                statistics_pred_ys = [F.softmax(statistics_pred_y) for statistics_pred_y in statistics_pred_ys]
+                fine_pred_ys = [F.softmax(fne_pred_y) for fine_pred_y in fine_pred_ys]
+                frust_pred_ys = [F.softmax(frust_pred_y) for frust_pred_y in frust_pred_ys]
                 xs = [F.concat((fine_pred_y.data, frust_pred_y.data, statistics_pred_y.data)) for fine_pred_y, frust_pred_y, statistics_pred_y in zip(fine_pred_ys, frust_pred_ys, statistics_pred_ys)]
                 loss, accuracy = model(xs=xs, ys=[ys])
 
