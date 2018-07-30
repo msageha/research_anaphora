@@ -39,6 +39,12 @@ class BiLSTMBase(Chain):
             self.pm_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.pn_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.l1 = L.Linear(input_size*4, n_labels)
+            self.oc_l1 = L.Linear(input_size*4, n_labels)
+            self.oy_l1 = L.Linear(input_size*4, n_labels)
+            self.ow_l1 = L.Linear(input_size*4, n_labels)
+            self.pb_l1 = L.Linear(input_size*4, n_labels)
+            self.pm_l1 = L.Linear(input_size*4, n_labels)
+            self.pn_l1 = L.Linear(input_size*4, n_labels)
 
         sentence_length = 2000
 
@@ -122,7 +128,18 @@ class BiLSTMBase(Chain):
             if z != zs[0]:
                 print('ERROR!!!!!', flush=True)
         ys = [F.concat((y1, y2)) for y1, y2 in zip(ys1, ys2)]
-        ys = [self.l1(y) for y in ys]
+        if zs[0] == 'OC':
+            ys = [self.oc_l1(y) for y in ys]
+        elif zs[0] == 'OY':
+            ys = [self.oy_l1(y) for y in ys]
+        elif zs[0] == 'OW':
+            ys = [self.ow_l1(y) for y in ys]
+        elif zs[0] == 'PB':
+            ys = [self.pb_l1(y) for y in ys]
+        elif zs[0] == 'PM':
+            ys = [self.pm_l1(y) for y in ys]
+        elif zs[0] == 'PN':
+            ys = [self.pn_l1(y) for y in ys]
         ys_neg = [F.matmul(self.domain_statistics_negative[z][:y.shape[0], :y.shape[0]], y[:, 0].reshape(-1, 1)) for y, z in zip(ys, zs)]
         ys_pos = [F.matmul(self.domain_statistics_positive[z][:y.shape[0], :y.shape[0]], y[:, 1].reshape(-1, 1)) for y, z in zip(ys, zs)]
         ys = [F.concat((y_neg, y_pos)) for y_neg, y_pos in zip(ys_neg, ys_pos)]
