@@ -222,12 +222,12 @@ def union(dataset_dict, args, dump_path):
         train_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][:train_size])
         dev_dataset_dict['{0}_z'.format(domain)] = np.array(dataset_dict['{0}_z'.format(domain)][train_size:dev_size])
 
-    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ga')
-    training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', 'ga', dump_path, args)
-    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'o')
-    training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', 'o', dump_path, args)
-    type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ni')
-    training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', 'ni', dump_path, args)
+    type_statistics_dict = calculate_type_statistics(train_dataset_dict, args.case)
+    training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', args.case, dump_path, args)
+    # type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'o')
+    # training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', 'o', dump_path, args)
+    # type_statistics_dict = calculate_type_statistics(train_dataset_dict, 'ni')
+    # training(train_dataset_dict, dev_dataset_dict, type_statistics_dict, 'union', 'ni', dump_path, args)
 
 def load_union_model_path(path, case):
     for epoch in range(20, 0, -1):
@@ -347,7 +347,7 @@ def main():
     args = parser.parse_args()
 
     dataset_dict = load_dataset(args.df_path)
-    # union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
+    union(dataset_dict, args, 'normal/dropout-{0}_batchsize-{1}'.format(args.dropout, args.batchsize))
 
     train_dataset_dict = {}
     for domain in domain_dict:
