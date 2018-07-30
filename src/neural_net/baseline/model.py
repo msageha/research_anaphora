@@ -30,7 +30,7 @@ class BiLSTMBase(Chain):
     def __init__(self, input_size, output_size, n_labels, n_layers=1, dropout=0.3):
         super(BiLSTMBase, self).__init__()
         with self.init_scope():
-            self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
+            self.nstep_bilstm = L.NStepBiLSTM(n_layers=n_layers, in_size=input_size, out_size=output_size, dropout=dropout)
             self.l1 = L.Linear(input_size*2, n_labels)
 
     def __call__(self, xs, ys):
