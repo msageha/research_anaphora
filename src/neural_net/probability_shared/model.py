@@ -36,8 +36,8 @@ class BiLSTMBase(Chain):
             self.l2 = L.Linear(n_labels, n_labels)
 
 
-    def __call__(self, xs, ys, zs):
-        pred_ys = self.traverse(xs, zs)
+    def __call__(self, xs, ys):
+        pred_ys = self.traverse(xs)
 
         loss = .0
         for pred_y, y in zip(pred_ys, ys):
@@ -52,7 +52,7 @@ class BiLSTMBase(Chain):
                 accuracy += 1/len(ys)
         return loss, accuracy
 
-    def traverse(self, xs, zs):
+    def traverse(self, xs):
         hx, cx = None, None
         hx, cx, ys = self.nstep_bilstm1(xs=xs, hx=hx, cx=cx)
         ys = [self.l1(y) for y in ys]
