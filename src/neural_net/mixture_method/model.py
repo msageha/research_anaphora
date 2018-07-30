@@ -38,7 +38,6 @@ class BiLSTMBase(Chain):
             self.pb_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.pm_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
             self.pn_nstep_bilstm = L.NStepBiLSTM(n_layers=n_labels, in_size=input_size, out_size=output_size, dropout=dropout)
-            self.l1 = L.Linear(input_size*4, n_labels)
             self.oc_l1 = L.Linear(input_size*4, n_labels)
             self.oy_l1 = L.Linear(input_size*4, n_labels)
             self.ow_l1 = L.Linear(input_size*4, n_labels)
