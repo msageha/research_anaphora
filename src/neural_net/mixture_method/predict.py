@@ -225,6 +225,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir','-m', type=str, default='')
     parser.add_argument('--train_test_ratio', type=float, default=0.8)
+    parser.add_argument('--case', type=str, default='')
     args = parser.parse_args()
     dataset_dict = load_dataset('../dataframe')
     train_dataset_dict = {}
@@ -234,7 +235,7 @@ def main():
         train_dataset_dict['{0}_y_o'.format(domain)] = dataset_dict['{0}_y_o'.format(domain)][:train_size]
         train_dataset_dict['{0}_y_ni'.format(domain)] = dataset_dict['{0}_y_ni'.format(domain)][:train_size]
 
-    for case in ['ga', 'o', 'ni']:
+    for case in [args.case]:
         type_statistics_dict = calculate_type_statistics(train_dataset_dict, case)
         for domain in domain_dict:
             model_path = load_model_path(args.dir, case, domain)
